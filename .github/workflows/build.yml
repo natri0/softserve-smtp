@@ -1,0 +1,31 @@
+name: Build project
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    # allow manually running
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        buildtype: [Debug, Release]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Get CMake
+        uses: lukka/get-cmake@latest
+      - name: Configure CMake
+        run: |
+          mkdir build
+          cd build
+          cmake .. -G Ninja -D CMAKE_BUILD_TYPE=${{ matrix.buildtype }}
+      - name: Build
+        run: |
+          cmake --build build/
