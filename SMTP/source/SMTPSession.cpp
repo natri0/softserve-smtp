@@ -84,8 +84,6 @@ size_t ISXSMTP::SMTPSession::parseCommandVerb(std::string_view request)
 		}
 	}
 
-	// not using std::string_view because
-	// there is no overloading in std::unordered_map::at()
 	std::string command_verb = std::string(request.begin(), request.begin() + command_verb_end_pos);
 
 	size_t command_index = 0;
