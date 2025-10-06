@@ -2,6 +2,8 @@
 
 #include "Commands/SMTPCommandsBase.h"
 #include "SMTPReply.h"
+#include "SMTPBuffer.h"
+#include "SMTPState.h"
 
 #include <string>
 #include <vector>
@@ -11,6 +13,7 @@
 namespace ISXSMTP
 {
 
+// will be moved into separate file in the future
 constexpr char CRLF[3] = {0x0D, 0x0A, 0x00};
 constexpr char SP = 0x20;
 
@@ -38,6 +41,7 @@ private:
 
 	// returns index of command in the m_commands vector
 	size_t parseCommandVerb(std::string_view request);
+
 private:
 	// this vector should be filled either in constructor 
 	// depending on some kind of config
@@ -47,6 +51,11 @@ private:
 
 	std::unordered_map<std::string, size_t> m_commandMap;
 
+	SMTPBuffer m_reversePath;
+	SMTPBuffer m_forwardPath;
+	SMTPBuffer m_mailData;
+
+	SMTPState m_state;
 };
 
 } // ISXSMTP

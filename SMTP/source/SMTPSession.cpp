@@ -27,11 +27,10 @@ ISXSMTP::SMTPSession::~SMTPSession()
 ISXSMTP::SMTPReply ISXSMTP::SMTPSession::ProcessClientCommand(std::string request)
 {
 	auto command_index = parseCommandVerb(request);
-	std::cout << command_index << std::endl;
 
-	m_commands[command_index]->Invoke({});
+	auto reply = m_commands[command_index]->Invoke({});
 
-	return {};
+	return reply;
 }
 
 std::string ISXSMTP::SMTPSession::GetOpeningMessage() const
@@ -69,12 +68,12 @@ void ISXSMTP::SMTPSession::fillCommandsVector()
 
 size_t ISXSMTP::SMTPSession::parseCommandVerb(std::string_view request)
 {
-	// command verb ends with "SP"
+	// command verb ends with <SP>
 	auto command_verb_end_pos = request.find_first_of(ISXSMTP::SP);
 	if (command_verb_end_pos == std::string::npos)
 	{
 		// this could mean that command has no parameters
-		// in this case string should end with "CRLF"
+		// in this case string should end with <CRLF>
 		command_verb_end_pos = request.find_first_of(ISXSMTP::CRLF);
 
 		if (command_verb_end_pos == std::string::npos)
