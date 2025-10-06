@@ -1,20 +1,43 @@
 #pragma once
 
 #include <string>
+#include <array>
+#include <cstdint>
 
 namespace ISXSMTP
 {
 
-struct SMTPReply
+class SMTPReply
 {
-	// error code or 
-	// other kind of result
-	// should be placed here later
+public:
+	SMTPReply(std::array<std::uint8_t, 3> code, const std::string& comment);
 
-	// SMTP returns 3 digit code (+1 for \0) depending on the result of operation
-	// maybe reply code will change to be an enum or class later
-	char reply_code[4];
-	std::string comment;
+public:
+	static SMTPReply CommandUnrecognized();
+	static SMTPReply SyntaxError();
+	static SMTPReply CommandNotImplemented();
+	static SMTPReply BadSequenceOfCommands();
+	static SMTPReply CommandParameterNotImplemented();
+	static SMTPReply HelpReply();
+	static SMTPReply HelpMessage();
+	static SMTPReply ServiceReady();
+	static SMTPReply ServiceClosing();
+	static SMTPReply ServiceNotAvailable();
+	static SMTPReply OK();
+	static SMTPReply UserNotLocal251(); // will write user to forward path automatically
+	static SMTPReply UserNotLocal551(); // will ask user to specifically set this user to forward path
+	static SMTPReply CannotVerifyUser();
+	static SMTPReply MailboxUnavailable450(); // mailbox may be available after some time
+	static SMTPReply MailboxUnavailable550(); // mailbox unavailable permanently
+	static SMTPReply ProcessingError();
+	static SMTPReply InsufficientSystemStorage();
+	static SMTPReply ExceededStorageAllocation();
+	static SMTPReply StartMailInput();
+	static SMTPReply TransactionFailed();
+	
+private:
+	std::array<std::uint8_t, 3> m_code;
+	std::string m_comment;	
 };
 
 }

@@ -14,5 +14,8 @@ add_library(SMTP
 	 "source/Commands/QUITCommand.cpp" 
 	 "source/Commands/VRFYCommand.cpp"
 	 "source/Commands/RSETCommand.cpp"
-	 "source/SMTPSession.cpp"  "include/SMTPBuffer.h" "include/SMTPState.h" "source/SMTPBuffer.cpp" "source/SMTPState.cpp")
+	 "source/SMTPSession.cpp"  
+	 "source/SMTPBuffer.cpp" 
+	 "source/SMTPState.cpp" 
+	 "source/SMTPReply.cpp")
 target_include_directories(SMTP PUBLIC "include")
