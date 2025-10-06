@@ -28,7 +28,7 @@ ISXSMTP::SMTPReply ISXSMTP::SMTPSession::ProcessClientCommand(std::string reques
 {
 	auto command_index = parseCommandVerb(request);
 
-	auto reply = m_commands[command_index]->Invoke({});
+	auto reply = m_commands[command_index]->Invoke({m_reversePath, m_forwardPath, m_mailData, m_state, request});
 
 	return reply;
 }
