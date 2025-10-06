@@ -12,7 +12,7 @@ class EHLOCommand : public SMTPCommandBase
 public:
 	EHLOCommand();
 
-	SMTPCommandResult Invoke(SMTPCommandArguments arguments) override;
+	SMTPReply Invoke(SMTPCommandArguments arguments) override;
 	std::string GetName() const override;
 };
 

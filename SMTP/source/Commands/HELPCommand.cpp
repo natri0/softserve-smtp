@@ -5,7 +5,7 @@ ISXSMTP::HELPCommand::HELPCommand()
 
 }
 
-ISXSMTP::SMTPCommandResult ISXSMTP::HELPCommand::Invoke(SMTPCommandArguments arguments)
+ISXSMTP::SMTPReply ISXSMTP::HELPCommand::Invoke(SMTPCommandArguments arguments)
 {
 	return {};
 }

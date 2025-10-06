@@ -12,7 +12,7 @@ class NOOPCommand : public SMTPCommandBase
 public:
 	NOOPCommand();
 
-	SMTPCommandResult Invoke(SMTPCommandArguments arguments) override;
+	SMTPReply Invoke(SMTPCommandArguments arguments) override;
 	std::string GetName() const override;
 };
 

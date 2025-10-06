@@ -12,7 +12,7 @@ class HELOCommand : public SMTPCommandBase
 public:
 	HELOCommand();
 
-	SMTPCommandResult Invoke(SMTPCommandArguments arguments) override;
+	SMTPReply Invoke(SMTPCommandArguments arguments) override;
 	std::string GetName() const override;
 };
 

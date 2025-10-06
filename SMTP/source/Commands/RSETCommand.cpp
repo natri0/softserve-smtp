@@ -5,7 +5,7 @@ ISXSMTP::RSETCommand::RSETCommand()
 
 }
 
-ISXSMTP::SMTPCommandResult ISXSMTP::RSETCommand::Invoke(SMTPCommandArguments arguments)
+ISXSMTP::SMTPReply ISXSMTP::RSETCommand::Invoke(SMTPCommandArguments arguments)
 {
 	return {};
 }

@@ -12,7 +12,7 @@ class RCPTCommand : public SMTPCommandBase
 public:
 	RCPTCommand();
 
-	SMTPCommandResult Invoke(SMTPCommandArguments arguments) override;
+	SMTPReply Invoke(SMTPCommandArguments arguments) override;
 	std::string GetName() const override;
 };
 

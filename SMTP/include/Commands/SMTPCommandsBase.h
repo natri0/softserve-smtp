@@ -1,18 +1,11 @@
 #pragma once
 
+#include "SMTPReply.h"
+
 #include <string>
 
 namespace ISXSMTP
 {
-struct SMTPCommandResult
-{
-	// existence of this struct is questionable
-	// might be removed later
-
-	// error code or 
-	// other kind of result
-	// should be placed here 
-};
 
 struct SMTPCommandArguments
 {
@@ -25,7 +18,7 @@ struct SMTPCommandArguments
 class SMTPCommandBase 
 {
 public:
-	virtual SMTPCommandResult Invoke(SMTPCommandArguments arguments) = 0;
+	virtual SMTPReply Invoke(SMTPCommandArguments arguments) = 0;
 	virtual std::string GetName() const = 0;
 };
 

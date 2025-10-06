@@ -12,7 +12,7 @@ class VRFYCommand : public SMTPCommandBase
 public:
 	VRFYCommand();
 
-	SMTPCommandResult Invoke(SMTPCommandArguments arguments) override;
+	SMTPReply Invoke(SMTPCommandArguments arguments) override;
 	std::string GetName() const override;
 };
 

@@ -5,7 +5,7 @@ ISXSMTP::HELOCommand::HELOCommand()
 
 }
 
-ISXSMTP::SMTPCommandResult ISXSMTP::HELOCommand::Invoke(SMTPCommandArguments arguments)
+ISXSMTP::SMTPReply ISXSMTP::HELOCommand::Invoke(SMTPCommandArguments arguments)
 {
 	return {};
 }

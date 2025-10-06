@@ -5,7 +5,7 @@ ISXSMTP::RCPTCommand::RCPTCommand()
 
 }
 
-ISXSMTP::SMTPCommandResult ISXSMTP::RCPTCommand::Invoke(SMTPCommandArguments arguments)
+ISXSMTP::SMTPReply ISXSMTP::RCPTCommand::Invoke(SMTPCommandArguments arguments)
 {
 	return {};
 }

@@ -24,41 +24,9 @@ ISXSMTP::SMTPSession::~SMTPSession()
 	// TODO
 }
 
-ISXSMTP::SMTPResult ISXSMTP::SMTPSession::ProcessClientCommand(std::string request)
+ISXSMTP::SMTPReply ISXSMTP::SMTPSession::ProcessClientCommand(std::string request)
 {
-	// command verb ends with "SP"
-	auto command_verb_end_pos = request.find_first_of(ISXSMTP::SP);
-	if (command_verb_end_pos == std::string::npos)
-	{
-		// this could mean that command has no parameters
-		// in this case string should end with "CRLF"
-		command_verb_end_pos = request.find_first_of(ISXSMTP::CRLF);
-
-		if (command_verb_end_pos == std::string::npos)
-		{
-			// error
-			// TODO: handle error
-			return {};
-		}
-	}
-
-	// not using std::string_view because
-	// there is no overloading in std::unordered_map::at()
-	std::string command_verb = std::string(request.begin(), request.begin() + command_verb_end_pos);
-
-	std::cout << command_verb << std::endl;
-
-	size_t command_index = 0;
-	try
-	{
-		// get the command index in the vector
-		command_index = m_commandMap.at(command_verb);
-	}
-	catch(...)
-	{
-		// TODO: handle error
-	}
-	
+	auto command_index = parseCommandVerb(request);
 	std::cout << command_index << std::endl;
 
 	m_commands[command_index]->Invoke({});
@@ -97,5 +65,41 @@ void ISXSMTP::SMTPSession::fillCommandsVector()
 	m_commands.emplace_back(std::make_unique<ISXSMTP::NOOPCommand>());
 	m_commands.emplace_back(std::make_unique<ISXSMTP::VRFYCommand>());
 	m_commands.emplace_back(std::make_unique<ISXSMTP::QUITCommand>());
+}
+
+size_t ISXSMTP::SMTPSession::parseCommandVerb(std::string_view request)
+{
+	// command verb ends with "SP"
+	auto command_verb_end_pos = request.find_first_of(ISXSMTP::SP);
+	if (command_verb_end_pos == std::string::npos)
+	{
+		// this could mean that command has no parameters
+		// in this case string should end with "CRLF"
+		command_verb_end_pos = request.find_first_of(ISXSMTP::CRLF);
+
+		if (command_verb_end_pos == std::string::npos)
+		{
+			// error
+			// TODO: handle error
+			return {};
+		}
+	}
+
+	// not using std::string_view because
+	// there is no overloading in std::unordered_map::at()
+	std::string command_verb = std::string(request.begin(), request.begin() + command_verb_end_pos);
+
+	size_t command_index = 0;
+	try
+	{
+		// get the command index in the vector
+		command_index = m_commandMap.at(command_verb);
+	}
+	catch (...)
+	{
+		// TODO: handle error
+	}
+
+	return command_index;
 }
 

@@ -5,7 +5,7 @@ ISXSMTP::VRFYCommand::VRFYCommand()
 
 }
 
-ISXSMTP::SMTPCommandResult ISXSMTP::VRFYCommand::Invoke(SMTPCommandArguments arguments)
+ISXSMTP::SMTPReply ISXSMTP::VRFYCommand::Invoke(SMTPCommandArguments arguments)
 {
 	return {};
 }

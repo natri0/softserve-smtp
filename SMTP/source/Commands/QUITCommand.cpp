@@ -5,7 +5,7 @@ ISXSMTP::QUITCommand::QUITCommand()
 
 }
 
-ISXSMTP::SMTPCommandResult ISXSMTP::QUITCommand::Invoke(SMTPCommandArguments arguments)
+ISXSMTP::SMTPReply ISXSMTP::QUITCommand::Invoke(SMTPCommandArguments arguments)
 {
 	return {};
 }

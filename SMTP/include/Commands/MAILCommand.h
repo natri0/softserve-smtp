@@ -12,7 +12,7 @@ class MAILCommand : public SMTPCommandBase
 public:
 	MAILCommand();
 
-	SMTPCommandResult Invoke(SMTPCommandArguments arguments) override;
+	SMTPReply Invoke(SMTPCommandArguments arguments) override;
 	std::string GetName() const override;
 };
 

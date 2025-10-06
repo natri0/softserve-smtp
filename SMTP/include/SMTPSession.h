@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Commands/SMTPCommandsBase.h"
+#include "SMTPReply.h"
 
 #include <string>
 #include <vector>
@@ -13,13 +14,6 @@ namespace ISXSMTP
 constexpr char CRLF[3] = {0x0D, 0x0A, 0x00};
 constexpr char SP = 0x20;
 
-struct SMTPResult
-{
-	// error code or 
-	// other kind of result
-	// should be placed here later
-};
-
 class SMTPSession
 {
 public:
@@ -28,7 +22,7 @@ public:
 
 	// !!! copies string !!!
 	// might change this later
-	SMTPResult ProcessClientCommand(std::string request); 
+	SMTPReply ProcessClientCommand(std::string request); 
 
 	// this functions may be removed later
 	std::string GetOpeningMessage() const;
@@ -42,6 +36,8 @@ private:
 	// temporary function, will be removed later
 	void fillCommandsVector(); 
 
+	// returns index of command in the m_commands vector
+	size_t parseCommandVerb(std::string_view request);
 private:
 	// this vector should be filled either in constructor 
 	// depending on some kind of config
