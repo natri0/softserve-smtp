@@ -7,7 +7,7 @@ ISXSMTP::RSETCommand::RSETCommand()
 
 ISXSMTP::SMTPReply ISXSMTP::RSETCommand::Invoke(SMTPCommandArguments arguments)
 {
-	return {};
+	return ISXSMTP::SMTPReply::CommandNotImplemented();
 }
 
 std::string ISXSMTP::RSETCommand::GetName() const

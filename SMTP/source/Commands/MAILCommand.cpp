@@ -7,7 +7,7 @@ ISXSMTP::MAILCommand::MAILCommand()
 
 ISXSMTP::SMTPReply ISXSMTP::MAILCommand::Invoke(SMTPCommandArguments arguments)
 {
-	return {};
+	return ISXSMTP::SMTPReply::CommandNotImplemented();
 }
 
 std::string ISXSMTP::MAILCommand::GetName() const

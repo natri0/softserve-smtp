@@ -7,7 +7,7 @@ ISXSMTP::RCPTCommand::RCPTCommand()
 
 ISXSMTP::SMTPReply ISXSMTP::RCPTCommand::Invoke(SMTPCommandArguments arguments)
 {
-	return {};
+	return ISXSMTP::SMTPReply::CommandNotImplemented();
 }
 
 std::string ISXSMTP::RCPTCommand::GetName() const

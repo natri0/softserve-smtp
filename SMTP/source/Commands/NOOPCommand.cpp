@@ -9,8 +9,8 @@ ISXSMTP::NOOPCommand::NOOPCommand()
 
 ISXSMTP::SMTPReply ISXSMTP::NOOPCommand::Invoke(SMTPCommandArguments arguments)
 {
-	std::cout << "Hello from NOOP command!\n";
-	return {};
+	// this command does nothing
+	return ISXSMTP::SMTPReply::OK();
 }
 
 std::string ISXSMTP::NOOPCommand::GetName() const

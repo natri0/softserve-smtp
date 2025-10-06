@@ -7,7 +7,7 @@ ISXSMTP::EHLOCommand::EHLOCommand()
 
 ISXSMTP::SMTPReply ISXSMTP::EHLOCommand::Invoke(SMTPCommandArguments arguments)
 {
-	return {};
+	return ISXSMTP::SMTPReply::CommandNotImplemented();
 }
 
 std::string ISXSMTP::EHLOCommand::GetName() const

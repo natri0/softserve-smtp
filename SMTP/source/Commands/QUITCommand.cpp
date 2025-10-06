@@ -7,7 +7,7 @@ ISXSMTP::QUITCommand::QUITCommand()
 
 ISXSMTP::SMTPReply ISXSMTP::QUITCommand::Invoke(SMTPCommandArguments arguments)
 {
-	return {};
+	return ISXSMTP::SMTPReply::CommandNotImplemented();
 }
 
 std::string ISXSMTP::QUITCommand::GetName() const

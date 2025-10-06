@@ -7,7 +7,7 @@ ISXSMTP::VRFYCommand::VRFYCommand()
 
 ISXSMTP::SMTPReply ISXSMTP::VRFYCommand::Invoke(SMTPCommandArguments arguments)
 {
-	return {};
+	return ISXSMTP::SMTPReply::CommandNotImplemented();
 }
 
 std::string ISXSMTP::VRFYCommand::GetName() const
