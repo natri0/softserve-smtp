@@ -14,7 +14,7 @@ struct SMTPReply
 	// SMTP returns 3 digit code (+1 for \0) depending on the result of operation
 	// maybe reply code will change to be an enum or class later
 	char reply_code[4];
-	std::string command;
+	std::string comment;
 };
 
 }
