@@ -33,16 +33,6 @@ ISXSMTP::SMTPReply ISXSMTP::SMTPSession::ProcessClientCommand(std::string reques
 	return reply;
 }
 
-std::string ISXSMTP::SMTPSession::GetOpeningMessage() const
-{
-	return std::string("220 <domain should be placed here> Simple Mail Transfer Service Ready");
-}
-
-std::string ISXSMTP::SMTPSession::GetClosingMessage() const
-{
-	return std::string("221 <domain should be placed here> Service closing transmission channel");
-}
-
 void ISXSMTP::SMTPSession::createCommandMap()
 {
 	for (size_t i = 0; i < m_commands.size(); i++)

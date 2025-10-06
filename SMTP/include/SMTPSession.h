@@ -26,10 +26,6 @@ public:
 	// !!! copies string !!!
 	// might change this later
 	SMTPReply ProcessClientCommand(std::string request); 
-
-	// this functions may be removed later
-	std::string GetOpeningMessage() const;
-	std::string GetClosingMessage() const;
 		 
 private:
 	// creates std::unordered_map<std::string, size_t> of available commands
