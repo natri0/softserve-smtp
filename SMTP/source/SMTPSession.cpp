@@ -12,6 +12,7 @@
 #include "Commands/QUITCommand.h"
 
 #include <iostream>
+#include <algorithm>
 
 ISXSMTP::SMTPSession::SMTPSession()
 {
@@ -75,6 +76,7 @@ size_t ISXSMTP::SMTPSession::parseCommandVerb(std::string_view request)
 	}
 
 	std::string command_verb = std::string(request.begin(), request.begin() + command_verb_end_pos);
+	std::transform(command_verb.begin(), command_verb.end(), command_verb.begin(), ::toupper);
 
 	size_t command_index = 0;
 	try
