@@ -4,7 +4,7 @@
 #include <format>
 
 #include "formatutil/optional.h"
-#include "formatutil/variant.h"
+#include "formatutil/jsonvalue.h"
 
 static auto json_doc = R"(1.0)";
 
