@@ -16,7 +16,7 @@ private:
 
 private:
 	std::unique_ptr<ITransmissionChannel> m_transmissionChannel;
-	SMTPContext m_context;
+	std::shared_ptr<SMTPContext> m_context;
 	//std::unordered_map<index_t, SMTPCommandBase> m_commands;
 
 public:

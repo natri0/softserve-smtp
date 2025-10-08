@@ -3,12 +3,13 @@
 ISXSMTP::SMTPSession::SMTPSession(std::unique_ptr<ITransmissionChannel> transmission_channel)
 	: m_transmissionChannel(std::move(transmission_channel))
 {
+	m_context = std::make_shared<SMTPContext>();
 	process();
 }
 
 bool ISXSMTP::SMTPSession::IsFinished()
 {
-	if (m_context.state == ISXSMTP::SMTPStates::FINISH)
+	if (m_context->state == ISXSMTP::SMTPStates::FINISH)
 		return true;
 	return false;
 }
