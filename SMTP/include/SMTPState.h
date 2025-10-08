@@ -21,6 +21,11 @@ public:
 	void Clear();
 	void Set(SMTPStates state);
 
+public:
+	bool operator==(SMTPStates other);
+	bool operator!=(SMTPStates other);
+	SMTPState& operator=(SMTPStates state);
+
 private:
 	SMTPStates m_state;
 };
