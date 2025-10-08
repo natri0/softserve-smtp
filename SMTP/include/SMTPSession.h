@@ -25,6 +25,9 @@ public:
 	// Returns true if SMTPSession is finished processing request
 	// Returns false otherwise
 	bool IsFinished();
+
+private:
+	void process();
 };
 
 }
