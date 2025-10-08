@@ -2,26 +2,22 @@
 
 #include <vector>
 #include <cstdint>
-#include <string>
-#include <string_view>
 
 namespace ISXSMTP
 {
 
 class SMTPBuffer
 {
+private:
+	std::vector<std::uint8_t> m_data;
+
 public:
-	SMTPBuffer();
-	~SMTPBuffer();
+	void Append(std::vector<std::uint8_t> data);
+	void Append(std::uint8_t data);
+
+	std::vector<std::uint8_t>& Get();
 
 	void Clear();
-	void Write(std::string str);
-	void Write(std::string_view str);
-	void Write(std::uint8_t ch);
-	std::vector<std::uint8_t>& Read();
-
-private:
-	std::vector<std::uint8_t> m_buffer;
 };
 
 }
