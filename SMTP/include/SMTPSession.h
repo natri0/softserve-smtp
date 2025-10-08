@@ -1,14 +1,13 @@
 #pragma once
 
 #include "ITransmissionChannel.h"
+#include "SMTPContext.h"
 
 #include <memory>
 #include <unordered_map>
 
 namespace ISXSMTP
 {
-
-
 
 class SMTPSession
 {
@@ -17,7 +16,7 @@ private:
 
 private:
 	std::unique_ptr<ITransmissionChannel> m_transmissionChannel;
-	//std::unique_ptr<SMTPContex> m_contex;
+	SMTPContext m_context;
 	//std::unordered_map<index_t, SMTPCommandBase> m_commands;
 
 public:
