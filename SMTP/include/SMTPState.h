@@ -16,7 +16,6 @@ class SMTPState
 {
 public:
 	SMTPState();
-	~SMTPState();
 
 	void Clear();
 	void Set(SMTPStates state);

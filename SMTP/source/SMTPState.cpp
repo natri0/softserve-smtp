@@ -6,16 +6,6 @@ ISXSMTP::SMTPState::SMTPState()
 
 }
 
-ISXSMTP::SMTPState::SMTPState()
-{
-
-}
-
-ISXSMTP::SMTPState::~SMTPState()
-{
-
-}
-
 void ISXSMTP::SMTPState::Clear()
 {
 	m_state = SMTPStates::INITIAL;
