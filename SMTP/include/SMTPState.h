@@ -8,7 +8,8 @@ enum class SMTPStates
 	INITIAL,
 	POST_MAIL,
 	POST_RCPT,
-	POST_DATA
+	POST_DATA,
+	FINISH
 };
 
 class SMTPState
