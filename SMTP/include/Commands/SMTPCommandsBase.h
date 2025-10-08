@@ -1,28 +1,17 @@
 #pragma once
 
 #include "SMTPReply.h"
-#include "SMTPBuffer.h"
-#include "SMTPState.h"
+#include "SMTPContext.h"
 
 #include <string>
+#include <memory>
 
 namespace ISXSMTP
 {
 
 struct SMTPCommandArguments
 {
-	// existence of this class is questionable
-	// might be removed later
-
-	// arguments for the command should be placed here
-
-	SMTPBuffer& reverse_path;
-	SMTPBuffer& forward_path;
-	SMTPBuffer& mail_data;
-
-	SMTPState& state;
-
-	std::string request;
+	std::shared_ptr<SMTPContext> context;
 };
 
 class SMTPCommandBase 
