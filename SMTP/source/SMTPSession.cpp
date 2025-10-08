@@ -8,6 +8,7 @@ ISXSMTP::SMTPSession::SMTPSession(std::unique_ptr<ITransmissionChannel> transmis
 
 bool ISXSMTP::SMTPSession::IsFinished()
 {
-	// TODO
+	if (m_context.state == ISXSMTP::SMTPStates::FINISH)
+		return true;
 	return false;
 }
