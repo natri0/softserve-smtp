@@ -20,6 +20,8 @@ std::optional<double> json::visit_number(const char *&string) {
 }
 
 std::optional<json::Value> json::visit_element(const char *&string) {
+    while (isspace(*string)) string++;
+
     if (auto number = visit_number(string); number.has_value()) return { *number };
     return {};
 }
