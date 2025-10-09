@@ -25,12 +25,6 @@ ISXSMTP::SMTPString::SMTPString(std::vector<std::uint8_t>&& data)
 
 }
 
-ISXSMTP::SMTPString::SMTPString(std::vector<std::uint8_t> data)
-	: m_data(data)
-{
-	
-}
-
 ISXSMTP::SMTPString::SMTPString(const std::vector<std::uint8_t>& data)
 	: m_data(data)
 {

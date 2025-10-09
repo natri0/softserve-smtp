@@ -18,7 +18,6 @@ public:
 public:
 	SMTPString();
 	SMTPString(const std::vector<std::uint8_t>& data);
-	SMTPString(std::vector<std::uint8_t> data);
 	SMTPString(std::vector<std::uint8_t>&& data);
 	SMTPString(std::string data);
 	SMTPString(const std::string& data);
