@@ -14,11 +14,6 @@ ISXSMTP::SMTPString::SMTPString(const std::string& data)
 	m_data.assign(data.begin(), data.end());
 }
 
-ISXSMTP::SMTPString::SMTPString(std::string data)
-{
-	m_data.assign(data.begin(), data.end());
-}
-
 ISXSMTP::SMTPString::SMTPString(std::vector<std::uint8_t>&& data)
 	: m_data(std::move(data))
 {
@@ -105,10 +100,24 @@ ISXSMTP::SMTPString& ISXSMTP::SMTPString::operator+(std::uint8_t value)
 
 size_t ISXSMTP::SMTPString::FindFirstOf(const SMTPString& value) const
 {
-	auto it = std::find(m_data.begin(), m_data.end(), value.m_data);
-	if (it != m_data.end())
-		return it - m_data.begin();
-	return NPOS;
+	bool sequence_holding = false;
+	size_t first = NPOS;
+	for (size_t i = 0, j = 0; i < this->Count() && j < value.Count(); i++)
+	{
+		if (this->Get(i) == value.Get(j))
+		{
+			if (j == 0)
+				first = i;
+			sequence_holding = true;
+			j++;
+		}
+		else
+		{
+			sequence_holding = false;
+			first = NPOS;
+		}
+	}
+	return first;
 }
 
 size_t ISXSMTP::SMTPString::FindFirstOf(std::uint8_t value) const

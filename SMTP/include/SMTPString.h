@@ -20,7 +20,6 @@ public:
 	SMTPString();
 	SMTPString(const std::vector<std::uint8_t>& data);
 	SMTPString(std::vector<std::uint8_t>&& data);
-	SMTPString(std::string data);
 	SMTPString(const std::string& data);
 
 	void Append(std::uint8_t ch);
@@ -53,8 +52,9 @@ public:
 template<>
 struct std::hash<ISXSMTP::SMTPString> {
 	std::size_t operator()(ISXSMTP::SMTPString const& s) const noexcept {
+		// Not the best design, probably should write my own hash function for std::vector
 		std::string str;
-		str.assign(s.m_data.begin(), s.m_data.end());
+		str.assign(s.m_data.begin(), s.m_data.end()); 
 		return std::hash<std::string>{}(str);
 	}
 };
