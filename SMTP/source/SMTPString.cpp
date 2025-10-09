@@ -56,6 +56,11 @@ std::uint8_t ISXSMTP::SMTPString::Get(size_t index) const
 	return m_data[index];
 }
 
+ISXSMTP::SMTPString ISXSMTP::SMTPString::GetRange(size_t start, size_t end) const
+{
+	return SMTPString(std::vector<std::uint8_t>(m_data.begin() + start, m_data.begin() + end));	
+}
+
 size_t ISXSMTP::SMTPString::Count() const
 {
 	return m_data.size();

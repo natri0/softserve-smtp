@@ -30,6 +30,7 @@ public:
 
 	std::vector<std::uint8_t>& GetData();
 	std::uint8_t Get(size_t index) const;
+	SMTPString GetRange(size_t start, size_t end) const;
 	size_t Count() const;
 
 	size_t FindFirstOf(std::uint8_t value) const;
