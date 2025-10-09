@@ -37,6 +37,8 @@ public:
 
 	SMTPString& Concat(const SMTPString& other);
 
+	void ToUpper();
+
 	std::uint8_t operator[](size_t index) const;
 	SMTPString& operator+(const SMTPString& other);
 	SMTPString& operator+(std::uint8_t value);

@@ -72,6 +72,15 @@ ISXSMTP::SMTPString& ISXSMTP::SMTPString::Concat(const SMTPString& other)
 	return *this;
 }
 
+void ISXSMTP::SMTPString::ToUpper()
+{
+	// Unless specified otherwise encoding should be ASCII
+	for (auto item : m_data)
+	{
+		item = std::toupper(item);
+	}
+}
+
 std::uint8_t ISXSMTP::SMTPString::operator[](size_t index) const
 {
 	return Get(index);
