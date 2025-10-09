@@ -3,6 +3,7 @@
 #include <vector>
 #include <cstdint>
 #include <string>
+#include <memory> // for std::hash
 
 namespace ISXSMTP
 {
@@ -43,6 +44,17 @@ public:
 	SMTPString& operator+(const SMTPString& other);
 	SMTPString& operator+(std::uint8_t value);
 	SMTPString& operator+(const std::vector<std::uint8_t>& data);
+
+	friend struct std::hash<SMTPString>;
 };
 
 }
+
+template<>
+struct std::hash<ISXSMTP::SMTPString> {
+	std::size_t operator()(ISXSMTP::SMTPString const& s) const noexcept {
+		std::string str;
+		str.assign(s.m_data.begin(), s.m_data.end());
+		return std::hash<std::string>{}(str);
+	}
+};
