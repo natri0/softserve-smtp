@@ -5,13 +5,17 @@ ISXSMTP::HELOCommand::HELOCommand()
 
 }
 
-ISXSMTP::SMTPReply ISXSMTP::HELOCommand::Invoke(SMTPCommandArguments arguments)
+ISXSMTP::SMTPReply ISXSMTP::HELOCommand::Invoke(SMTPCommandArguments arguments, std::shared_ptr<SMTPContext> context)
 {
-	return ISXSMTP::SMTPReply::CommandNotImplemented();
+	return SMTPReply::CommandNotImplemented();
 }
 
-std::string ISXSMTP::HELOCommand::GetName() const
+ISXSMTP::SMTPString ISXSMTP::HELOCommand::GetName()
 {
-	return std::string("HELO");
+	return {};
 }
 
+ISXSMTP::SMTPString ISXSMTP::HELOCommand::GetSyntax()
+{
+	return {};
+}

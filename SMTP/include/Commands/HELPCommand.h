@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SMTPCommandsBase.h"
+#include "SMTPCommandBase.h"
 
 #include <string>
 
@@ -12,8 +12,9 @@ class HELPCommand : public SMTPCommandBase
 public:
 	HELPCommand();
 
-	SMTPReply Invoke(SMTPCommandArguments arguments) override;
-	std::string GetName() const override;
+	SMTPReply Invoke(SMTPCommandArguments arguments, std::shared_ptr<SMTPContext> context) override;
+	SMTPString GetName() override;
+	SMTPString GetSyntax() override;
 };
 
 }

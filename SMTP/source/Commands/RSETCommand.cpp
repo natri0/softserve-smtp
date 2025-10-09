@@ -5,17 +5,17 @@ ISXSMTP::RSETCommand::RSETCommand()
 
 }
 
-ISXSMTP::SMTPReply ISXSMTP::RSETCommand::Invoke(SMTPCommandArguments arguments)
+ISXSMTP::SMTPReply ISXSMTP::RSETCommand::Invoke(SMTPCommandArguments arguments, std::shared_ptr<SMTPContext> context)
 {
-	arguments.forward_path.Clear();
-	arguments.reverse_path.Clear();
-	arguments.mail_data.Clear();
-	arguments.state.Clear();
-
-	return ISXSMTP::SMTPReply::OK();
+	return SMTPReply::CommandNotImplemented();
 }
 
-std::string ISXSMTP::RSETCommand::GetName() const
+ISXSMTP::SMTPString ISXSMTP::RSETCommand::GetName()
 {
-	return std::string("RSET");
+	return {};
+}
+
+ISXSMTP::SMTPString ISXSMTP::RSETCommand::GetSyntax()
+{
+	return {};
 }

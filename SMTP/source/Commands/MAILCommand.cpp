@@ -1,17 +1,22 @@
 #include "Commands/MAILCommand.h"
 
+
 ISXSMTP::MAILCommand::MAILCommand()
 {
 
 }
 
-ISXSMTP::SMTPReply ISXSMTP::MAILCommand::Invoke(SMTPCommandArguments arguments)
+ISXSMTP::SMTPReply ISXSMTP::MAILCommand::Invoke(SMTPCommandArguments arguments, std::shared_ptr<SMTPContext> context)
 {
-	return ISXSMTP::SMTPReply::CommandNotImplemented();
+	return SMTPReply::CommandNotImplemented();
 }
 
-std::string ISXSMTP::MAILCommand::GetName() const
+ISXSMTP::SMTPString ISXSMTP::MAILCommand::GetName()
 {
-	return std::string("MAIL");
+	return {};
 }
 
+ISXSMTP::SMTPString ISXSMTP::MAILCommand::GetSyntax()
+{
+	return {};
+}

@@ -1,17 +1,22 @@
 #include "Commands/RCPTCommand.h"
 
+
 ISXSMTP::RCPTCommand::RCPTCommand()
 {
 
 }
 
-ISXSMTP::SMTPReply ISXSMTP::RCPTCommand::Invoke(SMTPCommandArguments arguments)
+ISXSMTP::SMTPReply ISXSMTP::RCPTCommand::Invoke(SMTPCommandArguments arguments, std::shared_ptr<SMTPContext> context)
 {
-	return ISXSMTP::SMTPReply::CommandNotImplemented();
+	return SMTPReply::CommandNotImplemented();
 }
 
-std::string ISXSMTP::RCPTCommand::GetName() const
+ISXSMTP::SMTPString ISXSMTP::RCPTCommand::GetName()
 {
-	return std::string("RCPT");
+	return {};
 }
 
+ISXSMTP::SMTPString ISXSMTP::RCPTCommand::GetSyntax()
+{
+	return {};
+}

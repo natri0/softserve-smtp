@@ -1,20 +1,22 @@
 #include "Commands/NOOPCommand.h"
 
-#include <iostream>
 
 ISXSMTP::NOOPCommand::NOOPCommand()
 {
 
 }
 
-ISXSMTP::SMTPReply ISXSMTP::NOOPCommand::Invoke(SMTPCommandArguments arguments)
+ISXSMTP::SMTPReply ISXSMTP::NOOPCommand::Invoke(SMTPCommandArguments arguments, std::shared_ptr<SMTPContext> context)
 {
-	// this command does nothing
-	return ISXSMTP::SMTPReply::OK();
+	return SMTPReply::CommandNotImplemented();
 }
 
-std::string ISXSMTP::NOOPCommand::GetName() const
+ISXSMTP::SMTPString ISXSMTP::NOOPCommand::GetName()
 {
-	return std::string("NOOP");
+	return {};
 }
 
+ISXSMTP::SMTPString ISXSMTP::NOOPCommand::GetSyntax()
+{
+	return {};
+}

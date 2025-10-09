@@ -5,13 +5,17 @@ ISXSMTP::QUITCommand::QUITCommand()
 
 }
 
-ISXSMTP::SMTPReply ISXSMTP::QUITCommand::Invoke(SMTPCommandArguments arguments)
+ISXSMTP::SMTPReply ISXSMTP::QUITCommand::Invoke(SMTPCommandArguments arguments, std::shared_ptr<SMTPContext> context)
 {
-	return ISXSMTP::SMTPReply::CommandNotImplemented();
+	return SMTPReply::CommandNotImplemented();
 }
 
-std::string ISXSMTP::QUITCommand::GetName() const
+ISXSMTP::SMTPString ISXSMTP::QUITCommand::GetName()
 {
-	return std::string("QUIT");
+	return {};
 }
 
+ISXSMTP::SMTPString ISXSMTP::QUITCommand::GetSyntax()
+{
+	return {};
+}

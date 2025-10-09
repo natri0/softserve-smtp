@@ -1,17 +1,23 @@
 #include "Commands/EHLOCommand.h"
 
+
+
 ISXSMTP::EHLOCommand::EHLOCommand()
 {
 
 }
 
-ISXSMTP::SMTPReply ISXSMTP::EHLOCommand::Invoke(SMTPCommandArguments arguments)
+ISXSMTP::SMTPReply ISXSMTP::EHLOCommand::Invoke(SMTPCommandArguments arguments, std::shared_ptr<SMTPContext> context)
 {
-	return ISXSMTP::SMTPReply::CommandNotImplemented();
+	return SMTPReply::CommandNotImplemented();
 }
 
-std::string ISXSMTP::EHLOCommand::GetName() const
+ISXSMTP::SMTPString ISXSMTP::EHLOCommand::GetName()
 {
-	return std::string("EHLO");
+	return {};
 }
 
+ISXSMTP::SMTPString ISXSMTP::EHLOCommand::GetSyntax()
+{
+	return {};
+}

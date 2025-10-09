@@ -5,13 +5,17 @@ ISXSMTP::VRFYCommand::VRFYCommand()
 
 }
 
-ISXSMTP::SMTPReply ISXSMTP::VRFYCommand::Invoke(SMTPCommandArguments arguments)
+ISXSMTP::SMTPReply ISXSMTP::VRFYCommand::Invoke(SMTPCommandArguments arguments, std::shared_ptr<SMTPContext> context)
 {
-	return ISXSMTP::SMTPReply::CommandNotImplemented();
+	return SMTPReply::CommandNotImplemented();
 }
 
-std::string ISXSMTP::VRFYCommand::GetName() const
+ISXSMTP::SMTPString ISXSMTP::VRFYCommand::GetName()
 {
-	return std::string("VRFY");
+	return {};
 }
 
+ISXSMTP::SMTPString ISXSMTP::VRFYCommand::GetSyntax()
+{
+	return {};
+}

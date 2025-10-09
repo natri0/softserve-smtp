@@ -5,13 +5,17 @@ ISXSMTP::DATACommand::DATACommand()
 
 }
 
-ISXSMTP::SMTPReply ISXSMTP::DATACommand::Invoke(SMTPCommandArguments arguments)
+ISXSMTP::SMTPReply ISXSMTP::DATACommand::Invoke(SMTPCommandArguments arguments, std::shared_ptr<SMTPContext> context)
 {
-	return ISXSMTP::SMTPReply::CommandNotImplemented();
+	return SMTPReply::CommandNotImplemented();
 }
 
-std::string ISXSMTP::DATACommand::GetName() const
+ISXSMTP::SMTPString ISXSMTP::DATACommand::GetName()
 {
-	return std::string("DATA");
+	return {};
 }
 
+ISXSMTP::SMTPString ISXSMTP::DATACommand::GetSyntax()
+{
+	return {};
+}
