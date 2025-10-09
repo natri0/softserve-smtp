@@ -1,0 +1,113 @@
+#pragma once
+
+#include "SMTPString.h"
+
+#include <algorithm>
+
+ISXSMTP::SMTPString::SMTPString()
+	: m_data({})
+{
+}
+
+ISXSMTP::SMTPString::SMTPString(const std::string& data)
+{
+	m_data.assign(data.begin(), data.end());
+}
+
+ISXSMTP::SMTPString::SMTPString(std::string data)
+{
+	m_data.assign(data.begin(), data.end());
+}
+
+ISXSMTP::SMTPString::SMTPString(std::vector<std::uint8_t>&& data)
+	: m_data(std::move(data))
+{
+
+}
+
+ISXSMTP::SMTPString::SMTPString(std::vector<std::uint8_t> data)
+	: m_data(data)
+{
+	
+}
+
+ISXSMTP::SMTPString::SMTPString(const std::vector<std::uint8_t>& data)
+	: m_data(data)
+{
+	
+}
+
+void ISXSMTP::SMTPString::Append(std::uint8_t ch)
+{
+	m_data.push_back(ch);
+}
+
+void ISXSMTP::SMTPString::Clear()
+{
+	m_data.clear();
+}
+
+void ISXSMTP::SMTPString::Append(const std::vector<std::uint8_t>& data)
+{
+	m_data.append_range(data);
+}
+
+void ISXSMTP::SMTPString::Append(const SMTPString& string)
+{
+	m_data.append_range(string.m_data);
+}
+
+std::vector<std::uint8_t>& ISXSMTP::SMTPString::GetData()
+{
+	return m_data;
+}
+
+std::uint8_t ISXSMTP::SMTPString::Get(size_t index) const
+{
+	return m_data[index];
+}
+
+size_t ISXSMTP::SMTPString::Count() const
+{
+	return m_data.size();
+}
+
+ISXSMTP::SMTPString& ISXSMTP::SMTPString::Concat(const SMTPString& other)
+{
+	m_data.append_range(other.m_data);
+	return *this;
+}
+
+std::uint8_t ISXSMTP::SMTPString::operator[](size_t index) const
+{
+	return Get(index);
+}
+
+ISXSMTP::SMTPString& ISXSMTP::SMTPString::operator+(const SMTPString& other)
+{
+	return Concat(other);
+}
+
+ISXSMTP::SMTPString& ISXSMTP::SMTPString::operator+(const std::vector<std::uint8_t>& data)
+{
+	Append(data);
+	return *this;
+}
+
+ISXSMTP::SMTPString& ISXSMTP::SMTPString::operator+(std::uint8_t value)
+{
+	Append(value);
+	return *this;
+}
+
+size_t ISXSMTP::SMTPString::FindFirstOf(const SMTPString& value) const
+{
+	auto it = std::find(m_data.begin(), m_data.end(), value.m_data);
+	return it - m_data.begin();
+}
+
+size_t ISXSMTP::SMTPString::FindFirstOf(std::uint8_t value) const
+{
+	auto it = std::find(m_data.begin(), m_data.end(), value);
+	return it - m_data.begin();
+}
