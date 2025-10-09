@@ -10,7 +10,7 @@ struct SMTPCommandArguments
 {
 	// key - arg name
 	// value - arg value
-	std::unordered_map<std::vector<std::uint8_t>, std::vector<std::uint8_t>> arguments;
+	std::unordered_map<SMTPString, SMTPString> arguments;
 };
 
 }
