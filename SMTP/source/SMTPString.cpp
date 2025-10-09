@@ -103,11 +103,15 @@ ISXSMTP::SMTPString& ISXSMTP::SMTPString::operator+(std::uint8_t value)
 size_t ISXSMTP::SMTPString::FindFirstOf(const SMTPString& value) const
 {
 	auto it = std::find(m_data.begin(), m_data.end(), value.m_data);
-	return it - m_data.begin();
+	if (it != m_data.end())
+		return it - m_data.begin();
+	return NPOS;
 }
 
 size_t ISXSMTP::SMTPString::FindFirstOf(std::uint8_t value) const
 {
 	auto it = std::find(m_data.begin(), m_data.end(), value);
-	return it - m_data.begin();
+	if (it != m_data.end())
+		return it - m_data.begin();
+	return NPOS;
 }

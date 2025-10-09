@@ -13,6 +13,9 @@ private:
 	std::vector<std::uint8_t> m_data;
 
 public:
+	static constexpr size_t NPOS = -1;
+
+public:
 	SMTPString();
 	SMTPString(const std::vector<std::uint8_t>& data);
 	SMTPString(std::vector<std::uint8_t> data);
