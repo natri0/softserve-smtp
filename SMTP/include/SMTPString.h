@@ -40,6 +40,8 @@ public:
 
 	void ToUpper();
 
+	std::string ToString() const;
+
 	std::uint8_t operator[](size_t index) const;
 	SMTPString& operator+(const SMTPString& other);
 	SMTPString& operator+(std::uint8_t value);

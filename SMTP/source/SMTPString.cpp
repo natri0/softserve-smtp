@@ -81,6 +81,11 @@ void ISXSMTP::SMTPString::ToUpper()
 	}
 }
 
+std::string ISXSMTP::SMTPString::ToString() const
+{
+	return std::string(m_data.begin(), m_data.end());
+}
+
 std::uint8_t ISXSMTP::SMTPString::operator[](size_t index) const
 {
 	return Get(index);
