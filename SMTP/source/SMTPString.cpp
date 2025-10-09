@@ -96,6 +96,18 @@ ISXSMTP::SMTPString& ISXSMTP::SMTPString::operator+(const SMTPString& other)
 	return Concat(other);
 }
 
+bool ISXSMTP::SMTPString::operator==(const SMTPString& other) const
+{
+	if (other.Count() != this->Count())
+		return false;
+	for (size_t i = 0; i < this->Count(); i++)
+	{
+		if (this->Get(i) != other.Get(i))
+			return false;
+	}
+	return true;
+}
+
 ISXSMTP::SMTPString& ISXSMTP::SMTPString::operator+(const std::vector<std::uint8_t>& data)
 {
 	Append(data);

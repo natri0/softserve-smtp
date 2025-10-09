@@ -46,6 +46,7 @@ public:
 	SMTPString& operator+(const SMTPString& other);
 	SMTPString& operator+(std::uint8_t value);
 	SMTPString& operator+(const std::vector<std::uint8_t>& data);
+	bool operator==(const SMTPString& other) const;
 
 	friend struct std::hash<SMTPString>;
 };
