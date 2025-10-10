@@ -1,22 +1,8 @@
 #include "SMTPSession.h"
-#include "Commands/EHLOCommand.h"
-#include "Commands/MAILCommand.h"
-#include "Commands/RCPTCommand.h"
-#include "Commands/DATACommand.h"
-#include "Commands/HELPCommand.h"
-#include "Commands/NOOPCommand.h"
-#include "Commands/QUITCommand.h"
-#include "Commands/RSETCommand.h"
-#include "Commands/HELOCommand.h"
-#include "SMTPConstants.h"
-#include "CommandParser.h"
 
-#include <iostream>
-
-ISXSMTP::SMTPSession::SMTPSession(std::shared_ptr<ITransmissionChannel> transmission_channel)
-	: m_transmissionChannel(transmission_channel)
+ISXSMTP::SMTPSession::SMTPSession(std::unique_ptr<ITransmissionChannel> transmission_channel)
+	: m_transmissionChannel(std::move(transmission_channel))
 {
-	fillCommandMap();
 	m_context = std::make_shared<SMTPContext>();
 	process();
 }
@@ -38,55 +24,8 @@ void ISXSMTP::SMTPSession::process()
 	* 5. Repeat until QUIT occurs
 	*/
 
-	while (!IsFinished())
+	while (IsFinished())
 	{
-		if (m_transmissionChannel->IsDataAvailable())
-		{
-			SMTPString command;
-			do 
-			{
-				m_transmissionChannel->Read(command.GetData());
-			} while (command.Count() != 0 && command.Get(command.Count() - 1) != SMTPConstants::LF);
 
-			if (!command.IsEmpty())
-			{
-				SMTPString output;
-				auto res = ISXSMTP::CommandParser::Parse(command, m_commands);
-				for (auto i : res.error_code.GetCode())
-				{
-					char ch;
-					itoa(i, &ch, 10);
-					output.Append(ch);
-				}
-
-				output.Append(" ");
-				output.Append(res.error_code.GetComment());
-				output.Append('\n');
-
-				m_transmissionChannel->Write(output.GetData());
-			}
-		}
 	}
-}
-
-void ISXSMTP::SMTPSession::fillCommandMap()
-{
-	auto EHLO = std::make_unique<EHLOCommand>();
-	auto MAIL = std::make_unique<MAILCommand>();
-	auto RCPT = std::make_unique<RCPTCommand>();
-	auto DATA = std::make_unique<DATACommand>();
-	auto HELP = std::make_unique<HELPCommand>();
-	auto HELO = std::make_unique<HELOCommand>();
-	auto RSET = std::make_unique<RSETCommand>();
-	auto QUIT = std::make_unique<QUITCommand>();
-	auto NOOP = std::make_unique<NOOPCommand>();
-	m_commands[EHLO->GetName()] = std::move(EHLO);
-	m_commands[MAIL->GetName()] = std::move(MAIL);
-	m_commands[RCPT->GetName()] = std::move(RCPT);
-	m_commands[DATA->GetName()] = std::move(DATA);
-	m_commands[HELP->GetName()] = std::move(HELP);
-	m_commands[HELO->GetName()] = std::move(HELO);
-	m_commands[RSET->GetName()] = std::move(RSET);
-	m_commands[QUIT->GetName()] = std::move(QUIT);
-	m_commands[NOOP->GetName()] = std::move(NOOP);
 }
