@@ -71,14 +71,14 @@ void ISXSMTP::SMTPSession::process()
 				else
 				{
 					auto command_result = m_commands[command_parser_result.command_verb]->Invoke(
-						command_parser_result.parsed_arguments,
-						m_context);
+							command_parser_result.parsed_arguments,
+							m_context);
 
 					for (auto i : command_result.GetCode())
 					{
-						char ch;
-						itoa(i, &ch, 10);
-						output.Append(ch);
+						char ch[2];
+						itoa(i, ch, 10);
+						output.Append(ch[0]);
 					}
 
 					output.Append(" ");

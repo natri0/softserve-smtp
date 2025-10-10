@@ -32,7 +32,6 @@ public:
 		return m_buffer.size();
 	}
 
-
 	size_t Read(std::vector<uint8_t>& buffer) override
 	{
 		std::scoped_lock(m_mutex);
@@ -124,6 +123,9 @@ int main(void)
 	{
 		std::cout << "[" << item.first.ToString() << "]: " << item.second.ToString() << std::endl;
 	}*/
+
+	write_thread.join();
+	read_thread.join();
 
 	return 0;
 }
