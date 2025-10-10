@@ -21,7 +21,7 @@ ISXSMTP::CommandParserResult ISXSMTP::CommandParser::Parse(
 	size_t command_verb_index = findCommandVerbIndex(command);
 	if (command_verb_index == SMTPString::NPOS)
 	{
-		return { {}, SMTPReply::SyntaxError() };
+		return { {}, {}, SMTPReply::SyntaxError() };
 	}
 
 	SMTPString command_verb = command.GetRange(0, command_verb_index);
@@ -32,10 +32,10 @@ ISXSMTP::CommandParserResult ISXSMTP::CommandParser::Parse(
 	}
 	catch (...)
 	{
-		return { {}, SMTPReply::CommandUnrecognized() };
+		return { {}, {}, SMTPReply::CommandUnrecognized() };
 	}
 
-	CommandParserResult result = { {}, SMTPReply::OK() };
+	CommandParserResult result = { command_verb, {}, SMTPReply::OK() };
 	for (size_t i = 0, j = 0; i < command.Count() && j < command_syntax.Count(); i++, j++)
 	{
 		if (command_syntax[j] == '!') // mandatory argument found

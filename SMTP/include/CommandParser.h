@@ -11,6 +11,8 @@ namespace ISXSMTP
 
 struct CommandParserResult
 {
+	SMTPString command_verb;
+
 	SMTPCommandArguments parsed_arguments;
 
 	// should only return syntax related error codes
