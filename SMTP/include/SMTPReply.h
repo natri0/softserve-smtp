@@ -1,5 +1,7 @@
 #pragma once
 
+#include "SMTPString.h"
+
 #include <string>
 #include <array>
 #include <cstdint>
@@ -10,7 +12,7 @@ namespace ISXSMTP
 class SMTPReply
 {
 public:
-	SMTPReply(std::array<std::uint8_t, 3> code, const std::string& comment);
+	SMTPReply(std::array<std::uint8_t, 3> code, const SMTPString& comment);
 
 public:
 	static SMTPReply CommandUnrecognized();
@@ -37,7 +39,7 @@ public:
 	
 private:
 	std::array<std::uint8_t, 3> m_code;
-	std::string m_comment;	
+	SMTPString m_comment;	
 };
 
 }

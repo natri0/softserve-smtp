@@ -1,6 +1,6 @@
 #include "SMTPReply.h"
 
-ISXSMTP::SMTPReply::SMTPReply(std::array<std::uint8_t, 3> code, const std::string& comment)
+ISXSMTP::SMTPReply::SMTPReply(std::array<std::uint8_t, 3> code, const SMTPString& comment)
 	: m_code(code)
 	, m_comment(comment)
 {
