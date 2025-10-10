@@ -9,6 +9,13 @@ ISXSMTP::SMTPString::SMTPString()
 {
 }
 
+ISXSMTP::SMTPString::SMTPString(const char* cstring)
+{
+	// !!! Double conversion !!!
+	std::string str(cstring);
+	m_data.assign(str.begin(), str.end());
+}
+
 ISXSMTP::SMTPString::SMTPString(const std::string& data)
 {
 	m_data.assign(data.begin(), data.end());
