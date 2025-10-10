@@ -28,6 +28,7 @@ public:
 	void Append(const std::vector<std::uint8_t>& data);
 
 	void Clear();
+	bool IsEmpty() const;
 
 	std::vector<std::uint8_t>& GetData();
 	std::uint8_t Get(size_t index) const;

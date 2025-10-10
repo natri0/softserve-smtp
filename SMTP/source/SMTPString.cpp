@@ -43,6 +43,11 @@ void ISXSMTP::SMTPString::Clear()
 	m_data.clear();
 }
 
+bool ISXSMTP::SMTPString::IsEmpty() const
+{
+	return m_data.empty();
+}
+
 void ISXSMTP::SMTPString::Append(const std::vector<std::uint8_t>& data)
 {
 	m_data.append_range(data);
