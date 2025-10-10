@@ -121,3 +121,20 @@ ISXSMTP::SMTPReply ISXSMTP::SMTPReply::TransactionFailed()
 {
 	return SMTPReply({ 5, 5, 4 }, "Transaction failed");
 }
+
+bool ISXSMTP::SMTPReply::operator!=(const SMTPReply& other)
+{
+	return !(*this == other);
+}
+
+bool ISXSMTP::SMTPReply::operator==(const SMTPReply& other)
+{
+	if (this->m_code[0] == other.m_code[0] &&
+		this->m_code[1] == other.m_code[1] &&
+		this->m_code[2] == other.m_code[2])
+	{
+		return true;
+	}
+
+	return false;
+}

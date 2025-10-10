@@ -39,6 +39,9 @@ public:
 	static SMTPReply StartMailInput();
 	static SMTPReply TransactionFailed();
 	
+	bool operator==(const SMTPReply& other);
+	bool operator!=(const SMTPReply& other);
+
 private:
 	std::array<std::uint8_t, 3> m_code;
 	SMTPString m_comment;	
