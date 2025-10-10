@@ -6,6 +6,17 @@ ISXSMTP::SMTPReply::SMTPReply(std::array<std::uint8_t, 3> code, const SMTPString
 {
 }
 
+ISXSMTP::SMTPString ISXSMTP::SMTPReply::GetComment() const
+{
+	return m_comment;
+}
+
+std::array<std::uint8_t, 3> ISXSMTP::SMTPReply::GetCode() const
+{
+	return m_code;
+}
+
+
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::CommandUnrecognized()
 {
 	return SMTPReply({ 5, 0, 0 }, "Command unrecognized");

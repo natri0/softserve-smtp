@@ -13,6 +13,8 @@ class SMTPReply
 {
 public:
 	SMTPReply(std::array<std::uint8_t, 3> code, const SMTPString& comment);
+	SMTPString GetComment() const;
+	std::array<std::uint8_t, 3> GetCode() const;
 
 public:
 	static SMTPReply CommandUnrecognized();
