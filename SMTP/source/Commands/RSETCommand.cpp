@@ -1,4 +1,5 @@
 #include "Commands/RSETCommand.h"
+#include "SMTPConstants.h"
 
 ISXSMTP::RSETCommand::RSETCommand()
 {
@@ -12,10 +13,10 @@ ISXSMTP::SMTPReply ISXSMTP::RSETCommand::Invoke(SMTPCommandArguments arguments, 
 
 ISXSMTP::SMTPString ISXSMTP::RSETCommand::GetName()
 {
-	return {};
+	return SMTPString("RSET");
 }
 
 ISXSMTP::SMTPString ISXSMTP::RSETCommand::GetSyntax()
 {
-	return {};
+	return SMTPString("RSET") + SMTPConstants::CR + SMTPConstants::LF;;
 }

@@ -1,4 +1,5 @@
 #include "Commands/DATACommand.h"
+#include "SMTPConstants.h"
 
 ISXSMTP::DATACommand::DATACommand()
 {
@@ -12,10 +13,10 @@ ISXSMTP::SMTPReply ISXSMTP::DATACommand::Invoke(SMTPCommandArguments arguments, 
 
 ISXSMTP::SMTPString ISXSMTP::DATACommand::GetName()
 {
-	return {};
+	return "DATA";
 }
 
 ISXSMTP::SMTPString ISXSMTP::DATACommand::GetSyntax()
 {
-	return {};
+	return SMTPString("DATA") + SMTPConstants::CR + SMTPConstants::LF;
 }

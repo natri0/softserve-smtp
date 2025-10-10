@@ -1,4 +1,5 @@
 #include "Commands/QUITCommand.h"
+#include "SMTPConstants.h"
 
 ISXSMTP::QUITCommand::QUITCommand()
 {
@@ -12,10 +13,10 @@ ISXSMTP::SMTPReply ISXSMTP::QUITCommand::Invoke(SMTPCommandArguments arguments, 
 
 ISXSMTP::SMTPString ISXSMTP::QUITCommand::GetName()
 {
-	return {};
+	return "QUIT";
 }
 
 ISXSMTP::SMTPString ISXSMTP::QUITCommand::GetSyntax()
 {
-	return {};
+	return SMTPString("QUIT") + SMTPConstants::CR + SMTPConstants::LF;
 }

@@ -1,5 +1,5 @@
 #include "Commands/RCPTCommand.h"
-
+#include "SMTPConstants.h"
 
 ISXSMTP::RCPTCommand::RCPTCommand()
 {
@@ -13,10 +13,10 @@ ISXSMTP::SMTPReply ISXSMTP::RCPTCommand::Invoke(SMTPCommandArguments arguments, 
 
 ISXSMTP::SMTPString ISXSMTP::RCPTCommand::GetName()
 {
-	return {};
+	return SMTPString("RCPT");
 }
 
 ISXSMTP::SMTPString ISXSMTP::RCPTCommand::GetSyntax()
 {
-	return {};
+	return SMTPString("RCPT") + SMTPConstants::SP + SMTPString("TO:") + SMTPString("<!forward_path!>") + SMTPConstants::CR + SMTPConstants::LF;;
 }

@@ -1,4 +1,5 @@
 #include "Commands/VRFYCommand.h"
+#include "SMTPConstants.h"
 
 ISXSMTP::VRFYCommand::VRFYCommand()
 {
@@ -12,10 +13,10 @@ ISXSMTP::SMTPReply ISXSMTP::VRFYCommand::Invoke(SMTPCommandArguments arguments, 
 
 ISXSMTP::SMTPString ISXSMTP::VRFYCommand::GetName()
 {
-	return {};
+	return SMTPString("VRFY");
 }
 
 ISXSMTP::SMTPString ISXSMTP::VRFYCommand::GetSyntax()
 {
-	return {};
+	return SMTPString("VRFY") + SMTPConstants::SP + SMTPString("!string!") + SMTPConstants::CR + SMTPConstants::LF;
 }
