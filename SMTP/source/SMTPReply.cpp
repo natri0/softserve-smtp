@@ -39,6 +39,7 @@ ISXSMTP::SMTPString ISXSMTP::SMTPReply::ToSMTPString() const
 	result.Append(m_comment);
 	result.Append(SMTPConstants::CR);
 	result.Append(SMTPConstants::LF);
+	return result;
 }
 
 void ISXSMTP::SMTPReply::SetMultiLine(bool value)

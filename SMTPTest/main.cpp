@@ -16,7 +16,7 @@ private:
 	std::vector<std::uint8_t> m_outsideBuffer;
 
 public:
-	size_t Write(std::vector<uint8_t>& buffer) override
+	size_t Write(const std::vector<uint8_t>& buffer) override
 	{
 		std::scoped_lock(m_mutex);
 		m_outsideBuffer.clear();

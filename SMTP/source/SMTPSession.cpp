@@ -55,15 +55,7 @@ void ISXSMTP::SMTPSession::process()
 
 				if (command_parser_result.error_code != SMTPReply::OK())
 				{
-					char ch[4];
-					itoa(command_parser_result.error_code.GetCode(), ch, 10);
-					output.Append(ch);
-
-					output.Append(" ");
-					output.Append(command_parser_result.error_code.GetComment());
-					output.Append('\n');
-
-					m_transmissionChannel->Write(output.GetData());
+					m_transmissionChannel->Write(command_parser_result.error_code.ToSMTPString().GetData());
 				}
 				else
 				{
@@ -71,15 +63,7 @@ void ISXSMTP::SMTPSession::process()
 							command_parser_result.parsed_arguments,
 							m_context);
 
-					char ch[4];
-					itoa(command_parser_result.error_code.GetCode(), ch, 10);
-					output.Append(ch);
-
-					output.Append(" ");
-					output.Append(command_result.GetComment());
-					output.Append('\n');
-
-					m_transmissionChannel->Write(output.GetData());
+					m_transmissionChannel->Write(command_result.ToSMTPString().GetData());
 				}	
 			}
 		}
