@@ -11,10 +11,19 @@ namespace ISXSMTP
 
 class SMTPReply
 {
+private:
+	std::uint16_t m_code;
+	SMTPString m_comment;
+	bool m_multiLine;
+
 public:
+	SMTPReply(std::uint16_t code, const SMTPString& comment, bool multi_line);
 	SMTPReply(std::uint16_t code, const SMTPString& comment);
+
 	SMTPString GetComment() const;
 	std::uint16_t GetCode() const;
+	SMTPString ToSMTPString() const;
+	void SetMultiLine(bool value);
 
 public:
 	static SMTPReply CommandUnrecognized();
@@ -41,10 +50,6 @@ public:
 	
 	bool operator==(const SMTPReply& other);
 	bool operator!=(const SMTPReply& other);
-
-private:
-	std::uint16_t m_code;
-	SMTPString m_comment;	
 };
 
 }

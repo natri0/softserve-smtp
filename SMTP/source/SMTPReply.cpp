@@ -1,9 +1,20 @@
 #include "SMTPReply.h"
 
+#include "SMTPConstants.h"
+
+ISXSMTP::SMTPReply::SMTPReply(std::uint16_t code, const SMTPString& comment, bool multi_line)
+	: m_code(code)
+	, m_comment(comment)
+	, m_multiLine(multi_line)
+{
+}
+
 ISXSMTP::SMTPReply::SMTPReply(std::uint16_t code, const SMTPString& comment)
 	: m_code(code)
 	, m_comment(comment)
+	, m_multiLine(false)
 {
+
 }
 
 ISXSMTP::SMTPString ISXSMTP::SMTPReply::GetComment() const
@@ -16,6 +27,24 @@ std::uint16_t ISXSMTP::SMTPReply::GetCode() const
 	return m_code;
 }
 
+ISXSMTP::SMTPString ISXSMTP::SMTPReply::ToSMTPString() const
+{
+	char code_text[4]; // all codes are 3 digits +1 for \0
+	itoa(m_code, code_text, 10);
+	SMTPString result(code_text);
+	if (m_multiLine)
+		result.Append('-');
+	else
+		result.Append(" ");
+	result.Append(m_comment);
+	result.Append(SMTPConstants::CR);
+	result.Append(SMTPConstants::LF);
+}
+
+void ISXSMTP::SMTPReply::SetMultiLine(bool value)
+{
+	m_multiLine = value;
+}
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::CommandUnrecognized()
 {
