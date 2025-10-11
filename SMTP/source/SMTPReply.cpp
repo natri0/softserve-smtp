@@ -29,9 +29,7 @@ std::uint16_t ISXSMTP::SMTPReply::GetCode() const
 
 ISXSMTP::SMTPString ISXSMTP::SMTPReply::ToSMTPString() const
 {
-	char code_text[4]; // all codes are 3 digits +1 for \0
-	itoa(m_code, code_text, 10);
-	SMTPString result(code_text);
+	SMTPString result(std::to_string(m_code));
 	if (m_multiLine)
 		result.Append('-');
 	else
