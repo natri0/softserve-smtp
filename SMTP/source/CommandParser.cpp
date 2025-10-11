@@ -162,7 +162,7 @@ void ISXSMTP::CommandParser::handleMandatoryArgument(
 	SMTPString arg_name = readArgName(command_syntax, syntax_index);
 	if (arg_name.IsEmpty())
 	{
-		result.error_code = SMTPReply({ 5, 4, 1 }, "Service failed due to internal error");
+		result.error_code = SMTPReply(541, "Service failed due to internal error");
 		return;
 	}		
 
@@ -192,7 +192,7 @@ void ISXSMTP::CommandParser::handleOptionalArgument(
 	SMTPString arg_name = readArgName(command_syntax, syntax_index	);
 	if (arg_name.IsEmpty())
 	{
-		result.error_code = SMTPReply({ 5, 4, 1 }, "Service failed due to internal error");
+		result.error_code = SMTPReply(541, "Service failed due to internal error");
 		return;
 	}	
 

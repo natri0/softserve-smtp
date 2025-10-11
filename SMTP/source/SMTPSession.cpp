@@ -55,12 +55,9 @@ void ISXSMTP::SMTPSession::process()
 
 				if (command_parser_result.error_code != SMTPReply::OK())
 				{
-					for (auto i : command_parser_result.error_code.GetCode())
-					{
-						char ch;
-						itoa(i, &ch, 10);
-						output.Append(ch);
-					}
+					char ch[4];
+					itoa(command_parser_result.error_code.GetCode(), ch, 10);
+					output.Append(ch);
 
 					output.Append(" ");
 					output.Append(command_parser_result.error_code.GetComment());
@@ -74,12 +71,9 @@ void ISXSMTP::SMTPSession::process()
 							command_parser_result.parsed_arguments,
 							m_context);
 
-					for (auto i : command_result.GetCode())
-					{
-						char ch[2];
-						itoa(i, ch, 10);
-						output.Append(ch[0]);
-					}
+					char ch[4];
+					itoa(command_parser_result.error_code.GetCode(), ch, 10);
+					output.Append(ch);
 
 					output.Append(" ");
 					output.Append(command_result.GetComment());
