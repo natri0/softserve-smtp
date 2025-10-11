@@ -1,6 +1,6 @@
 #include "SMTPReply.h"
 
-ISXSMTP::SMTPReply::SMTPReply(std::array<std::uint8_t, 3> code, const SMTPString& comment)
+ISXSMTP::SMTPReply::SMTPReply(std::uint16_t code, const SMTPString& comment)
 	: m_code(code)
 	, m_comment(comment)
 {
@@ -11,7 +11,7 @@ ISXSMTP::SMTPString ISXSMTP::SMTPReply::GetComment() const
 	return m_comment;
 }
 
-std::array<std::uint8_t, 3> ISXSMTP::SMTPReply::GetCode() const
+std::uint16_t ISXSMTP::SMTPReply::GetCode() const
 {
 	return m_code;
 }
@@ -19,107 +19,107 @@ std::array<std::uint8_t, 3> ISXSMTP::SMTPReply::GetCode() const
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::CommandUnrecognized()
 {
-	return SMTPReply({ 5, 0, 0 }, "Command unrecognized");
+	return SMTPReply(500, "Command unrecognized");
 }
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::SyntaxError()
 {
-	return SMTPReply({ 5, 0, 1 }, "Syntax error in parameters or arguments");
+	return SMTPReply(501, "Syntax error in parameters or arguments");
 }
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::CommandNotImplemented()
 {
-	return SMTPReply({ 5, 0, 2 }, "Command not implemented");
+	return SMTPReply(502, "Command not implemented");
 }
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::BadSequenceOfCommands()
 {
-	return SMTPReply({ 5, 0, 3 }, "Bad sequence of commands");
+	return SMTPReply(503, "Bad sequence of commands");
 }
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::CommandParameterNotImplemented()
 {
-	return SMTPReply({ 5, 0, 4 }, "Command parameter not implemented");
+	return SMTPReply(504, "Command parameter not implemented");
 }
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::HelpReply()
 {
-	return SMTPReply({ 2, 1, 1 }, "");
+	return SMTPReply(211, "");
 }
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::HelpMessage()
 {
-	return SMTPReply({ 2, 1, 4 }, "");
+	return SMTPReply(214, "");
 }
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::ServiceReady()
 {
-	return SMTPReply({ 2, 2, 0 }, "<domain> Service ready");
+	return SMTPReply(220, "<domain> Service ready");
 }
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::ServiceClosing()
 {
-	return SMTPReply({ 2, 2, 1 }, "<domain> Service closing transmission channel");
+	return SMTPReply(221, "<domain> Service closing transmission channel");
 }
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::ServiceNotAvailable()
 {
-	return SMTPReply({ 4, 2, 1 }, "Service not available, closing transmission channel");
+	return SMTPReply(421, "Service not available, closing transmission channel");
 }
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::OK()
 {
-	return SMTPReply({ 2, 5, 0 }, "Action completed");
+	return SMTPReply(250, "Action completed");
 }
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::UserNotLocal251()
 {
-	return SMTPReply({ 2, 5, 1 }, "User not local; will forward to <forward-path>");
+	return SMTPReply(251, "User not local; will forward to <forward-path>");
 }
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::UserNotLocal551()
 {
-	return SMTPReply({ 5, 5, 1 }, "User not local; please try <forward-path>");
+	return SMTPReply(551, "User not local; please try <forward-path>");
 }
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::CannotVerifyUser()
 {
-	return SMTPReply({ 2, 5, 2 }, "Cannot verify user, but will accept message and try to delivery");
+	return SMTPReply(252, "Cannot verify user, but will accept message and try to delivery");
 }
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::MailboxUnavailable450()
 {
-	return SMTPReply({ 4, 5, 0 }, "Mailbox unavailable, try later");
+	return SMTPReply(450, "Mailbox unavailable, try later");
 }
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::MailboxUnavailable550()
 {
-	return SMTPReply({ 5, 5, 0 }, "Mailbox unavailable");
+	return SMTPReply(550, "Mailbox unavailable");
 }
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::ProcessingError()
 {
-	return SMTPReply({ 4, 5, 1 }, "Processing error, try later");
+	return SMTPReply(451, "Processing error, try later");
 }
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::InsufficientSystemStorage()
 {
-	return SMTPReply({ 4, 5, 2 }, "Insufficient system storage, try later");
+	return SMTPReply(452, "Insufficient system storage, try later");
 }
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::ExceededStorageAllocation()
 {
-	return SMTPReply({ 5, 5, 2 }, "Exceeded storage allocation");
+	return SMTPReply(552, "Exceeded storage allocation");
 }
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::StartMailInput()
 {
-	return SMTPReply({ 5, 5, 3 }, "Mailbox syntax incorrect");
+	return SMTPReply(553, "Mailbox syntax incorrect");
 }
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::TransactionFailed()
 {
-	return SMTPReply({ 5, 5, 4 }, "Transaction failed");
+	return SMTPReply(554, "Transaction failed");
 }
 
 bool ISXSMTP::SMTPReply::operator!=(const SMTPReply& other)
@@ -129,12 +129,5 @@ bool ISXSMTP::SMTPReply::operator!=(const SMTPReply& other)
 
 bool ISXSMTP::SMTPReply::operator==(const SMTPReply& other)
 {
-	if (this->m_code[0] == other.m_code[0] &&
-		this->m_code[1] == other.m_code[1] &&
-		this->m_code[2] == other.m_code[2])
-	{
-		return true;
-	}
-
-	return false;
+	return this->m_code == other.m_code;
 }

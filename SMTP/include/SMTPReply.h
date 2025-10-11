@@ -12,9 +12,9 @@ namespace ISXSMTP
 class SMTPReply
 {
 public:
-	SMTPReply(std::array<std::uint8_t, 3> code, const SMTPString& comment);
+	SMTPReply(std::uint16_t code, const SMTPString& comment);
 	SMTPString GetComment() const;
-	std::array<std::uint8_t, 3> GetCode() const;
+	std::uint16_t GetCode() const;
 
 public:
 	static SMTPReply CommandUnrecognized();
@@ -43,7 +43,7 @@ public:
 	bool operator!=(const SMTPReply& other);
 
 private:
-	std::array<std::uint8_t, 3> m_code;
+	std::uint16_t m_code;
 	SMTPString m_comment;	
 };
 
