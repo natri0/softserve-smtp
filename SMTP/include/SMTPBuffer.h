@@ -14,7 +14,6 @@ private:
 	SMTPString m_data;
 
 public:
-	void Append(SMTPString data);
 	void Append(const SMTPString& data);
 	void Append(std::uint8_t data);
 

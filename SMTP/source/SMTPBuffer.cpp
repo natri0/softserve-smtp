@@ -1,10 +1,5 @@
 #include "SMTPBuffer.h"
 
-void ISXSMTP::SMTPBuffer::Append(SMTPString data)
-{
-	m_data.Append(data);
-}
-
 ISXSMTP::SMTPString& ISXSMTP::SMTPBuffer::Get()
 {
 	return m_data;
