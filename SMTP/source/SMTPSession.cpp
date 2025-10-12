@@ -68,7 +68,10 @@ void ISXSMTP::SMTPSession::process()
 					auto command_result = m_commands[command_parser_result.command_verb]->Invoke(
 							command_parser_result.parsed_arguments);
 
-					m_transmissionChannel->Write(command_result.ToSMTPString().GetData());
+					for (auto reply : command_result)
+					{
+						m_transmissionChannel->Write(reply.ToSMTPString().GetData());
+					}
 				}	
 			}
 		}
