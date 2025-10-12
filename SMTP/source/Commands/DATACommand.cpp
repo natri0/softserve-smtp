@@ -6,9 +6,9 @@ ISXSMTP::DATACommand::DATACommand()
 
 }
 
-ISXSMTP::SMTPReply ISXSMTP::DATACommand::Invoke(SMTPCommandArguments arguments)
+std::vector<ISXSMTP::SMTPReply> ISXSMTP::DATACommand::Invoke(SMTPCommandArguments arguments)
 {
-	return SMTPReply::CommandNotImplemented();
+	return { SMTPReply::CommandNotImplemented() };
 }
 
 ISXSMTP::SMTPString ISXSMTP::DATACommand::GetName()

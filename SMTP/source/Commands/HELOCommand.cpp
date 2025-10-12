@@ -6,7 +6,7 @@ ISXSMTP::HELOCommand::HELOCommand()
 
 }
 
-ISXSMTP::SMTPReply ISXSMTP::HELOCommand::Invoke(SMTPCommandArguments arguments)
+std::vector<ISXSMTP::SMTPReply> ISXSMTP::HELOCommand::Invoke(SMTPCommandArguments arguments)
 {
 	SMTPString domain;
 	try
@@ -15,13 +15,13 @@ ISXSMTP::SMTPReply ISXSMTP::HELOCommand::Invoke(SMTPCommandArguments arguments)
 	}
 	catch (...)
 	{
-		return SMTPReply::SyntaxError();
+		return { SMTPReply::SyntaxError() };
 	}
 
 	arguments.context->state = SMTPStates::POST_EHLO;
 
 	SMTPString comment = SMTPString("<domain> greets ") + domain;
-	return SMTPReply(250, comment);
+	return { SMTPReply(250, comment) };
 }
 
 ISXSMTP::SMTPString ISXSMTP::HELOCommand::GetName()

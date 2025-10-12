@@ -6,9 +6,9 @@ ISXSMTP::NOOPCommand::NOOPCommand()
 
 }
 
-ISXSMTP::SMTPReply ISXSMTP::NOOPCommand::Invoke(SMTPCommandArguments arguments)
+std::vector<ISXSMTP::SMTPReply> ISXSMTP::NOOPCommand::Invoke(SMTPCommandArguments arguments)
 {
-	return SMTPReply::OK();
+	return { SMTPReply::OK() };
 }
 
 ISXSMTP::SMTPString ISXSMTP::NOOPCommand::GetName()

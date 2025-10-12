@@ -6,11 +6,11 @@ ISXSMTP::MAILCommand::MAILCommand()
 
 }
 
-ISXSMTP::SMTPReply ISXSMTP::MAILCommand::Invoke(SMTPCommandArguments arguments)
+std::vector<ISXSMTP::SMTPReply> ISXSMTP::MAILCommand::Invoke(SMTPCommandArguments arguments)
 {
 	// mail command should be called after ehlo or helo
 	if (arguments.context->state == SMTPStates::FINISH || arguments.context->state == SMTPStates::INITIAL)
-		return SMTPReply::BadSequenceOfCommands();
+		return { SMTPReply::BadSequenceOfCommands() };
 
 	SMTPString reverse_path;
 	try
@@ -19,7 +19,7 @@ ISXSMTP::SMTPReply ISXSMTP::MAILCommand::Invoke(SMTPCommandArguments arguments)
 	}
 	catch (...)
 	{
-		return SMTPReply::SyntaxError();
+		return { SMTPReply::SyntaxError() };
 	}
 
 	arguments.context->forward_path.Clear();
@@ -30,7 +30,7 @@ ISXSMTP::SMTPReply ISXSMTP::MAILCommand::Invoke(SMTPCommandArguments arguments)
 
 	arguments.context->state.Set(SMTPStates::POST_MAIL);
 
-	return SMTPReply::OK();
+	return { SMTPReply::OK() };
 }
 
 ISXSMTP::SMTPString ISXSMTP::MAILCommand::GetName()

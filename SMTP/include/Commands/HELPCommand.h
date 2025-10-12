@@ -12,7 +12,7 @@ class HELPCommand : public SMTPCommandBase
 public:
 	HELPCommand();
 
-	SMTPReply Invoke(SMTPCommandArguments arguments) override;
+	std::vector<SMTPReply> Invoke(SMTPCommandArguments arguments) override;
 	SMTPString GetName() override;
 	SMTPString GetSyntax() override;
 };

@@ -6,8 +6,25 @@ ISXSMTP::EHLOCommand::EHLOCommand()
 
 }
 
-ISXSMTP::SMTPReply ISXSMTP::EHLOCommand::Invoke(SMTPCommandArguments arguments)
+std::vector<ISXSMTP::SMTPReply> ISXSMTP::EHLOCommand::Invoke(SMTPCommandArguments arguments)
 {
+	if (arguments.context->state == SMTPStates::FINISH)
+		return SMTPReply::BadSequenceOfCommands();
+
+	SMTPString domain;
+	try
+	{
+		domain = arguments.arguments.at("domain");
+	}
+	catch (...)
+	{
+		return SMTPReply::SyntaxError();
+	}
+
+
+
+	arguments.context->state = SMTPStates::POST_EHLO;
+
 	return SMTPReply::CommandNotImplemented();
 }
 

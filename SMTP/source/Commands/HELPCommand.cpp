@@ -6,9 +6,9 @@ ISXSMTP::HELPCommand::HELPCommand()
 
 }
 
-ISXSMTP::SMTPReply ISXSMTP::HELPCommand::Invoke(SMTPCommandArguments arguments)
+std::vector<ISXSMTP::SMTPReply> ISXSMTP::HELPCommand::Invoke(SMTPCommandArguments arguments)
 {
-	return SMTPReply::CommandNotImplemented();
+	return { SMTPReply::CommandNotImplemented() };
 }
 
 ISXSMTP::SMTPString ISXSMTP::HELPCommand::GetName()

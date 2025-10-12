@@ -6,9 +6,9 @@ ISXSMTP::RCPTCommand::RCPTCommand()
 
 }
 
-ISXSMTP::SMTPReply ISXSMTP::RCPTCommand::Invoke(SMTPCommandArguments arguments)
+std::vector<ISXSMTP::SMTPReply> ISXSMTP::RCPTCommand::Invoke(SMTPCommandArguments arguments)
 {
-	return SMTPReply::CommandNotImplemented();
+	return { SMTPReply::CommandNotImplemented() };
 }
 
 ISXSMTP::SMTPString ISXSMTP::RCPTCommand::GetName()

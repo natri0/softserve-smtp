@@ -6,14 +6,14 @@ ISXSMTP::RSETCommand::RSETCommand()
 
 }
 
-ISXSMTP::SMTPReply ISXSMTP::RSETCommand::Invoke(SMTPCommandArguments arguments)
+std::vector<ISXSMTP::SMTPReply> ISXSMTP::RSETCommand::Invoke(SMTPCommandArguments arguments)
 {
 	arguments.context->forward_path.Clear();
 	arguments.context->reverse_path.Clear();
 	arguments.context->mail_data.Clear();
 	arguments.context->state.Set(SMTPStates::INITIAL);
 
-	return SMTPReply::OK();
+	return { SMTPReply::OK() };
 }
 
 ISXSMTP::SMTPString ISXSMTP::RSETCommand::GetName()
