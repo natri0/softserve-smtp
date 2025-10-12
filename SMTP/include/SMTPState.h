@@ -6,6 +6,7 @@ namespace ISXSMTP
 enum class SMTPStates
 {
 	INITIAL,
+	POST_EHLO,
 	POST_MAIL,
 	POST_RCPT,
 	POST_DATA,
