@@ -13,8 +13,11 @@
 
 #include <iostream>
 
-ISXSMTP::SMTPSession::SMTPSession(std::shared_ptr<ITransmissionChannel> transmission_channel)
+ISXSMTP::SMTPSession::SMTPSession(
+		std::shared_ptr<ITransmissionChannel> transmission_channel,
+		std::shared_ptr<ISMTPMailbox> mailbox)
 	: m_transmissionChannel(transmission_channel)
+	, m_mailbox(mailbox)
 {
 	fillCommandMap();
 	m_context = std::make_shared<SMTPContext>();
