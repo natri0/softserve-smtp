@@ -14,9 +14,6 @@ ISXSMTP::CommandParserResult ISXSMTP::CommandParser::Parse(
 	* 3. Parse arguments and fill struct
 	*/
 
-	// SMTP is case insensitive
-	command.ToUpper();
-
 	// First word in the command followed by the <SP> is a command verb
 	size_t command_verb_index = findCommandVerbIndex(command);
 	if (command_verb_index == SMTPString::NPOS)
@@ -25,6 +22,7 @@ ISXSMTP::CommandParserResult ISXSMTP::CommandParser::Parse(
 	}
 
 	SMTPString command_verb = command.GetRange(0, command_verb_index);
+	command_verb.ToUpper();
 	SMTPString command_syntax;
 	try
 	{
@@ -56,7 +54,7 @@ ISXSMTP::CommandParserResult ISXSMTP::CommandParser::Parse(
 				return result;
 			}
 		}
-		else if (command[i] != command_syntax[j])
+		else if (std::toupper(command[i]) != command_syntax[j])
 		{
 			handleSyntaxDeviation(command, i, command_syntax, j, result);
 			if (result.error_code != SMTPReply::OK())
