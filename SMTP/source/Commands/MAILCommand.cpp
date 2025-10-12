@@ -30,7 +30,7 @@ ISXSMTP::SMTPReply ISXSMTP::MAILCommand::Invoke(SMTPCommandArguments arguments)
 
 	arguments.context->state.Set(SMTPStates::POST_MAIL);
 
-	return SMTPReply::CommandNotImplemented();
+	return SMTPReply::OK();
 }
 
 ISXSMTP::SMTPString ISXSMTP::MAILCommand::GetName()
