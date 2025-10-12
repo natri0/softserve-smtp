@@ -8,6 +8,28 @@ ISXSMTP::MAILCommand::MAILCommand()
 
 ISXSMTP::SMTPReply ISXSMTP::MAILCommand::Invoke(SMTPCommandArguments arguments)
 {
+	// mail command should be called after ehlo or helo
+	if (arguments.context->state == SMTPStates::FINISH || arguments.context->state == SMTPStates::INITIAL)
+		return SMTPReply::BadSequenceOfCommands();
+
+	SMTPString reverse_path;
+	try
+	{
+		reverse_path = arguments.arguments.at("reverse_path");
+	}
+	catch (...)
+	{
+		return SMTPReply::SyntaxError();
+	}
+
+	arguments.context->forward_path.Clear();
+	arguments.context->reverse_path.Clear();
+	arguments.context->mail_data.Clear();
+
+	arguments.context->reverse_path.Append(reverse_path);
+
+	arguments.context->state.Set(SMTPStates::POST_MAIL);
+
 	return SMTPReply::CommandNotImplemented();
 }
 
