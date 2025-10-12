@@ -26,11 +26,6 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::MAILCommand::Invoke(SMTPCommandArgument
 	arguments.context->reverse_path.Clear();
 	arguments.context->mail_data.Clear();
 
-	if (!arguments.mailbox->IsMailboxAvailable(reverse_path))
-	{
-		return { SMTPReply::MailboxUnavailable550() };
-	}
-
 	arguments.context->reverse_path.Append(reverse_path);
 
 	arguments.context->state.Set(SMTPStates::POST_MAIL);
