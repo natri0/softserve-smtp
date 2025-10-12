@@ -6,7 +6,7 @@ ISXSMTP::EHLOCommand::EHLOCommand()
 
 }
 
-ISXSMTP::SMTPReply ISXSMTP::EHLOCommand::Invoke(SMTPCommandArguments arguments, std::shared_ptr<SMTPContext> context)
+ISXSMTP::SMTPReply ISXSMTP::EHLOCommand::Invoke(SMTPCommandArguments arguments)
 {
 	return SMTPReply::CommandNotImplemented();
 }

@@ -6,9 +6,9 @@ ISXSMTP::QUITCommand::QUITCommand()
 
 }
 
-ISXSMTP::SMTPReply ISXSMTP::QUITCommand::Invoke(SMTPCommandArguments arguments, std::shared_ptr<SMTPContext> context)
+ISXSMTP::SMTPReply ISXSMTP::QUITCommand::Invoke(SMTPCommandArguments arguments)
 {
-	context->state.Set(SMTPStates::FINISH);
+	arguments.context->state.Set(SMTPStates::FINISH);
 
 	return SMTPReply::ServiceClosing();
 }

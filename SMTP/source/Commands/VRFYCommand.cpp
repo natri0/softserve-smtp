@@ -6,7 +6,7 @@ ISXSMTP::VRFYCommand::VRFYCommand()
 
 }
 
-ISXSMTP::SMTPReply ISXSMTP::VRFYCommand::Invoke(SMTPCommandArguments arguments, std::shared_ptr<SMTPContext> context)
+ISXSMTP::SMTPReply ISXSMTP::VRFYCommand::Invoke(SMTPCommandArguments arguments)
 {
 	return SMTPReply::CommandNotImplemented();
 }

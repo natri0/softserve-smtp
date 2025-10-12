@@ -6,7 +6,7 @@ ISXSMTP::MAILCommand::MAILCommand()
 
 }
 
-ISXSMTP::SMTPReply ISXSMTP::MAILCommand::Invoke(SMTPCommandArguments arguments, std::shared_ptr<SMTPContext> context)
+ISXSMTP::SMTPReply ISXSMTP::MAILCommand::Invoke(SMTPCommandArguments arguments)
 {
 	return SMTPReply::CommandNotImplemented();
 }

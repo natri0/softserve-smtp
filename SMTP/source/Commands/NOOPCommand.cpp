@@ -6,7 +6,7 @@ ISXSMTP::NOOPCommand::NOOPCommand()
 
 }
 
-ISXSMTP::SMTPReply ISXSMTP::NOOPCommand::Invoke(SMTPCommandArguments arguments, std::shared_ptr<SMTPContext> context)
+ISXSMTP::SMTPReply ISXSMTP::NOOPCommand::Invoke(SMTPCommandArguments arguments)
 {
 	return SMTPReply::OK();
 }

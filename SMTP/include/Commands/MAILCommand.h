@@ -12,7 +12,7 @@ class MAILCommand : public SMTPCommandBase
 public:
 	MAILCommand();
 
-	SMTPReply Invoke(SMTPCommandArguments arguments, std::shared_ptr<SMTPContext> context) override;
+	SMTPReply Invoke(SMTPCommandArguments arguments) override;
 	SMTPString GetName() override;
 	SMTPString GetSyntax() override;
 };

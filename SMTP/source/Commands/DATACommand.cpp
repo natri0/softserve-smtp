@@ -6,7 +6,7 @@ ISXSMTP::DATACommand::DATACommand()
 
 }
 
-ISXSMTP::SMTPReply ISXSMTP::DATACommand::Invoke(SMTPCommandArguments arguments, std::shared_ptr<SMTPContext> context)
+ISXSMTP::SMTPReply ISXSMTP::DATACommand::Invoke(SMTPCommandArguments arguments)
 {
 	return SMTPReply::CommandNotImplemented();
 }

@@ -6,12 +6,12 @@ ISXSMTP::RSETCommand::RSETCommand()
 
 }
 
-ISXSMTP::SMTPReply ISXSMTP::RSETCommand::Invoke(SMTPCommandArguments arguments, std::shared_ptr<SMTPContext> context)
+ISXSMTP::SMTPReply ISXSMTP::RSETCommand::Invoke(SMTPCommandArguments arguments)
 {
-	context->forward_path.Clear();
-	context->reverse_path.Clear();
-	context->mail_data.Clear();
-	context->state.Set(SMTPStates::INITIAL);
+	arguments.context->forward_path.Clear();
+	arguments.context->reverse_path.Clear();
+	arguments.context->mail_data.Clear();
+	arguments.context->state.Set(SMTPStates::INITIAL);
 
 	return SMTPReply::OK();
 }

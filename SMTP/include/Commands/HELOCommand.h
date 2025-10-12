@@ -12,7 +12,7 @@ class HELOCommand : public SMTPCommandBase
 public:
 	HELOCommand();
 
-	SMTPReply Invoke(SMTPCommandArguments arguments, std::shared_ptr<SMTPContext> context) override;
+	SMTPReply Invoke(SMTPCommandArguments arguments) override;
 	SMTPString GetName() override;
 	SMTPString GetSyntax() override;
 };

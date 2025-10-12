@@ -1,6 +1,8 @@
 #pragma once
 
 #include "SMTPString.h"
+#include "ISMTPMailbox.h"
+#include "SMTPContext.h"
 
 #include <unordered_map>
 
