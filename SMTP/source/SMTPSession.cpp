@@ -62,9 +62,11 @@ void ISXSMTP::SMTPSession::process()
 				}
 				else
 				{
+					command_parser_result.parsed_arguments.context = m_context;
+					command_parser_result.parsed_arguments.mailbox = m_mailbox;
+
 					auto command_result = m_commands[command_parser_result.command_verb]->Invoke(
-							command_parser_result.parsed_arguments,
-							m_context);
+							command_parser_result.parsed_arguments);
 
 					m_transmissionChannel->Write(command_result.ToSMTPString().GetData());
 				}	
