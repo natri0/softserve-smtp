@@ -10,6 +10,7 @@ enum class SMTPStates
 	POST_MAIL,
 	POST_RCPT,
 	POST_DATA,
+	END_DATA,
 	FINISH
 };
 
