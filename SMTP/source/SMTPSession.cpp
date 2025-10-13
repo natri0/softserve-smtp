@@ -45,6 +45,22 @@ void ISXSMTP::SMTPSession::process()
 	{
 		if (m_transmissionChannel->IsDataAvailable())
 		{
+			if (m_context->state == SMTPStates::POST_DATA)
+			{
+				do
+				{
+					m_transmissionChannel->Read(m_context->mail_data.Get().GetData());
+					
+				} while (m_context->mail_data.Get().IsEndingPresent() && m_transmissionChannel->IsDataAvailable());
+
+				if (m_context->mail_data.Get().IsDataEndingPresent())
+				{
+					m_context->state = SMTPStates::END_DATA;
+					m_transmissionChannel->Write(SMTPReply::OK().ToSMTPString().GetData());
+					continue;
+				}
+			}
+
 			SMTPString command;
 			do 
 			{

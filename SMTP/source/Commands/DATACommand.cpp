@@ -8,7 +8,10 @@ ISXSMTP::DATACommand::DATACommand()
 
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::DATACommand::Invoke(SMTPCommandArguments arguments)
 {
-	return { SMTPReply::CommandNotImplemented() };
+	//if (arguments.context->state != SMTPStates::POST_RCPT)
+		//return { SMTPReply::BadSequenceOfCommands() };
+	arguments.context->state = SMTPStates::POST_DATA;
+	return { SMTPReply::StartMailInput() };
 }
 
 ISXSMTP::SMTPString ISXSMTP::DATACommand::GetName()
