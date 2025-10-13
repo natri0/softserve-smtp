@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SMTPString.h"
+#include "SMTPConstants.h"
 
 #include <algorithm>
 
@@ -82,6 +83,37 @@ ISXSMTP::SMTPString& ISXSMTP::SMTPString::Concat(const SMTPString& other)
 {
 	m_data.append_range(other.m_data);
 	return *this;
+}
+
+bool ISXSMTP::SMTPString::IsEndingPresent() const
+{
+	if (m_data.size() >= 2)
+	{
+		if (m_data[m_data.size() - 1] == ISXSMTP::SMTPConstants::LF &&
+			m_data[m_data.size() - 2] == ISXSMTP::SMTPConstants::CR)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool ISXSMTP::SMTPString::IsDataEndingPresent() const
+{
+	if (m_data.size() >= 5)
+	{
+		if (m_data[m_data.size() - 1] == ISXSMTP::SMTPConstants::LF &&
+			m_data[m_data.size() - 2] == ISXSMTP::SMTPConstants::CR &&
+			m_data[m_data.size() - 3] == '.' &&
+			m_data[m_data.size() - 4] == ISXSMTP::SMTPConstants::LF &&
+			m_data[m_data.size() - 5] == ISXSMTP::SMTPConstants::CR)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void ISXSMTP::SMTPString::ToUpper()

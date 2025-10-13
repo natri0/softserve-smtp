@@ -40,6 +40,11 @@ public:
 
 	SMTPString& Concat(const SMTPString& other);
 
+	// checks if line terminated by <CRLF>
+	bool IsEndingPresent() const;
+	// checks if line terminated by <CRLF>.<CRLF>
+	bool IsDataEndingPresent() const;
+
 	void ToUpper();
 
 	std::string ToString() const;
