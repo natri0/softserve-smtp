@@ -13,9 +13,15 @@ public:
     Client(const std::string& host, const unsigned short port);
     ~Client();
 
-    void run(std::string str = "something") const;
+    void run(std::string str = "something");
+
+    void stop();
+
+    void send(std::string str);
 
 private:
+    bool isRunning = false;
+
     net::io_context io;
     net::ip::tcp::endpoint server_endpoint;
     std::shared_ptr<Session> session = nullptr;

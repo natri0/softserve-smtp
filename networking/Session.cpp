@@ -3,6 +3,8 @@
 //
 
 #include "Session.h"
+#include <iostream>
+#include <mutex>
 
 constexpr std::size_t BUFFER_SIZE = 1024;
 
@@ -34,6 +36,7 @@ bool Session::disconnect()
     socket->shutdown(net::socket_base::shutdown_both, ec);
 
     socket->close(ec);
+
     return true;
 }
 
@@ -41,7 +44,7 @@ void Session::run()
 {
     try
     {
-        while (socket->is_open()) read();
+        read();
     }
     catch (const boost::system::system_error& e) { if (onDisconnect) onDisconnect(); }
 }
@@ -49,26 +52,50 @@ void Session::run()
 void Session::send(const std::string& data)
 {
     if (!socket->is_open()) return;
-    try
-    {
-        net::write(*socket, net::buffer(data));
-    }
-    catch (const boost::system::system_error& e) { if (onDisconnect) onDisconnect(); }
+
+    writeQueue.push_back(data);
+    write();
 };
+
+void Session::write()
+{
+    net::async_write(*socket, net::buffer(writeQueue.front()),
+                     [this](const boost::system::error_code& ec, std::size_t /*bytes_transferred*/)
+                     {
+                         if (!ec)
+                         {
+                             writeQueue.pop_front();
+
+                             if (!writeQueue.empty())
+                                 write();
+                         }
+                         else
+                         {
+                             if (onDisconnect) onDisconnect();
+                         }
+                     });
+}
 
 void Session::read()
 {
-    if (!socket->is_open()) return;
+    if (!socket || !socket->is_open()) return;
 
-    try
-    {
-        char buffer[BUFFER_SIZE];
-        const std::size_t n = socket->read_some(net::buffer(buffer));
-        if (onMessageReceived) onMessageReceived(std::string(buffer, n));
-    }
-    catch (const boost::system::system_error& e)
-    {
-        if (onDisconnect) onDisconnect();
-        throw;
-    }
-};
+    socket->async_read_some(net::buffer(buffer),
+                            [this](const boost::system::error_code& ec, std::size_t bytes_transferred)
+                            {
+                                if (!ec)
+                                {
+                                    if (onMessageReceived)
+                                        onMessageReceived(std::string(buffer.data(), bytes_transferred));
+                                    read();
+                                }
+                                else
+                                {
+                                    if (ec != net::error::operation_aborted)
+                                    {
+                                        if (onDisconnect)
+                                            onDisconnect();
+                                    }
+                                }
+                            });
+}

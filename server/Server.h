@@ -8,7 +8,6 @@
 #include "../networking/Session.h"
 #include "ThreadPool.h"
 
-
 class Server {
 public:
     Server();
@@ -21,12 +20,16 @@ public:
 private:
     boost::asio::io_context io;
 
+    std::vector<std::thread> threads;
+
     // SMTP
     // Parser
 
     // temporary value: waiting for parser
     unsigned short port = 12345;
     net::ip::tcp::acceptor acceptor;
+
+    std::vector<std::shared_ptr<Session>> sessions;
 
     // temp
     void print(const std::string& str);

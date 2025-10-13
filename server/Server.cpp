@@ -4,8 +4,6 @@
 #include <iostream>
 #include "Server.h"
 
-// Server::Server() : acceptor(io, {net::ip::tcp::v4(), port})
-// Server::Server()
 Server::Server() : threadPool(std::make_unique<ThreadPool>()), acceptor(net::ip::tcp::acceptor(io))
 {
 }
@@ -27,13 +25,12 @@ void Server::stopServer()
     if (ec) std::cerr << "Error closing acceptor: " << ec.message() << std::endl;
 
     io.stop();
-
-    threadPool->join_threads();
 }
 
 void Server::run()
 {
     setUpAcceptor();
+
     runAcceptor();
 
     io.run();
@@ -48,7 +45,8 @@ void Server::runAcceptor()
     {
         if (!ec)
         {
-            auto session = std::make_shared<Session>(socket);
+            const auto session = std::make_shared<Session>(socket);
+
             session->setOnMessage([this](const std::string& msg)
             {
                 this->print(msg);
@@ -59,7 +57,8 @@ void Server::runAcceptor()
                 std::cout << "Client disconnected" << std::endl;
             });
 
-            threadPool->add_task_to_queue([session]() { session->run(); });
+            sessions.push_back(session);
+            session->run();
         }
         else
         {
@@ -74,6 +73,7 @@ void Server::setUpAcceptor()
 {
     acceptor.open(net::ip::tcp::v6());
     acceptor.set_option(net::ip::v6_only(false));
+    acceptor.set_option(net::ip::tcp::acceptor::reuse_address(true));
     acceptor.bind({net::ip::tcp::v6(), port});
     acceptor.listen();
 }

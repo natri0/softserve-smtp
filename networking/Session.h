@@ -7,6 +7,8 @@
 
 #include <boost/asio.hpp>
 #include <functional>
+#include <deque>
+#include <array>
 
 namespace net = boost::asio;
 
@@ -39,6 +41,12 @@ public:
 
 private:
     void read();
+    void write();
+
+    std::array<char, 1024> buffer;
+    std::deque<std::string> writeQueue;
+
+    std::vector<std::thread> threads;
 
     std::shared_ptr<net::ip::tcp::socket> socket;
 
