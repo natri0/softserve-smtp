@@ -9,7 +9,7 @@
 namespace ISXSMTP
 {
 
-struct CommandParserResult
+struct SMTPCommandParserResult
 {
 	SMTPString command_verb;
 
@@ -19,13 +19,13 @@ struct CommandParserResult
 	SMTPReply error_code;
 };
 
-class CommandParser
+class SMTPCommandParser
 {
 public:
 	// static class
-	CommandParser() = delete; 
+	SMTPCommandParser() = delete;
 
-	static CommandParserResult Parse(
+	static SMTPCommandParserResult Parse(
 			SMTPString command,
 			const std::unordered_map<SMTPString, 
 			std::unique_ptr<SMTPCommandBase>>& commands);
@@ -37,15 +37,15 @@ private:
 	static void handleMandatoryArgument(
 			const SMTPString& command, size_t& command_index,
 			const SMTPString& command_syntax, size_t& syntax_index,
-			CommandParserResult& result);
+		SMTPCommandParserResult& result);
 	static void handleOptionalArgument(
 		const SMTPString& command, size_t& command_index,
 		const SMTPString& command_syntax, size_t& syntax_index,
-		CommandParserResult& result);
+		SMTPCommandParserResult& result);
 	static void handleSyntaxDeviation(
 		const SMTPString& command, size_t& command_index,
 		const SMTPString& command_syntax, size_t& syntax_index,
-		CommandParserResult& result);
+		SMTPCommandParserResult& result);
 };
 
 }

@@ -18,6 +18,6 @@ add_library(SMTP
 	 "source/SMTPBuffer.cpp" 
 	 "source/SMTPState.cpp" 
 	 "source/SMTPReply.cpp" 
-	 "source/CommandParser.cpp" 
-	 "source/SMTPString.cpp" "include/SMTPConstants.h")
+	 "source/SMTPCommandParser.cpp" 
+	 "source/SMTPString.cpp")
 target_include_directories(SMTP PUBLIC "include")

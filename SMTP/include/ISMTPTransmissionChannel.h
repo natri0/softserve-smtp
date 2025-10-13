@@ -6,7 +6,7 @@
 namespace ISXSMTP
 {
 
-class ITransmissionChannel
+class ISMTPTransmissionChannel
 {
 public:
 	// Takes as the arguments pointer to the data and its count

@@ -1,6 +1,6 @@
 #include "SMTPSession.h"
-#include "ITransmissionChannel.h"
-#include "CommandParser.h"
+#include "ISMTPTransmissionChannel.h"
+#include "SMTPCommandParser.h"
 #include "SMTPConstants.h"
 
 #include <string>
@@ -8,7 +8,7 @@
 #include <mutex>
 #include <memory>
 
-class MockTransmission : public ISXSMTP::ITransmissionChannel
+class MockTransmission : public ISXSMTP::ISMTPTransmissionChannel
 {
 private:
 	std::mutex m_mutex;
@@ -35,7 +35,6 @@ public:
 	size_t Read(std::vector<uint8_t>& buffer) override
 	{
 		std::scoped_lock(m_mutex);
-		buffer.clear();
 		buffer.append_range(m_buffer);
 		m_buffer.clear();
 		return buffer.size();
@@ -44,7 +43,6 @@ public:
 	size_t ReadOutside(std::vector<uint8_t>& buffer) 
 	{
 		std::scoped_lock(m_mutex);
-		buffer.clear();
 		buffer.append_range(m_outsideBuffer);
 		m_outsideBuffer.clear();
 		return buffer.size();
@@ -69,8 +67,11 @@ void input(std::shared_ptr<MockTransmission> transmission_channel)
 	while (true)
 	{
 		std::string input;
-		std::cin >> input;
+		getline(std::cin, input);
 		std::vector<std::uint8_t> buffer(input.begin(), input.end());
+		buffer.push_back(ISXSMTP::SMTPConstants::CR);
+		buffer.push_back(ISXSMTP::SMTPConstants::LF);
+		buffer.push_back('.');
 		buffer.push_back(ISXSMTP::SMTPConstants::CR);
 		buffer.push_back(ISXSMTP::SMTPConstants::LF);
 		transmission_channel->WriteOutside(buffer);
@@ -85,12 +86,13 @@ void console_writer(std::shared_ptr<MockTransmission> transmission_channel)
 		if (transmission_channel->IsDataAvailableOutside())
 		{
 			size_t bytes_read = transmission_channel->ReadOutside(buffer);
-			std::cout << "Bytes read: " << bytes_read << std::endl;
+			//std::cout << "Bytes read: " << bytes_read << std::endl;
 			for (size_t i = 0; i < bytes_read; i++)
 			{
 				std::cout << buffer[i];
 			}
 			std::cout << std::endl;
+			buffer.clear();
 		}
 	}
 }
@@ -104,7 +106,7 @@ int main(void)
 	std::thread write_thread(input, transmission_channel);
 	std::thread read_thread(console_writer, transmission_channel);
 
-	SMTPSession session(transmission_channel);
+	SMTPSession session(transmission_channel, nullptr);
 
 	//SMTPString str(std::string("test"));
 	//SMTPString sub_str(std::string("st"));

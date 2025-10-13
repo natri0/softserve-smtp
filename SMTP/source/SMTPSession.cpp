@@ -9,12 +9,12 @@
 #include "Commands/RSETCommand.h"
 #include "Commands/HELOCommand.h"
 #include "SMTPConstants.h"
-#include "CommandParser.h"
+#include "SMTPCommandParser.h"
 
 #include <iostream>
 
 ISXSMTP::SMTPSession::SMTPSession(
-		std::shared_ptr<ITransmissionChannel> transmission_channel,
+		std::shared_ptr<ISMTPTransmissionChannel> transmission_channel,
 		std::shared_ptr<ISMTPMailbox> mailbox)
 	: m_transmissionChannel(transmission_channel)
 	, m_mailbox(mailbox)
@@ -70,7 +70,7 @@ void ISXSMTP::SMTPSession::process()
 			if (!command.IsEmpty())
 			{
 				SMTPString output;
-				auto command_parser_result = ISXSMTP::CommandParser::Parse(command, m_commands);
+				auto command_parser_result = ISXSMTP::SMTPCommandParser::Parse(command, m_commands);
 
 				if (command_parser_result.error_code != SMTPReply::OK())
 				{

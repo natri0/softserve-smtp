@@ -1,9 +1,9 @@
-#include "CommandParser.h"
+#include "SMTPCommandParser.h"
 #include "SMTPConstants.h"
 
 #include <iostream>
 
-ISXSMTP::CommandParserResult ISXSMTP::CommandParser::Parse(
+ISXSMTP::SMTPCommandParserResult ISXSMTP::SMTPCommandParser::Parse(
 		SMTPString command,
 		const std::unordered_map<SMTPString, 
 		std::unique_ptr<SMTPCommandBase>>& commands)
@@ -33,7 +33,7 @@ ISXSMTP::CommandParserResult ISXSMTP::CommandParser::Parse(
 		return { {}, {}, SMTPReply::CommandUnrecognized() };
 	}
 
-	CommandParserResult result = { command_verb, {}, SMTPReply::OK() };
+	SMTPCommandParserResult result = { command_verb, {}, SMTPReply::OK() };
 	for (size_t i = 0, j = 0; i < command.Count() && j < command_syntax.Count(); i++, j++)
 	{
 		if (command_syntax[j] == '!') // mandatory argument found
@@ -68,7 +68,7 @@ ISXSMTP::CommandParserResult ISXSMTP::CommandParser::Parse(
 	return result;
 }
 
-size_t ISXSMTP::CommandParser::findCommandVerbIndex(const SMTPString& command)
+size_t ISXSMTP::SMTPCommandParser::findCommandVerbIndex(const SMTPString& command)
 {
 	size_t command_verb_index = command.FindFirstOf(SMTPConstants::SP);
 	if (command_verb_index == SMTPString::NPOS)
@@ -85,7 +85,7 @@ size_t ISXSMTP::CommandParser::findCommandVerbIndex(const SMTPString& command)
 	return command_verb_index;
 }
 
-ISXSMTP::SMTPString ISXSMTP::CommandParser::readArgName(const SMTPString& command_syntax, size_t& start)
+ISXSMTP::SMTPString ISXSMTP::SMTPCommandParser::readArgName(const SMTPString& command_syntax, size_t& start)
 {
 	SMTPString arg_name;
 	std::uint8_t end_char = command_syntax[start];
@@ -106,7 +106,7 @@ ISXSMTP::SMTPString ISXSMTP::CommandParser::readArgName(const SMTPString& comman
 	return arg_name;
 }
 
-ISXSMTP::SMTPString ISXSMTP::CommandParser::readArgValue(const SMTPString& command, size_t& start)
+ISXSMTP::SMTPString ISXSMTP::SMTPCommandParser::readArgValue(const SMTPString& command, size_t& start)
 {
 	SMTPString arg_value;
 	if (command[start] == '\"')
@@ -145,13 +145,13 @@ ISXSMTP::SMTPString ISXSMTP::CommandParser::readArgValue(const SMTPString& comma
 	return arg_value;
 }
 
-void ISXSMTP::CommandParser::handleMandatoryArgument(
+void ISXSMTP::SMTPCommandParser::handleMandatoryArgument(
 	const SMTPString& command,
 	size_t& command_index,
 	const SMTPString&
 	command_syntax,
 	size_t& syntax_index,
-	CommandParserResult& result)
+	SMTPCommandParserResult& result)
 {
 	// this means next section inside '!'...'!' contains argument name
 	// and the next word in command should be written as value to that argument
@@ -176,12 +176,12 @@ void ISXSMTP::CommandParser::handleMandatoryArgument(
 	result.error_code = SMTPReply::OK();
 }
 
-void ISXSMTP::CommandParser::handleOptionalArgument(
+void ISXSMTP::SMTPCommandParser::handleOptionalArgument(
 		const SMTPString& command,
 		size_t& command_index,
 		const SMTPString& command_syntax,
 		size_t& syntax_index,
-		CommandParserResult& result)
+		SMTPCommandParserResult& result)
 {
 	// this means next section inside '['...']' contains optional argument name
 	// and the next word in command may be written as value to that argument
@@ -204,12 +204,12 @@ void ISXSMTP::CommandParser::handleOptionalArgument(
 	result.error_code = SMTPReply::OK();
 }
 
-void ISXSMTP::CommandParser::handleSyntaxDeviation(
+void ISXSMTP::SMTPCommandParser::handleSyntaxDeviation(
 		const SMTPString& command, 
 		size_t& command_index,
 		const SMTPString& command_syntax,
 		size_t& syntax_index,
-		CommandParserResult& result)
+		SMTPCommandParserResult& result)
 {
 	if (command[command_index] == SMTPConstants::SP && command_syntax[syntax_index] != SMTPConstants::CR)
 	{

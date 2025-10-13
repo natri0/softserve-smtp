@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ITransmissionChannel.h"
+#include "ISMTPTransmissionChannel.h"
 #include "ISMTPMailbox.h"
 #include "SMTPContext.h"
 #include "Commands/SMTPCommandBase.h"
@@ -15,7 +15,7 @@ namespace ISXSMTP
 class SMTPSession
 {
 private:
-	std::shared_ptr<ITransmissionChannel> m_transmissionChannel;
+	std::shared_ptr<ISMTPTransmissionChannel> m_transmissionChannel;
 	std::shared_ptr<ISMTPMailbox> m_mailbox;
 	std::shared_ptr<SMTPContext> m_context;
 public: // temporary for testing
@@ -23,7 +23,7 @@ public: // temporary for testing
 
 public:
 	SMTPSession(
-			std::shared_ptr<ITransmissionChannel> transmission_channel,
+			std::shared_ptr<ISMTPTransmissionChannel> transmission_channel,
 			std::shared_ptr<ISMTPMailbox> mailbox);
 
 	// Returns true if SMTPSession is finished processing request
