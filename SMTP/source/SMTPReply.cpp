@@ -142,7 +142,7 @@ ISXSMTP::SMTPReply ISXSMTP::SMTPReply::ExceededStorageAllocation()
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::StartMailInput()
 {
-	return SMTPReply(553, "Mailbox syntax incorrect");
+	return SMTPReply(354, "Start mail input; end with <CRLF>.<CRLF>");
 }
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::TransactionFailed()
