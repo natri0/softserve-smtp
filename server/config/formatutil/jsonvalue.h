@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../json.h"
-#include "vector.h"
 #include <format>
 
 namespace json {
@@ -33,6 +32,7 @@ namespace json {
                 }
                 return std::move(buf.append("]"));
             }
+            case Value::String: return "\"" + value.as_string() + "\"";
             default: throw std::runtime_error("invalid json::Value type");
         }
     }
