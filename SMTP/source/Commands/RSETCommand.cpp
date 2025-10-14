@@ -1,11 +1,6 @@
 #include "Commands/RSETCommand.h"
 #include "SMTPConstants.h"
 
-ISXSMTP::RSETCommand::RSETCommand()
-{
-
-}
-
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::RSETCommand::Invoke(SMTPCommandArguments arguments)
 {
 	arguments.context->forward_path.Clear();
@@ -23,5 +18,5 @@ ISXSMTP::SMTPString ISXSMTP::RSETCommand::GetName()
 
 ISXSMTP::SMTPString ISXSMTP::RSETCommand::GetSyntax()
 {
-	return SMTPString("RSET") + SMTPConstants::CR + SMTPConstants::LF;;
+	return SMTPString("RSET") + SMTPConstants::CR + SMTPConstants::LF;
 }

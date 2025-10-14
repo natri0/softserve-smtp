@@ -1,11 +1,6 @@
 #include "Commands/QUITCommand.h"
 #include "SMTPConstants.h"
 
-ISXSMTP::QUITCommand::QUITCommand()
-{
-
-}
-
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::QUITCommand::Invoke(SMTPCommandArguments arguments)
 {
 	arguments.context->state.Set(SMTPStates::FINISH);

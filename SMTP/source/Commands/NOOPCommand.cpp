@@ -1,11 +1,6 @@
 #include "Commands/NOOPCommand.h"
 #include "SMTPConstants.h"
 
-ISXSMTP::NOOPCommand::NOOPCommand()
-{
-
-}
-
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::NOOPCommand::Invoke(SMTPCommandArguments arguments)
 {
 	return { SMTPReply::OK() };

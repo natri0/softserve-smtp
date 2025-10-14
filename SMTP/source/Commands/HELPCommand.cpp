@@ -1,11 +1,6 @@
 #include "Commands/HELPCommand.h"
 #include "SMTPConstants.h"
 
-ISXSMTP::HELPCommand::HELPCommand()
-{
-
-}
-
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::HELPCommand::Invoke(SMTPCommandArguments arguments)
 {
 	return { SMTPReply::CommandNotImplemented() };

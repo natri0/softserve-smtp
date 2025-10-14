@@ -5,8 +5,7 @@
 
 ISXSMTP::SMTPCommandParserResult ISXSMTP::SMTPCommandParser::Parse(
 		SMTPString command,
-		const std::unordered_map<SMTPString, 
-		std::unique_ptr<SMTPCommandBase>>& commands)
+		const std::unordered_map<SMTPString, std::unique_ptr<SMTPCommandBase>>& commands)
 {
 	/*
 	* 1. Find command verb

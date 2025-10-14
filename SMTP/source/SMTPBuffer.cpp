@@ -1,6 +1,6 @@
 #include "SMTPBuffer.h"
 
-ISXSMTP::SMTPString& ISXSMTP::SMTPBuffer::Get()
+ISXSMTP::SMTPString& ISXSMTP::SMTPBuffer::GetSMTPString()
 {
 	return m_data;
 }

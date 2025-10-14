@@ -1,11 +1,6 @@
 #include "Commands/VRFYCommand.h"
 #include "SMTPConstants.h"
 
-ISXSMTP::VRFYCommand::VRFYCommand()
-{
-
-}
-
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::VRFYCommand::Invoke(SMTPCommandArguments arguments)
 {
 	return { SMTPReply::CommandNotImplemented() };

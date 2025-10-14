@@ -9,6 +9,9 @@
 namespace ISXSMTP
 {
 
+/**
+ * @brief Class that represents reply that SMTP send to the client
+ */
 class SMTPReply
 {
 private:
@@ -17,12 +20,43 @@ private:
 	bool m_multiLine;
 
 public:
+	/**
+	 * @brief Constructor
+	 * @param code std::uint16_t that represents reply code
+	 * @param comment SMTPString 
+	 * @param multi_line bool flag
+	 */
 	SMTPReply(std::uint16_t code, const SMTPString& comment, bool multi_line);
+
+	/**
+	 * @brief Constructor
+	 * @param code std::uint16_t that represents reply code
+	 * @param comment SMTPString
+	 */
 	SMTPReply(std::uint16_t code, const SMTPString& comment);
 
+	/**
+	 * @brief Returns comment associated with reply
+	 * @return SMTPString
+	 */
 	SMTPString GetComment() const;
+
+	/**
+	 * @brief Returns code associated with reply
+	 * @return std::uint16_t
+	 */
 	std::uint16_t GetCode() const;
+
+	/**
+	 * @brief Returns SMTPString that ready to be send back to client
+	 * @return SMTPString
+	 */
 	SMTPString ToSMTPString() const;
+
+	/**
+	 * @brief Sets multi line flag
+	 * @param value bool
+	 */
 	void SetMultiLine(bool value);
 
 public:
@@ -37,11 +71,11 @@ public:
 	static SMTPReply ServiceClosing();
 	static SMTPReply ServiceNotAvailable();
 	static SMTPReply OK();
-	static SMTPReply UserNotLocal251(); // will write user to forward path automatically
-	static SMTPReply UserNotLocal551(); // will ask user to specifically set this user to forward path
+	static SMTPReply UserNotLocal251(); 
+	static SMTPReply UserNotLocal551(); 
 	static SMTPReply CannotVerifyUser();
-	static SMTPReply MailboxUnavailable450(); // mailbox may be available after some time
-	static SMTPReply MailboxUnavailable550(); // mailbox unavailable permanently
+	static SMTPReply MailboxUnavailable450();
+	static SMTPReply MailboxUnavailable550(); 
 	static SMTPReply ProcessingError();
 	static SMTPReply InsufficientSystemStorage();
 	static SMTPReply ExceededStorageAllocation();
@@ -53,4 +87,3 @@ public:
 };
 
 }
-

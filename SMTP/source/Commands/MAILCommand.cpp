@@ -1,11 +1,6 @@
 #include "Commands/MAILCommand.h"
 #include "SMTPConstants.h"
 
-ISXSMTP::MAILCommand::MAILCommand()
-{
-
-}
-
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::MAILCommand::Invoke(SMTPCommandArguments arguments)
 {
 	// mail command should be called after ehlo or helo

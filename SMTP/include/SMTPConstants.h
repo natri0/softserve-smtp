@@ -2,6 +2,9 @@
 
 #include <cstdint>
 
+/**
+ * @brief Constants that used in SMTP
+ */
 namespace ISXSMTP::SMTPConstants
 {
 constexpr std::uint8_t LF = { 0x0A };

@@ -1,11 +1,6 @@
 #include "Commands/HELOCommand.h"
 #include "SMTPConstants.h"
 
-ISXSMTP::HELOCommand::HELOCommand()
-{
-
-}
-
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::HELOCommand::Invoke(SMTPCommandArguments arguments)
 {
 	SMTPString domain;

@@ -6,6 +6,9 @@
 namespace ISXSMTP
 {
 
+/**
+ * @brief Struct that contains buffers and state on which SMTP is operating
+ */
 struct SMTPContext
 {
 	SMTPBuffer reverse_path;

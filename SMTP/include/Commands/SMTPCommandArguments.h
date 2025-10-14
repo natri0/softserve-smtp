@@ -9,10 +9,12 @@
 namespace ISXSMTP
 {
 
+/**
+ * @brief Struct that contains arguments parsed by SMTPCommandParser 
+	and shared pointers to context and mailbox from SMTPSession
+ */
 struct SMTPCommandArguments
 {
-	// key - arg name
-	// value - arg value
 	std::unordered_map<SMTPString, SMTPString> arguments;
 
 	std::shared_ptr<SMTPContext> context;
@@ -20,4 +22,3 @@ struct SMTPCommandArguments
 };
 
 }
-

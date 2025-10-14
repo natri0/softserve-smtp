@@ -3,6 +3,9 @@
 namespace ISXSMTP
 {
 
+/**
+ * @brief Enum with all possible states that SMTPSession could be in
+ */
 enum class SMTPStates
 {
 	INITIAL,
@@ -14,8 +17,15 @@ enum class SMTPStates
 	FINISH
 };
 
+/**
+ * @brief Class wrapper for the SMTPStates
+ *	This class may be removed in the future and plain enum will be used instead
+ */
 class SMTPState
 {
+private:
+	SMTPStates m_state;
+
 public:
 	SMTPState();
 
@@ -26,9 +36,6 @@ public:
 	bool operator==(SMTPStates other);
 	bool operator!=(SMTPStates other);
 	SMTPState& operator=(SMTPStates state);
-
-private:
-	SMTPStates m_state;
 };
 
 }

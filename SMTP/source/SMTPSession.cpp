@@ -21,6 +21,7 @@ ISXSMTP::SMTPSession::SMTPSession(
 {
 	fillCommandMap();
 	m_context = std::make_shared<SMTPContext>();
+
 	process();
 }
 
@@ -49,11 +50,11 @@ void ISXSMTP::SMTPSession::process()
 			{
 				do
 				{
-					m_transmissionChannel->Read(m_context->mail_data.Get().GetData());
+					m_transmissionChannel->Read(m_context->mail_data.GetSMTPString().GetData());
 					
-				} while (m_context->mail_data.Get().IsEndingPresent() && m_transmissionChannel->IsDataAvailable());
+				} while (m_context->mail_data.GetSMTPString().IsEndingPresent() && m_transmissionChannel->IsDataAvailable());
 
-				if (m_context->mail_data.Get().IsDataEndingPresent())
+				if (m_context->mail_data.GetSMTPString().IsDataEndingPresent())
 				{
 					m_context->state = SMTPStates::END_DATA;
 					m_transmissionChannel->Write(SMTPReply::OK().ToSMTPString().GetData());

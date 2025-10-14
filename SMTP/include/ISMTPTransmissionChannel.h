@@ -6,19 +6,30 @@
 namespace ISXSMTP
 {
 
+/**
+ * @brief Interface that declares how SMTPSession should interact with transmission channel (sockets)
+ */
 class ISMTPTransmissionChannel
 {
 public:
-	// Takes as the arguments pointer to the data and its count
-	// Returns number of written bytes
+	/**
+	 * @brief Writes given data to the transmission channel stream
+	 * @param buffer with data
+	 * @return number of written bytes
+	 */
 	virtual size_t Write(const std::vector<uint8_t>& buffer) = 0;
 
-	// Takes as the arguments buffer and its size (not in bytes but as the count)
-	// Returns number of written bytes to the buffer
+	/**
+	 * @brief Read data into the given buffer
+	 * @param buffer where to write data
+	 * @return number of read bytes
+	 */
 	virtual size_t Read(std::vector<uint8_t>& buffer) = 0;
 
-	// Returns true if there's anything to read
-	// and false otherwise
+	/**
+	 * @brief Returns true if there is data to read, false otherwise
+	 * @return bool
+	 */
 	virtual bool IsDataAvailable() = 0;
 };
 

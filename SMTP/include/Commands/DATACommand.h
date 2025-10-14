@@ -10,8 +10,6 @@ namespace ISXSMTP
 class DATACommand : public SMTPCommandBase
 {
 public:
-	DATACommand();
-
 	std::vector<SMTPReply> Invoke(SMTPCommandArguments arguments) override;
 	SMTPString GetName() override;
 	SMTPString GetSyntax() override;

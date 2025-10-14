@@ -1,11 +1,6 @@
 #include "Commands/EHLOCommand.h"
 #include "SMTPConstants.h"
 
-ISXSMTP::EHLOCommand::EHLOCommand()
-{
-
-}
-
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::EHLOCommand::Invoke(SMTPCommandArguments arguments)
 {
 	if (arguments.context->state == SMTPStates::FINISH)
