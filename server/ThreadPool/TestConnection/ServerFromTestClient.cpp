@@ -1,10 +1,14 @@
+// main.cpp
 #include <iostream>
 #include <memory>
 #include <string>
+#include <functional>
 #include "asio.hpp"
 
+#include "SmtpCommandProcessor.hpp"
 #include "ThreadPool.hpp"
 #include "SMTPSession.hpp"
+
 
 auto pool = std::make_unique<ThreadPool>(12);
 
@@ -14,7 +18,7 @@ void processCommand(std::shared_ptr<SmtpSession> session, const std::string& cmd
 
     std::string response;
     std::string upper_cmd = cmd;
-    for (auto &c : upper_cmd) c = std::toupper(c);
+    for (auto& c : upper_cmd) c = std::toupper(c);
 
     if (upper_cmd.starts_with("EHLO") || upper_cmd.starts_with("HELO")) {
         response = "250 Hello " + cmd.substr(5) + "\r\n";
@@ -29,7 +33,7 @@ void processCommand(std::shared_ptr<SmtpSession> session, const std::string& cmd
     } else if (upper_cmd.starts_with("QUIT")) {
         response = "221 Bye\r\n";
         asio::async_write(*socket, asio::buffer(response),
-            [session](std::error_code ec, std::size_t){
+            [session](std::error_code ec, std::size_t) {
                 if (!ec) session->close();
             });
         return;
@@ -44,9 +48,35 @@ void processCommand(std::shared_ptr<SmtpSession> session, const std::string& cmd
 }
 
 void onClientCommand(std::shared_ptr<SmtpSession> session, const std::string& cmd) {
-    session->enqueueCommand(cmd);
-    pool->submitNextCommand(session);
+    if (!session->enqueueCommand(cmd)) return; 
+
+    if (session->compareBusy()) {
+        pool->submit([session]() {
+            thread_local SmtpCommandProcessor processor;
+
+            while (session->hasNextCommand()) {
+                auto task_cmd = session->popCommand();
+                if (task_cmd.empty()) continue;
+
+                auto socket = session->getSocket();
+                if (!socket || !socket->is_open()) {
+                    session->close();
+                    break;
+                }
+
+                try {
+                    processor.handle(session, task_cmd);
+                } catch (const std::exception& e) {
+                    std::cerr << "Processor exception: " << e.what() << std::endl;
+                    session->close();
+                    break;
+                }
+            }
+            session->releaseIfEmpty();
+        });
+    }
 }
+
 
 int main() {
     try {
@@ -61,12 +91,6 @@ int main() {
             auto socket = std::make_shared<asio::ip::tcp::socket>(io);
             acceptor.async_accept(*socket, [&, socket](std::error_code ec) mutable {
                 if (!ec) {
-                    std::string ip;
-                    std::error_code ep;
-                    ip = socket->remote_endpoint(ep).address().to_string();
-                    if (ep) ip = "unknown";
-                    std::cout << "📡 New connection from " << ip << "\n";
-
                     auto session = std::make_shared<SmtpSession>(socket);
 
                     std::string hello = "220 Simple SMTP Server Ready\r\n";
@@ -79,18 +103,12 @@ int main() {
                     auto readLoop = std::make_shared<std::function<void()>>();
 
                     *readLoop = [=]() mutable {
-                        if (session->isClosed()) {
-                            std::cout << "⚠️ Session already closed, skipping read\n";
-                            return;
-                        }
+                        if (session->isClosed()) return;
 
                         asio::async_read_until(*socket, *buffer, "\r\n",
                             [=](std::error_code ec, std::size_t) mutable {
-                                std::string ip;
-                                std::error_code ep;
-                                ip = session->getClientIp();
                                 if (ec) {
-                                    std::cout << "❌ Connection closed from [" << ip << "]: " << ec.message() << "\n";
+                                    std::cout << "❌ Connection closed from [" << session->getClientIp() << "]: " << ec.message() << "\n";
                                     session->close();
                                     return;
                                 }
@@ -101,28 +119,24 @@ int main() {
                                 if (!line.empty() && line.back() == '\r') line.pop_back();
 
                                 if (!line.empty()) {
-                                    std::cout << "[" << ip << "] CMD: " << line << "\n";
+                                    std::cout << "[" << session->getClientIp() << "] CMD: " << line << "\n";
                                     onClientCommand(session, line);
                                 }
 
-                                if (!session->isClosed()) {
-                                    (*readLoop)();
-                                } else {
-                                    std::cout << "🛑 Session closed, stopping read loop\n";
-                                }
+                                if (!session->isClosed()) (*readLoop)();
                             });
                     };
 
-                    (*readLoop)(); 
+                    (*readLoop)();
                 }
-                do_accept(); 
+
+                do_accept();
             });
         };
 
         do_accept();
         io.run();
-    }
-    catch (const std::exception &ex) {
+    } catch (const std::exception& ex) {
         std::cerr << "Server error: " << ex.what() << std::endl;
     }
 
