@@ -18,9 +18,13 @@ void SmtpSession::initialize(){
     }
 }
 
-void SmtpSession::enqueueCommand(const std::string& cmd) {
+bool SmtpSession::enqueueCommand(const std::string& cmd) {
     std::lock_guard<std::mutex> lock(session_mutex);
+     if (closed.load(std::memory_order_acquire)) {
+        return false; 
+    }
     commandQueue.push(cmd);
+    return true;
 }
 
 bool SmtpSession::hasNextCommand() {
@@ -30,8 +34,11 @@ bool SmtpSession::hasNextCommand() {
 
 std::string SmtpSession::popCommand() {
     std::lock_guard<std::mutex> lock(session_mutex);
-    if (commandQueue.empty()) return "";
-    std::string cmd = commandQueue.front();
+    if (commandQueue.empty()) {
+        busy.store(false, std::memory_order_release);
+        return "";
+    }
+    std::string cmd = std::move(commandQueue.front());
     commandQueue.pop();
     return cmd;
 }
@@ -42,19 +49,21 @@ void SmtpSession::setBusy(bool val) {
 }
 
 bool SmtpSession::isBusy() {
-    return busy.load(std::memory_order_acquire); 
+    return busy.load(std::memory_order_relaxed); 
 }
 
 bool SmtpSession::compareBusy() {
     bool expected = false;
-    return busy.compare_exchange_strong(expected, true);
+    return busy.compare_exchange_strong(expected, true, 
+                                        std::memory_order_acq_rel,
+                                        std::memory_order_acquire);
 }
 
 bool SmtpSession::releaseIfEmpty()
 {
     std::lock_guard<std::mutex> lock(session_mutex);
     if (commandQueue.empty()) {
-        busy.store(false);
+        busy.store(false, std::memory_order_release);
         return true;
     }
     return false;
@@ -63,50 +72,85 @@ bool SmtpSession::releaseIfEmpty()
 bool SmtpSession::clearQueue(){
     std::lock_guard<std::mutex> lock(session_mutex);
     if(commandQueue.empty()) return false;
-    while (!commandQueue.empty()){
-        commandQueue.pop();
-    }
+    std::queue<std::string> empty;
+    std::swap(commandQueue, empty);
     return true;
 }
 
 void SmtpSession::close() {
-    if (closed.exchange(true)) return;
-    if (socket && socket->is_open()) {
-        std::error_code ec;
-        socket->shutdown(asio::ip::tcp::socket::shutdown_both, ec);
-        socket->close(ec);
-    }
-    busy.store(false);
+
+    if (closed.exchange(true, std::memory_order_acq_rel)) return;
+    
+    busy.store(false, std::memory_order_release);
+
     clearQueue();
+    {
+        std::lock_guard<std::mutex> lock(socket_mutex);
+        if (socket && socket->is_open()) {
+            std::error_code ec;
+            socket->shutdown(asio::ip::tcp::socket::shutdown_both, ec);
+            socket->close(ec);
+        }
+    }
 }
 
 bool SmtpSession::isClosed() const {
-    return closed.load();
+    return closed.load(std::memory_order_acquire);
 }
 
 // --- Socket & info ---
 std::shared_ptr<asio::ip::tcp::socket> SmtpSession::getSocket() { 
+    std::lock_guard<std::mutex> lock(socket_mutex);
     if (closed.load(std::memory_order_acquire)) {
         return nullptr; 
     }
     return socket; 
 }
 
-std::string SmtpSession::getClientIp() const { 
-    std::lock_guard<std::mutex> lock(session_mutex);
+const std::string SmtpSession::getClientIp() const noexcept{ 
     return client_ip; 
 }
 
 // --- SMTP state ---
-SmtpSession::SessionStatus SmtpSession::getStatus() const { return current_state; }
-void SmtpSession::setStatus(SessionStatus st) { current_state = st; }
+SmtpSession::SessionStatus SmtpSession::getStatus() const { 
+    std::lock_guard<std::mutex> lock(session_mutex);
+    return current_state; 
+}
+void SmtpSession::setStatus(SessionStatus st) { 
+    std::lock_guard<std::mutex> lock(session_mutex);
+    current_state = st; 
+}
 
 // --- SMTP data ---
-void SmtpSession::setSender(const std::string& addr) { sender_address = addr; }
-void SmtpSession::setRecipient(const std::string& addr) { recipient_address = addr; }
-void SmtpSession::appendMessageLine(const std::string& line) { message_buffer += line + "\n"; }
-void SmtpSession::clearMessage() { message_buffer.clear(); }
+void SmtpSession::setSender(const std::string& addr) { 
+    std::lock_guard<std::mutex> lock(session_mutex);
+    sender_address = addr; 
+}
+void SmtpSession::setRecipient(const std::string& addr) { 
+    std::lock_guard<std::mutex> lock(session_mutex);
+    recipient_address = addr; 
+}
+void SmtpSession::appendMessageLine(const std::string& line) { 
+    std::lock_guard<std::mutex> lock(session_mutex);
+    message_buffer += line + "\n"; 
+}
 
-const std::string& SmtpSession::getSender() const { return sender_address; }
-const std::string& SmtpSession::getRecipient() const { return recipient_address; }
-const std::string& SmtpSession::getMessage() const { return message_buffer; }
+void SmtpSession::clearMessage() { 
+    std::lock_guard<std::mutex> lock(session_mutex);
+    message_buffer.clear(); 
+}
+
+const std::string SmtpSession::getSender() const { 
+    std::lock_guard<std::mutex> lock(session_mutex);
+    return sender_address; 
+}
+
+const std::string SmtpSession::getRecipient() const { 
+    std::lock_guard<std::mutex> lock(session_mutex);
+    return recipient_address; 
+}
+
+const std::string SmtpSession::getMessage() const { 
+    std::lock_guard<std::mutex> lock(session_mutex);
+    return message_buffer; 
+}

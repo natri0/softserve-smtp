@@ -41,8 +41,9 @@ public:
     /**
     * @brief Add a command to the session's command queue.
     * @param cmd SMTP command string.
+    * @return true if session is not close and elem push to queue, false otherwise.
     */
-    void enqueueCommand(const std::string& cmd);
+    bool enqueueCommand(const std::string& cmd);
 
     /**
     * @brief Check if there are more commands in the queue.
@@ -105,7 +106,7 @@ public:
     * @brief Get client IP address.
     * @return IP address string.
     */
-    std::string getClientIp() const;
+    const std::string getClientIp() const noexcept;
 
     /**
     * @brief Get current session status.
@@ -125,22 +126,25 @@ public:
     void appendMessageLine(const std::string& line);
     void clearMessage();
 
-    const std::string& getSender() const;
-    const std::string& getRecipient() const;
-    const std::string& getMessage() const;
+    const std::string getSender() const;
+    const std::string getRecipient() const;
+    const std::string getMessage() const;
 
 private:
     SessionStatus current_state = INITIAL;
-    std::shared_ptr<asio::ip::tcp::socket> socket;
     std::string client_ip;
     std::string sender_address;
     std::string recipient_address;
     std::string message_buffer;
 
-    std::queue<std::string> commandQueue;
-    std::atomic<bool> busy = false;
+    std::atomic<bool> busy{false};
     std::atomic<bool> closed{false};
+
     mutable std::mutex session_mutex;
+    std::queue<std::string> commandQueue;
+
+    mutable std::mutex socket_mutex;
+    std::shared_ptr<asio::ip::tcp::socket> socket;
 
     /**
     * @brief initialize session constructure.

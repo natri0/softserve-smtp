@@ -53,7 +53,8 @@ void ThreadPool::workerThread() {
             }
 
             auto cmd = session->popCommand();
-
+            if (cmd.empty()) continue;
+            
             auto socket = session->getSocket();
             if (!socket || !socket->is_open()) {
                 session->setBusy(false);
