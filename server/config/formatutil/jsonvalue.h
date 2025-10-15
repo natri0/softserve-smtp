@@ -34,6 +34,7 @@ namespace json {
             }
             case Value::String: return "\"" + value.as_string() + "\"";
             case Value::Null: return "null";
+            case Value::Boolean: return value.as_boolean() ? "true" : "false";
             default: throw std::runtime_error("invalid json::Value type");
         }
     }

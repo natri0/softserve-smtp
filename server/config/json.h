@@ -8,6 +8,7 @@ namespace json {
     public:
         Value(double val) : _type(Number), number(val) {}
         Value(int val) : _type(Number), number(val) {}
+        Value(bool val) : _type(Boolean), boolean(val) {}
 
         Value(const std::vector<Value> &val) : _type(Array), array(val) {}
         Value(std::vector<Value> &&val) : _type(Array), array(std::move(val)) {}
@@ -31,6 +32,7 @@ namespace json {
             Array,
             String,
             Null,
+            Boolean,
             // todo: add more types to json::Value
         };
 
@@ -39,12 +41,14 @@ namespace json {
         const double &as_number() const { return number; }
         const std::vector<Value> &as_array() const { return array; }
         const std::string &as_string() const { return string; }
+        const bool &as_boolean() const { return boolean; }
     private:
         Type _type;
         union {
             double number;
             std::vector<Value> array;
             std::string string;
+            bool boolean;
         };
     };
 

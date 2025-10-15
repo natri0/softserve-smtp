@@ -6,7 +6,7 @@
 #include "formatutil/optional.h"
 #include "formatutil/jsonvalue.h"
 
-static auto json_doc = R"([1.0, "test", "with\n escapes", "with \" quotes", null])";
+static auto json_doc = R"([1.0, "test", true, "with\n escapes", false, "with \" quotes", null])";
 
 /// convert unicode codepoint to utf8
 static size_t code_to_utf8(unsigned char *const buffer, const unsigned int code)
@@ -146,6 +146,16 @@ std::optional<json::Value> json::visit_element(const char *&string) {
     if (!memcmp(string, "null", 4)) {
         string += 4;
         return { Value::get_null() };
+    }
+
+    if (!memcmp(string, "true", 4)) {
+        string += 4;
+        return { true };
+    }
+
+    if (!memcmp(string, "false", 5)) {
+        string += 5;
+        return { false };
     }
 
     if (auto number = visit_number(string); number.has_value()) return { *number };
