@@ -54,20 +54,20 @@ void Session::send(const std::string& data)
     if (!socket->is_open()) return;
 
     writeQueue.push_back(data);
-    write();
+    if (!isWriting) write();
 };
 
 void Session::write()
 {
+    isWriting = true;
     net::async_write(*socket, net::buffer(writeQueue.front()),
                      [this](const boost::system::error_code& ec, std::size_t /*bytes_transferred*/)
                      {
                          if (!ec)
                          {
                              writeQueue.pop_front();
-
-                             if (!writeQueue.empty())
-                                 write();
+                             if (!writeQueue.empty()) write();
+                             else isWriting = false;
                          }
                          else
                          {

@@ -6,24 +6,25 @@
 #define SERVER_H
 
 #include "../networking/Session.h"
-#include "ThreadPool.h"
+#include <mutex>
 
 class Server {
 public:
     Server();
     ~Server();
 
-    // void initServer();
     void stopServer();
     void run();
 
 private:
-    boost::asio::io_context io;
+    void initServer();
 
-    std::vector<std::thread> threads;
+    boost::asio::io_context io;
+    std::mutex sessionMutex;
 
     // SMTP
     // Parser
+    // Thread Pool
 
     // temporary value: waiting for parser
     unsigned short port = 12345;
@@ -33,10 +34,13 @@ private:
 
     // temp
     void print(const std::string& str);
-    std::unique_ptr<ThreadPool> threadPool;
     //
     void runAcceptor();
     void setUpAcceptor();
+
+    // for session management
+    void onDisconnect(std::shared_ptr<Session> session);
+    void onMessage(const std::string& str);
 };
 
 #endif //SERVER_H

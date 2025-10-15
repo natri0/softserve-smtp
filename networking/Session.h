@@ -45,8 +45,7 @@ private:
 
     std::array<char, 1024> buffer;
     std::deque<std::string> writeQueue;
-
-    std::vector<std::thread> threads;
+    bool isWriting = false;
 
     std::shared_ptr<net::ip::tcp::socket> socket;
 

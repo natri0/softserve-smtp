@@ -4,13 +4,21 @@
 #include <iostream>
 #include "Server.h"
 
-Server::Server() : threadPool(std::make_unique<ThreadPool>()), acceptor(net::ip::tcp::acceptor(io))
+Server::Server() : acceptor(net::ip::tcp::acceptor(io))
 {
 }
 
 Server::~Server()
 {
     stopServer();
+}
+
+void Server::initServer()
+{
+    // initialization from config
+
+    setUpAcceptor();
+    runAcceptor();
 }
 
 void Server::stopServer()
@@ -24,15 +32,16 @@ void Server::stopServer()
 
     if (ec) std::cerr << "Error closing acceptor: " << ec.message() << std::endl;
 
+    for (auto& session : sessions)
+        session->disconnect();
+    sessions.clear();
+
     io.stop();
 }
 
 void Server::run()
 {
-    setUpAcceptor();
-
-    runAcceptor();
-
+    initServer();
     io.run();
 }
 
@@ -49,7 +58,7 @@ void Server::runAcceptor()
 
             session->setOnMessage([this](const std::string& msg)
             {
-                this->print(msg);
+                this->onMessage(msg);
             });
 
             session->setOnDisconnect([]()
@@ -72,10 +81,37 @@ void Server::runAcceptor()
 void Server::setUpAcceptor()
 {
     acceptor.open(net::ip::tcp::v6());
+
     acceptor.set_option(net::ip::v6_only(false));
     acceptor.set_option(net::ip::tcp::acceptor::reuse_address(true));
-    acceptor.bind({net::ip::tcp::v6(), port});
+
+    boost::system::error_code ec;
+    acceptor.bind({net::ip::tcp::v6(), port}, ec);
+
+    if (ec)
+    {
+        std::cerr << "Bind failed: " << ec.message() << std::endl;
+        return;
+    }
+
     acceptor.listen();
+}
+
+void Server::onDisconnect(std::shared_ptr<Session> session)
+{
+    session->disconnect();
+
+    sessionMutex.lock();
+    sessions.erase(std::remove(sessions.begin(), sessions.end(), session), sessions.end());
+    sessionMutex.unlock();
+}
+
+void Server::onMessage(const std::string& str)
+{
+    print(str);
+    //
+
+
 }
 
 void Server::print(const std::string& str)

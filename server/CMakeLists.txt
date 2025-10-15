@@ -12,8 +12,6 @@ add_executable(smtp_server main.cpp
         Server.h
         ../client/Client.cpp
         ../client/Client.h
-        ThreadPool.cpp
-        ThreadPool.h
 )
 
 target_include_directories(smtp_server PRIVATE ${BOOST_ROOT})

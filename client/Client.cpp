@@ -17,7 +17,7 @@ Client::~Client()
     stop();
 }
 
-void Client::run(std::string str)
+void Client::run()
 {
     if (isRunning) return;
     isRunning = true;
