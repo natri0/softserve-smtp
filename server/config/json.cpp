@@ -161,7 +161,8 @@ std::optional<json::Value> json::visit_element(const char *&string) {
     if (auto number = visit_number(string); number.has_value()) return { *number };
     if (auto array = visit_array(string); array.has_value()) return { std::move(*array) };
     if (auto str = visit_string(string); str.has_value()) return { std::move(*str) };
-    return {};
+
+    throw BadJson(std::format("failed to parse json: '{}'", string));
 }
 
 int main() {

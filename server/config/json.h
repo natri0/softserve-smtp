@@ -4,6 +4,12 @@
 #include <vector>
 
 namespace json {
+
+    struct BadJson final : std::runtime_error {
+        explicit BadJson(const char *str) : std::runtime_error(str) {}
+        explicit BadJson(const std::string &str) : std::runtime_error(str) {}
+    };
+
     class Value {
     public:
         Value(double val) : _type(Number), number(val) {}
