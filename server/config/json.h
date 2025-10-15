@@ -14,6 +14,12 @@ namespace json {
 
         Value(const std::string &val) : _type(String), string(val) {}
 
+        static Value get_null() {
+            Value x{0};
+            x._type = Null;
+            return x;
+        }
+
         Value(const Value &val) {
             memcpy(this, &val, sizeof(val));
         }
@@ -24,6 +30,7 @@ namespace json {
             Number,
             Array,
             String,
+            Null,
             // todo: add more types to json::Value
         };
 

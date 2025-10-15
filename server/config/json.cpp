@@ -6,7 +6,7 @@
 #include "formatutil/optional.h"
 #include "formatutil/jsonvalue.h"
 
-static auto json_doc = R"([1.0, "test", "with\n escapes", "with \" quotes"])";
+static auto json_doc = R"([1.0, "test", "with\n escapes", "with \" quotes", null])";
 
 /// convert unicode codepoint to utf8
 static size_t code_to_utf8(unsigned char *const buffer, const unsigned int code)
@@ -141,6 +141,12 @@ std::optional<json::Array> json::visit_array(const char *&string) {
 
 std::optional<json::Value> json::visit_element(const char *&string) {
     while (isspace(*string)) string++;
+
+    // using memcmp here because we only need to check if it _starts with_ "null" in cases this is part of an array/object
+    if (!memcmp(string, "null", 4)) {
+        string += 4;
+        return { Value::get_null() };
+    }
 
     if (auto number = visit_number(string); number.has_value()) return { *number };
     if (auto array = visit_array(string); array.has_value()) return { std::move(*array) };

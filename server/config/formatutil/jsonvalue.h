@@ -33,6 +33,7 @@ namespace json {
                 return std::move(buf.append("]"));
             }
             case Value::String: return "\"" + value.as_string() + "\"";
+            case Value::Null: return "null";
             default: throw std::runtime_error("invalid json::Value type");
         }
     }
