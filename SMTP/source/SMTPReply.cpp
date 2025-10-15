@@ -40,6 +40,11 @@ ISXSMTP::SMTPString ISXSMTP::SMTPReply::ToSMTPString() const
 	return result;
 }
 
+std::vector<std::uint8_t> ISXSMTP::SMTPReply::ToVector() const
+{
+	return ToSMTPString().GetData();
+}
+
 void ISXSMTP::SMTPReply::SetMultiLine(bool value)
 {
 	m_multiLine = value;

@@ -54,6 +54,12 @@ public:
 	SMTPString ToSMTPString() const;
 
 	/**
+	 * @brief Returns vector from the SMTPString returned in the SMTPReply::ToSMTPString method
+	 * @return std::vector<std::uint8_t>
+	 */
+	std::vector<std::uint8_t> ToVector() const;
+
+	/**
 	 * @brief Sets multi line flag
 	 * @param value bool
 	 */
