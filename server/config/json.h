@@ -1,6 +1,7 @@
 #pragma once
 
 #include <optional>
+#include <unordered_map>
 #include <vector>
 
 namespace json {
@@ -19,6 +20,9 @@ namespace json {
         Value(const std::vector<Value> &val) : _type(Array), array(val) {}
         Value(std::vector<Value> &&val) : _type(Array), array(std::move(val)) {}
 
+        Value(const std::unordered_map<std::string, Value> &val) : _type(Object), object(val) {}
+        Value(std::unordered_map<std::string, Value> &&val) : _type(Object), object(std::move(val)) {}
+
         Value(const std::string &val) : _type(String), string(val) {}
 
         static Value get_null() {
@@ -28,7 +32,7 @@ namespace json {
         }
 
         Value(const Value &val) {
-            memcpy(this, &val, sizeof(val));
+            *this = val;
         }
 
         Value &operator=(const Value &val) {
@@ -38,6 +42,7 @@ namespace json {
                 case Boolean: boolean = val.boolean; break;
                 case String: new (&string) std::string(val.string); break;
                 case Array: new (&array) std::vector(val.array); break;
+                case Object: new (&object) std::unordered_map(val.object); break;
             }
             return *this;
         }
@@ -46,6 +51,7 @@ namespace json {
             switch (_type) {
                 case String: string.~basic_string(); break;
                 case Array: array.~vector(); break;
+                case Object: object.~unordered_map(); break;
                 default: break;
             }
         }
@@ -56,7 +62,7 @@ namespace json {
             String,
             Null,
             Boolean,
-            // todo: add more types to json::Value
+            Object
         };
 
         Type type() const { return _type; }
@@ -65,6 +71,7 @@ namespace json {
         const std::vector<Value> &as_array() const { return array; }
         const std::string &as_string() const { return string; }
         const bool &as_boolean() const { return boolean; }
+        const std::unordered_map<std::string, Value> &as_object() const { return object; }
     private:
         Type _type;
         union {
@@ -72,6 +79,7 @@ namespace json {
             std::vector<Value> array;
             std::string string;
             bool boolean;
+            std::unordered_map<std::string, Value> object;
         };
     };
 
@@ -81,6 +89,7 @@ namespace json {
     std::optional<std::string> visit_string(const char *&string);
 
     std::optional<Array> visit_array(const char *&string);
+    std::optional<std::unordered_map<std::string, Value>> visit_object(const char *&string);
 
     std::optional<Value> visit_element(const char *&string);
 }

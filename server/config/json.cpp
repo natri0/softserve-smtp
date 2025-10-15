@@ -6,7 +6,7 @@
 #include "formatutil/optional.h"
 #include "formatutil/jsonvalue.h"
 
-static auto json_doc = R"([1.0, "test", true, "with\n escapes", false, "with \" quotes", null])";
+static auto json_doc = R"({ "key1": "value1", "key2": ["array", null, 1.0], "key3": true, "key4": { "nested": "yes" } })";
 
 /// convert unicode codepoint to utf8
 static size_t code_to_utf8(unsigned char *const buffer, const unsigned int code)
@@ -139,6 +139,49 @@ std::optional<json::Array> json::visit_array(const char *&string) {
     }
 }
 
+std::optional<std::unordered_map<std::string, json::Value>> json::visit_object(const char *&string) {
+    const char *begin = string;
+
+    if (*string++ != '{') {
+        string = begin;
+        return {};
+    }
+
+    std::unordered_map<std::string, Value> map;
+
+    while (true) {
+        std::string key;
+        while (isspace(*string)) string++;
+        if (auto k = visit_string(string); k.has_value()) {
+            key = k.value();
+        } else {
+            string = begin;
+            return {};
+        }
+
+        while (isspace(*string)) string++;
+        if (*string++ != ':') {
+            string = begin;
+            return {};
+        }
+
+        while (isspace(*string)) string++;
+        if (auto value = visit_element(string); value.has_value()) {
+            map.insert({ key, *value });
+        }
+
+        while (isspace(*string)) string++;
+        switch (*string++) {
+            case '}': return { map };
+            case ',': continue;
+            default: {
+                string = begin;
+                return {};
+            }
+        }
+    }
+}
+
 std::optional<json::Value> json::visit_element(const char *&string) {
     while (isspace(*string)) string++;
 
@@ -161,6 +204,7 @@ std::optional<json::Value> json::visit_element(const char *&string) {
     if (auto number = visit_number(string); number.has_value()) return { *number };
     if (auto array = visit_array(string); array.has_value()) return { std::move(*array) };
     if (auto str = visit_string(string); str.has_value()) return { std::move(*str) };
+    if (auto obj = visit_object(string); obj.has_value()) return { std::move(*obj) };
 
     throw BadJson(std::format("failed to parse json: '{}'", string));
 }
