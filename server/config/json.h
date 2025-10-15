@@ -31,7 +31,24 @@ namespace json {
             memcpy(this, &val, sizeof(val));
         }
 
-        ~Value() {}
+        Value &operator=(const Value &val) {
+            switch (_type = val._type) {
+                case Null: break;
+                case Number: number = val.number; break;
+                case Boolean: boolean = val.boolean; break;
+                case String: new (&string) std::string(val.string); break;
+                case Array: new (&array) std::vector(val.array); break;
+            }
+            return *this;
+        }
+
+        ~Value() {
+            switch (_type) {
+                case String: string.~basic_string(); break;
+                case Array: array.~vector(); break;
+                default: break;
+            }
+        }
 
         enum Type {
             Number,
