@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ISMTPTransmissionChannel.h"
 #include "ISMTPMailbox.h"
 #include "SMTPContext.h"
 #include "Commands/SMTPCommandBase.h"
@@ -17,10 +16,11 @@ namespace ISXSMTP
 class SMTPSession
 {
 private:
-	std::shared_ptr<ISMTPTransmissionChannel> m_transmissionChannel;
 	std::shared_ptr<ISMTPMailbox> m_mailbox;
 	std::shared_ptr<SMTPContext> m_context;
 	std::unordered_map<SMTPString, std::unique_ptr<SMTPCommandBase>> m_commands;
+
+	SMTPString m_clientInputBuffer;
 
 public:
 	/**
@@ -28,9 +28,7 @@ public:
 	 * @param transmission_channel ISMTPTransmissionChannel
 	 * @param mailbox ISMTPMailbox
 	 */
-	SMTPSession(
-			std::shared_ptr<ISMTPTransmissionChannel> transmission_channel,
-			std::shared_ptr<ISMTPMailbox> mailbox);
+	SMTPSession(std::shared_ptr<ISMTPMailbox> mailbox);
 
 	/**
 	 * @brief Returns true if the SMTPSession is finished its business with user
@@ -38,16 +36,31 @@ public:
 	 */
 	bool IsFinished();
 
-private:
 	/**
-	 * @brief Method with loop that processes client command
+	 * @brief Should be called when client connects to the server
+	 * @return std::vector<std::uint8_t> data for client
 	 */
-	void process();
+	std::vector<std::uint8_t> OnConnect();
 
+	/**
+	 * @brief Should be called when client sends data to the server
+	 * @param message std::vector<std::uint8_t> data from client
+	 * @return std::vector<std::uint8_t> data for client
+	 */
+	std::vector<std::uint8_t> OnMessage(std::vector<std::uint8_t> message);
+
+private:
 	/**
 	 * @brief Fills std::unordered_map with commands and their command verbs (names)
 	 */
 	void fillCommandMap();
+
+	/**
+	 * @brief handles mail data input
+	 * @param data std::vector<std::uint8_t> data from client
+	 * @return bool returns true if user finished entering mail data
+	 */
+	bool handleMailDataInput(std::vector<std::uint8_t> data);
 };
 
 }

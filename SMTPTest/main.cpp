@@ -1,5 +1,4 @@
 #include "SMTPSession.h"
-#include "ISMTPTransmissionChannel.h"
 #include "SMTPCommandParser.h"
 #include "SMTPConstants.h"
 
@@ -8,105 +7,44 @@
 #include <mutex>
 #include <memory>
 
-class MockTransmission : public ISXSMTP::ISMTPTransmissionChannel
+void writeToConsole(std::vector<std::uint8_t> data)
 {
-private:
-	std::mutex m_mutex;
-	std::vector<std::uint8_t> m_buffer;
-	std::vector<std::uint8_t> m_outsideBuffer;
-
-public:
-	size_t Write(const std::vector<uint8_t>& buffer) override
+	for (auto i : data)
 	{
-		std::scoped_lock(m_mutex);
-		m_outsideBuffer.clear();
-		m_outsideBuffer.append_range(buffer);
-		return m_outsideBuffer.size();
-	}
-
-	size_t WriteOutside(std::vector<uint8_t>& buffer) 
-	{
-		std::scoped_lock(m_mutex);
-		m_buffer.clear();
-		m_buffer.append_range(buffer);
-		return m_buffer.size();
-	}
-
-	size_t Read(std::vector<uint8_t>& buffer) override
-	{
-		std::scoped_lock(m_mutex);
-		buffer.append_range(m_buffer);
-		m_buffer.clear();
-		return buffer.size();
-	}
-
-	size_t ReadOutside(std::vector<uint8_t>& buffer) 
-	{
-		std::scoped_lock(m_mutex);
-		buffer.append_range(m_outsideBuffer);
-		m_outsideBuffer.clear();
-		return buffer.size();
-	}
-
-	bool IsDataAvailable() override
-	{
-		std::scoped_lock lock(m_mutex);
-		return !m_buffer.empty();
-	}
-
-	bool IsDataAvailableOutside() 
-	{
-		std::scoped_lock lock(m_mutex);
-		return !m_outsideBuffer.empty();
-	}
-
-};
-
-void input(std::shared_ptr<MockTransmission> transmission_channel)
-{
-	while (true)
-	{
-		std::string input;
-		getline(std::cin, input);
-		std::vector<std::uint8_t> buffer(input.begin(), input.end());
-		buffer.push_back(ISXSMTP::SMTPConstants::CR);
-		buffer.push_back(ISXSMTP::SMTPConstants::LF);
-		buffer.push_back('.');
-		buffer.push_back(ISXSMTP::SMTPConstants::CR);
-		buffer.push_back(ISXSMTP::SMTPConstants::LF);
-		transmission_channel->WriteOutside(buffer);
+		std::cout << i;
 	}
 }
 
-void console_writer(std::shared_ptr<MockTransmission> transmission_channel)
+std::vector<std::uint8_t> writeToSession(const std::string& msg)
 {
-	std::vector<std::uint8_t> buffer;
-	while (true)
-	{
-		if (transmission_channel->IsDataAvailableOutside())
-		{
-			size_t bytes_read = transmission_channel->ReadOutside(buffer);
-			//std::cout << "Bytes read: " << bytes_read << std::endl;
-			for (size_t i = 0; i < bytes_read; i++)
-			{
-				std::cout << buffer[i];
-			}
-			std::cout << std::endl;
-			buffer.clear();
-		}
-	}
+	std::cout << msg << std::endl;
+	std::vector<std::uint8_t> data(msg.begin(), msg.end());
+	data.push_back(ISXSMTP::SMTPConstants::CR);
+	data.push_back(ISXSMTP::SMTPConstants::LF);
+	data.push_back('.');
+	data.push_back(ISXSMTP::SMTPConstants::CR);
+	data.push_back(ISXSMTP::SMTPConstants::LF);
+	return data;
 }
 
 int main(void)
 {
 	using namespace ISXSMTP;
 
-	std::shared_ptr<MockTransmission> transmission_channel = std::make_shared<MockTransmission>();
+	/*std::shared_ptr<MockTransmission> transmission_channel = std::make_shared<MockTransmission>();
 
 	std::thread write_thread(input, transmission_channel);
-	std::thread read_thread(console_writer, transmission_channel);
+	std::thread read_thread(console_writer, transmission_channel);*/
 
-	SMTPSession session(transmission_channel, nullptr);
+	SMTPSession session(nullptr);
+
+	writeToConsole(session.OnConnect());
+	writeToConsole(session.OnMessage(writeToSession("ehlo test")));
+	writeToConsole(session.OnMessage(writeToSession("mail from:<test>")));
+	writeToConsole(session.OnMessage(writeToSession("rcpt to:<test>")));
+	writeToConsole(session.OnMessage(writeToSession("data")));
+	writeToConsole(session.OnMessage(writeToSession("test mail")));
+	writeToConsole(session.OnMessage(writeToSession("quit")));
 
 	//SMTPString str(std::string("test"));
 	//SMTPString sub_str(std::string("st"));
@@ -126,8 +64,8 @@ int main(void)
 		std::cout << "[" << item.first.ToString() << "]: " << item.second.ToString() << std::endl;
 	}*/
 
-	write_thread.join();
-	read_thread.join();
+	//write_thread.join();
+	//read_thread.join();
 
 	return 0;
 }

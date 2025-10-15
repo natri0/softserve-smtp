@@ -13,16 +13,13 @@
 
 #include <iostream>
 
-ISXSMTP::SMTPSession::SMTPSession(
-		std::shared_ptr<ISMTPTransmissionChannel> transmission_channel,
-		std::shared_ptr<ISMTPMailbox> mailbox)
-	: m_transmissionChannel(transmission_channel)
-	, m_mailbox(mailbox)
+ISXSMTP::SMTPSession::SMTPSession(std::shared_ptr<ISMTPMailbox> mailbox)
+	: m_mailbox(mailbox)
 {
 	fillCommandMap();
 	m_context = std::make_shared<SMTPContext>();
 
-	process();
+	//process();
 }
 
 bool ISXSMTP::SMTPSession::IsFinished()
@@ -32,67 +29,63 @@ bool ISXSMTP::SMTPSession::IsFinished()
 	return false;
 }
 
-void ISXSMTP::SMTPSession::process()
+std::vector<std::uint8_t> ISXSMTP::SMTPSession::OnConnect()
 {
-	/*
-	* 1. Read data from transmission channel
-	* 2. When <CLRF> discovered end reading and pass line to Parser
-	* 3. Call corresponding command with parsed arguments
-	* 4. Write SMTPReply code to user
-	* 5. Repeat until QUIT occurs
-	*/
+	return SMTPReply::ServiceReady().ToVector();
+}
 
-	while (!IsFinished())
+std::vector<std::uint8_t> ISXSMTP::SMTPSession::OnMessage(std::vector<std::uint8_t> message)
+{
+	if (m_context->state == SMTPStates::POST_DATA)
 	{
-		if (m_transmissionChannel->IsDataAvailable())
+		// handle mail data
+		if (handleMailDataInput(message))
 		{
-			if (m_context->state == SMTPStates::POST_DATA)
-			{
-				do
-				{
-					m_transmissionChannel->Read(m_context->mail_data.GetSMTPString().GetData());
-					
-				} while (m_context->mail_data.GetSMTPString().IsEndingPresent() && m_transmissionChannel->IsDataAvailable());
-
-				if (m_context->mail_data.GetSMTPString().IsDataEndingPresent())
-				{
-					m_context->state = SMTPStates::END_DATA;
-					m_transmissionChannel->Write(SMTPReply::OK().ToSMTPString().GetData());
-					continue;
-				}
-			}
-
-			SMTPString command;
-			do 
-			{
-				m_transmissionChannel->Read(command.GetData());
-			} while (command.Count() != 0 && command.Get(command.Count() - 1) != SMTPConstants::LF);
-
-			if (!command.IsEmpty())
-			{
-				SMTPString output;
-				auto command_parser_result = ISXSMTP::SMTPCommandParser::Parse(command, m_commands);
-
-				if (command_parser_result.error_code != SMTPReply::OK())
-				{
-					m_transmissionChannel->Write(command_parser_result.error_code.ToSMTPString().GetData());
-				}
-				else
-				{
-					command_parser_result.parsed_arguments.context = m_context;
-					command_parser_result.parsed_arguments.mailbox = m_mailbox;
-
-					auto command_result = m_commands[command_parser_result.command_verb]->Invoke(
-							command_parser_result.parsed_arguments);
-
-					for (auto reply : command_result)
-					{
-						m_transmissionChannel->Write(reply.ToSMTPString().GetData());
-					}
-				}	
-			}
+			return SMTPReply::OK().ToVector();
 		}
+
+		// client hasn't finished inputing mail data
+		return {};
 	}
+
+	m_clientInputBuffer.Append(message);
+	if (!m_clientInputBuffer.IsEndingPresent())
+	{
+		// this means client didn't finish sending command
+		return {};
+	}
+
+	auto command_parser_result = SMTPCommandParser::Parse(m_clientInputBuffer, m_commands);
+	if (command_parser_result.error_code != SMTPReply::OK())
+	{
+		// failed to parse command
+		return command_parser_result.error_code.ToVector();
+	}
+
+	// bind context and mailbox
+	command_parser_result.parsed_arguments.context = m_context;
+	command_parser_result.parsed_arguments.mailbox = m_mailbox;
+	auto command_result = m_commands[command_parser_result.command_verb]->Invoke(command_parser_result.parsed_arguments);
+	
+	m_clientInputBuffer.Clear();
+
+	SMTPString reply;
+	for (auto i : command_result)
+	{
+		reply.Append(i.ToSMTPString());
+	}
+	return reply.GetData();
+}
+
+bool ISXSMTP::SMTPSession::handleMailDataInput(std::vector<std::uint8_t> data)
+{
+	m_context->mail_data.Append(data);
+	if (m_context->mail_data.GetSMTPString().IsDataEndingPresent())
+	{
+		m_context->state = SMTPStates::END_DATA;
+		return true;
+	}
+	return false;
 }
 
 void ISXSMTP::SMTPSession::fillCommandMap()
@@ -116,3 +109,5 @@ void ISXSMTP::SMTPSession::fillCommandMap()
 	m_commands[QUIT->GetName()] = std::move(QUIT);
 	m_commands[NOOP->GetName()] = std::move(NOOP);
 }
+
+
