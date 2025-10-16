@@ -14,7 +14,8 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::MAILCommand::Invoke(SMTPCommandArgument
 	}
 	catch (...)
 	{
-		return { SMTPReply::SyntaxError() };
+		reverse_path = "";
+		//return { SMTPReply::SyntaxError() };
 	}
 
 	arguments.context->forward_path.Clear();
@@ -39,5 +40,5 @@ std::string ISXSMTP::MAILCommand::GetSyntax()
 	// I couldn't find a singe example what this params could mean or do
 	// I decided to omit them for now
 	// Specifying mail param will invoke Syntax Error, should be fixed in future
-	return  std::string("MAIL FROM:<!reverse_path!>") + SMTPConstants::CR + SMTPConstants::LF;
+	return  std::string("MAIL FROM:<[reverse_path]>") + SMTPConstants::CR + SMTPConstants::LF;
 }
