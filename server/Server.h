@@ -33,14 +33,12 @@ private:
     std::vector<std::shared_ptr<Session>> sessions;
 
     // temp
-    void print(const std::string& str);
+    std::string print(const std::string& str);
     //
     void runAcceptor();
     void setUpAcceptor();
 
-    // for session management
     void onDisconnect(std::shared_ptr<Session> session);
-    void onMessage(const std::string& str);
 };
 
 #endif //SERVER_H

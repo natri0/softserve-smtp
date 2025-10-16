@@ -7,6 +7,7 @@
 #include <mutex>
 
 constexpr std::size_t BUFFER_SIZE = 1024;
+constexpr int RECONNECT_DELAY_MS = 2000;
 
 Session::Session(std::shared_ptr<net::ip::tcp::socket> _socket) : socket(_socket)
 {
@@ -70,9 +71,8 @@ void Session::write()
                              else isWriting = false;
                          }
                          else
-                         {
-                             if (onDisconnect) onDisconnect();
-                         }
+                             if (onDisconnect && ec != net::error::operation_aborted) onDisconnect();
+
                      });
 }
 
@@ -89,13 +89,6 @@ void Session::read()
                                         onMessageReceived(std::string(buffer.data(), bytes_transferred));
                                     read();
                                 }
-                                else
-                                {
-                                    if (ec != net::error::operation_aborted)
-                                    {
-                                        if (onDisconnect)
-                                            onDisconnect();
-                                    }
-                                }
+                                else if (onDisconnect && ec != net::error::operation_aborted) onDisconnect();
                             });
 }

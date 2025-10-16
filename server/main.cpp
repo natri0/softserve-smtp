@@ -13,15 +13,18 @@ int main()
 
     std::thread client_thread_00([&]()
     {
+        client00.init();
+        client00.connect();
         client00.run();
-        // while (true) { client00.send("I am client 00!"); }
-        client00.send("I am client 00!");
+        client00.sendMail();
     });
 
     std::thread client_thread_01([&]()
     {
+        client01.init();
+        client01.connect();
         client01.run();
-        client01.send("I am client 01!");
+        client01.sendMail();
     });
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));

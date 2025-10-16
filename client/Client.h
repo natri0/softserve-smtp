@@ -13,18 +13,28 @@ public:
     Client(const std::string& host, const unsigned short port);
     ~Client();
 
+    void init();
+    void connect();
+    void reconnect();
     void run();
 
     void stop();
 
-    void send(std::string str);
+    void sendMail();
 
 private:
     bool isRunning = false;
 
+    // SMTP
+    // Mail
+    void onMessage(std::string& msg);
+
     net::io_context io;
     net::ip::tcp::endpoint server_endpoint;
     std::shared_ptr<Session> session;
+    net::steady_timer timer;
+
+    std::thread io_thread;
 };
 
 

@@ -56,9 +56,9 @@ void Server::runAcceptor()
         {
             const auto session = std::make_shared<Session>(socket);
 
-            session->setOnMessage([this](const std::string& msg)
+            session->setOnMessage([this, session](const std::string& msg)
             {
-                this->onMessage(msg);
+                session->send(this->print(msg));
             });
 
             session->setOnDisconnect([]()
@@ -106,15 +106,8 @@ void Server::onDisconnect(std::shared_ptr<Session> session)
     sessionMutex.unlock();
 }
 
-void Server::onMessage(const std::string& str)
-{
-    print(str);
-    //
-
-
-}
-
-void Server::print(const std::string& str)
+std::string Server::print(const std::string& str)
 {
     std::cout << str << std::endl;
+    return "hey";
 }
