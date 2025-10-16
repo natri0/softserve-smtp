@@ -11,12 +11,12 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::RSETCommand::Invoke(SMTPCommandArgument
 	return { SMTPReply::OK() };
 }
 
-ISXSMTP::SMTPString ISXSMTP::RSETCommand::GetName()
+std::string ISXSMTP::RSETCommand::GetName()
 {
-	return SMTPString("RSET");
+	return "RSET";
 }
 
-ISXSMTP::SMTPString ISXSMTP::RSETCommand::GetSyntax()
+std::string ISXSMTP::RSETCommand::GetSyntax()
 {
-	return SMTPString("RSET") + SMTPConstants::CR + SMTPConstants::LF;
+	return  std::string("RSET") + SMTPConstants::CR + SMTPConstants::LF;
 }

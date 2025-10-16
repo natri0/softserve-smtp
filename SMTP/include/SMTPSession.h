@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <unordered_map>
+#include <string>
 
 namespace ISXSMTP
 {
@@ -18,9 +19,9 @@ class SMTPSession
 private:
 	std::shared_ptr<ISMTPMailbox> m_mailbox;
 	std::shared_ptr<SMTPContext> m_context;
-	std::unordered_map<SMTPString, std::unique_ptr<SMTPCommandBase>> m_commands;
+	std::unordered_map<std::string, std::unique_ptr<SMTPCommandBase>> m_commands;
 
-	SMTPString m_clientInputBuffer;
+	std::string m_clientInputBuffer;
 
 public:
 	/**
@@ -38,16 +39,16 @@ public:
 
 	/**
 	 * @brief Should be called when client connects to the server
-	 * @return std::vector<std::uint8_t> data for client
+	 * @return std::string data for client
 	 */
-	std::vector<std::uint8_t> OnConnect();
+	std::string OnConnect();
 
 	/**
 	 * @brief Should be called when client sends data to the server
-	 * @param message std::vector<std::uint8_t> data from client
-	 * @return std::vector<std::uint8_t> data for client
+	 * @param message std::string data from client
+	 * @return std::string data for client
 	 */
-	std::vector<std::uint8_t> OnMessage(std::vector<std::uint8_t> message);
+	std::string OnMessage(const std::string& message);
 
 private:
 	/**
@@ -57,10 +58,13 @@ private:
 
 	/**
 	 * @brief handles mail data input
-	 * @param data std::vector<std::uint8_t> data from client
+	 * @param data std::string data from client
 	 * @return bool returns true if user finished entering mail data
 	 */
-	bool handleMailDataInput(std::vector<std::uint8_t> data);
+	bool handleMailDataInput(const std::string& data);
+
+	bool IsDataEndingPresent(const std::string& data);
+	bool IsLineEndingPresent(const std::string& data);
 };
 
 }

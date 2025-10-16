@@ -6,7 +6,7 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::EHLOCommand::Invoke(SMTPCommandArgument
 	if (arguments.context->state == SMTPStates::FINISH)
 		return { SMTPReply::BadSequenceOfCommands() };
 
-	SMTPString domain;
+	std::string domain;
 	try
 	{
 		domain = arguments.arguments.at("domain");
@@ -19,17 +19,17 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::EHLOCommand::Invoke(SMTPCommandArgument
 	arguments.context->state = SMTPStates::POST_EHLO;
 
 	return {
-		SMTPReply(250, SMTPString("<domain> greets ") + domain, true),
-		SMTPReply(250, SMTPString("HELP"))
+		SMTPReply(250, std::string("<domain> greets ") + domain, true),
+		SMTPReply(250, std::string("HELP"))
 	};
 }
 
-ISXSMTP::SMTPString ISXSMTP::EHLOCommand::GetName()
+std::string ISXSMTP::EHLOCommand::GetName()
 {
-	return SMTPString("EHLO");
+	return "EHLO";
 }
 
-ISXSMTP::SMTPString ISXSMTP::EHLOCommand::GetSyntax()
+std::string ISXSMTP::EHLOCommand::GetSyntax()
 {
-	return SMTPString("EHLO") + SMTPConstants::SP + SMTPString("!domain!") + SMTPConstants::CR + SMTPConstants::LF;
+	return std::string("EHLO !domain!") + SMTPConstants::CR + SMTPConstants::LF;
 }

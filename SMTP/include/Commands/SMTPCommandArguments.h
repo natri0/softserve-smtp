@@ -1,10 +1,11 @@
 #pragma once
 
-#include "SMTPString.h"
 #include "ISMTPMailbox.h"
 #include "SMTPContext.h"
 
 #include <unordered_map>
+#include <string>
+#include <memory>
 
 namespace ISXSMTP
 {
@@ -15,7 +16,7 @@ namespace ISXSMTP
  */
 struct SMTPCommandArguments
 {
-	std::unordered_map<SMTPString, SMTPString> arguments;
+	std::unordered_map<std::string, std::string> arguments;
 
 	std::shared_ptr<SMTPContext> context;
 	std::shared_ptr<ISMTPMailbox> mailbox;

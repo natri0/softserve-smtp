@@ -6,12 +6,12 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::VRFYCommand::Invoke(SMTPCommandArgument
 	return { SMTPReply::CommandNotImplemented() };
 }
 
-ISXSMTP::SMTPString ISXSMTP::VRFYCommand::GetName()
+std::string ISXSMTP::VRFYCommand::GetName()
 {
-	return SMTPString("VRFY");
+	return "VRFY";
 }
 
-ISXSMTP::SMTPString ISXSMTP::VRFYCommand::GetSyntax()
+std::string ISXSMTP::VRFYCommand::GetSyntax()
 {
-	return SMTPString("VRFY") + SMTPConstants::SP + SMTPString("!string!") + SMTPConstants::CR + SMTPConstants::LF;
+	return  std::string("VRFY !string!") + SMTPConstants::CR + SMTPConstants::LF;
 }

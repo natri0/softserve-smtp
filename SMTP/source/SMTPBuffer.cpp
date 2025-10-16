@@ -1,21 +1,21 @@
 #include "SMTPBuffer.h"
 
-ISXSMTP::SMTPString& ISXSMTP::SMTPBuffer::GetSMTPString()
+std::string& ISXSMTP::SMTPBuffer::GetString()
 {
 	return m_data;
 }
 
 void ISXSMTP::SMTPBuffer::Clear()
 {
-	m_data.Clear();
+	m_data.clear();
 }
 
 void ISXSMTP::SMTPBuffer::Append(std::uint8_t data)
 {
-	m_data.Append(data);
+	m_data.append(1, data);
 }
 
-void ISXSMTP::SMTPBuffer::Append(const SMTPString& data)
+void ISXSMTP::SMTPBuffer::Append(const std::string& data)
 {
-	m_data.Append(data);
+	m_data.append(data);
 }

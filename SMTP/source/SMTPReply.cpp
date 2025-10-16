@@ -2,14 +2,14 @@
 
 #include "SMTPConstants.h"
 
-ISXSMTP::SMTPReply::SMTPReply(std::uint16_t code, const SMTPString& comment, bool multi_line)
+ISXSMTP::SMTPReply::SMTPReply(std::uint16_t code, const std::string& comment, bool multi_line)
 	: m_code(code)
 	, m_comment(comment)
 	, m_multiLine(multi_line)
 {
 }
 
-ISXSMTP::SMTPReply::SMTPReply(std::uint16_t code, const SMTPString& comment)
+ISXSMTP::SMTPReply::SMTPReply(std::uint16_t code, const std::string& comment)
 	: m_code(code)
 	, m_comment(comment)
 	, m_multiLine(false)
@@ -17,7 +17,7 @@ ISXSMTP::SMTPReply::SMTPReply(std::uint16_t code, const SMTPString& comment)
 
 }
 
-ISXSMTP::SMTPString ISXSMTP::SMTPReply::GetComment() const
+std::string ISXSMTP::SMTPReply::GetComment() const
 {
 	return m_comment;
 }
@@ -27,22 +27,17 @@ std::uint16_t ISXSMTP::SMTPReply::GetCode() const
 	return m_code;
 }
 
-ISXSMTP::SMTPString ISXSMTP::SMTPReply::ToSMTPString() const
+std::string ISXSMTP::SMTPReply::ToString() const
 {
-	SMTPString result(std::to_string(m_code));
+	std::string result(std::to_string(m_code));
 	if (m_multiLine)
-		result.Append('-');
+		result.append("-");
 	else
-		result.Append(" ");
-	result.Append(m_comment);
-	result.Append(SMTPConstants::CR);
-	result.Append(SMTPConstants::LF);
+		result.append(" ");
+	result.append(m_comment);
+	result.append(1, SMTPConstants::CR);
+	result.append(1, SMTPConstants::LF);
 	return result;
-}
-
-std::vector<std::uint8_t> ISXSMTP::SMTPReply::ToVector() const
-{
-	return ToSMTPString().GetData();
 }
 
 void ISXSMTP::SMTPReply::SetMultiLine(bool value)

@@ -6,7 +6,7 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::RCPTCommand::Invoke(SMTPCommandArgument
 	if (arguments.context->state != SMTPStates::POST_MAIL && arguments.context->state != SMTPStates::POST_RCPT)
 		return { SMTPReply::BadSequenceOfCommands() };
 
-	SMTPString forward_path;
+	std::string forward_path;
 	try
 	{
 		forward_path = arguments.arguments.at("forward_path");
@@ -28,12 +28,12 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::RCPTCommand::Invoke(SMTPCommandArgument
 	return { SMTPReply::OK() };
 }
 
-ISXSMTP::SMTPString ISXSMTP::RCPTCommand::GetName()
+std::string ISXSMTP::RCPTCommand::GetName()
 {
-	return SMTPString("RCPT");
+	return "RCPT";
 }
 
-ISXSMTP::SMTPString ISXSMTP::RCPTCommand::GetSyntax()
+std::string ISXSMTP::RCPTCommand::GetSyntax()
 {
-	return SMTPString("RCPT") + SMTPConstants::SP + SMTPString("TO:") + SMTPString("<!forward_path!>") + SMTPConstants::CR + SMTPConstants::LF;;
+	return  std::string("RCPT TO:<!forward_path!>") + SMTPConstants::CR + SMTPConstants::LF;;
 }

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "SMTPString.h"
-
 #include <string>
 #include <array>
 #include <cstdint>
@@ -16,30 +14,30 @@ class SMTPReply
 {
 private:
 	std::uint16_t m_code;
-	SMTPString m_comment;
+	std::string m_comment;
 	bool m_multiLine;
 
 public:
 	/**
 	 * @brief Constructor
 	 * @param code std::uint16_t that represents reply code
-	 * @param comment SMTPString 
+	 * @param comment std::string 
 	 * @param multi_line bool flag
 	 */
-	SMTPReply(std::uint16_t code, const SMTPString& comment, bool multi_line);
+	SMTPReply(std::uint16_t code, const std::string& comment, bool multi_line);
 
 	/**
 	 * @brief Constructor
 	 * @param code std::uint16_t that represents reply code
-	 * @param comment SMTPString
+	 * @param comment std::string
 	 */
-	SMTPReply(std::uint16_t code, const SMTPString& comment);
+	SMTPReply(std::uint16_t code, const std::string& comment);
 
 	/**
 	 * @brief Returns comment associated with reply
-	 * @return SMTPString
+	 * @return std::string
 	 */
-	SMTPString GetComment() const;
+	std::string GetComment() const;
 
 	/**
 	 * @brief Returns code associated with reply
@@ -48,16 +46,10 @@ public:
 	std::uint16_t GetCode() const;
 
 	/**
-	 * @brief Returns SMTPString that ready to be send back to client
-	 * @return SMTPString
+	 * @brief Returns std::string that ready to be send back to client
+	 * @return std::string
 	 */
-	SMTPString ToSMTPString() const;
-
-	/**
-	 * @brief Returns vector from the SMTPString returned in the SMTPReply::ToSMTPString method
-	 * @return std::vector<std::uint8_t>
-	 */
-	std::vector<std::uint8_t> ToVector() const;
+	std::string ToString() const;
 
 	/**
 	 * @brief Sets multi line flag

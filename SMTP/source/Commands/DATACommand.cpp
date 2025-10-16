@@ -9,12 +9,12 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::DATACommand::Invoke(SMTPCommandArgument
 	return { SMTPReply::StartMailInput() };
 }
 
-ISXSMTP::SMTPString ISXSMTP::DATACommand::GetName()
+std::string ISXSMTP::DATACommand::GetName()
 {
 	return "DATA";
 }
 
-ISXSMTP::SMTPString ISXSMTP::DATACommand::GetSyntax()
+std::string ISXSMTP::DATACommand::GetSyntax()
 {
-	return SMTPString("DATA") + SMTPConstants::CR + SMTPConstants::LF;
+	return std::string("DATA") + SMTPConstants::CR + SMTPConstants::LF;
 }

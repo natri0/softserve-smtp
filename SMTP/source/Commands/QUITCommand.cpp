@@ -8,12 +8,12 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::QUITCommand::Invoke(SMTPCommandArgument
 	return { SMTPReply::ServiceClosing() };
 }
 
-ISXSMTP::SMTPString ISXSMTP::QUITCommand::GetName()
+std::string ISXSMTP::QUITCommand::GetName()
 {
 	return "QUIT";
 }
 
-ISXSMTP::SMTPString ISXSMTP::QUITCommand::GetSyntax()
+std::string ISXSMTP::QUITCommand::GetSyntax()
 {
-	return SMTPString("QUIT") + SMTPConstants::CR + SMTPConstants::LF;
+	return  std::string("QUIT") + SMTPConstants::CR + SMTPConstants::LF;
 }

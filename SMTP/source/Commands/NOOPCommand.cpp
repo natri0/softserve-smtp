@@ -6,12 +6,12 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::NOOPCommand::Invoke(SMTPCommandArgument
 	return { SMTPReply::OK() };
 }
 
-ISXSMTP::SMTPString ISXSMTP::NOOPCommand::GetName()
+std::string ISXSMTP::NOOPCommand::GetName()
 {
 	return "NOOP";
 }
 
-ISXSMTP::SMTPString ISXSMTP::NOOPCommand::GetSyntax()
+std::string ISXSMTP::NOOPCommand::GetSyntax()
 {
-	return SMTPString("NOOP") + SMTPConstants::SP + SMTPString("[string]") + SMTPConstants::CR + SMTPConstants::LF;
+	return  std::string("NOOP [string]") + SMTPConstants::CR + SMTPConstants::LF;
 }

@@ -2,7 +2,6 @@
 
 #include "Commands/SMTPCommandArguments.h"
 #include "Commands/SMTPCommandBase.h"
-#include "SMTPString.h"
 
 #include <vector>
 
@@ -17,7 +16,7 @@ struct SMTPCommandParserResult
 	/**
 	 * @brief First word of the command denoted by <SP>
 	 */
-	SMTPString command_verb;
+	std::string command_verb;
 
 	/**
 	 * @brief SMTPCommandParser fill map with arguments passed with the command
@@ -44,75 +43,75 @@ public:
 	
 	/**
 	 * @brief Parses SMTP command. SMTP command are case insensitive
-	 * @param command SMTPString that contains command
+	 * @param command std::string that contains command
 	 * @param commands std::unordered_map with command available in the SMTPSession
 	 * @return SMTPCommandParserResult 
 	 */
 	static SMTPCommandParserResult Parse(
-			SMTPString command,
-			const std::unordered_map<SMTPString, std::unique_ptr<SMTPCommandBase>>& commands);
+			const std::string& command,
+			const std::unordered_map<std::string, std::unique_ptr<SMTPCommandBase>>& commands);
 
 private:
 	/**
 	 * @brief Parses command verb from the given command
-	 * @param command SMTPString
+	 * @param command std::string
 	 * @return index in the command where command verb ends
 	 */
-	static size_t findCommandVerbIndex(const SMTPString& command);
+	static size_t findCommandVerbIndex(const std::string& command);
 
 	/**
 	 * @brief reads argument name from the command syntax
-	 * @param command_syntax SMTPString
+	 * @param command_syntax std::string
 	 * @param start index where argument name starts
-	 * @return SMTPString with argument name
+	 * @return std::string with argument name
 	 */
-	static SMTPString readArgName(const SMTPString& command_syntax, size_t& start);
+	static std::string readArgName(const std::string& command_syntax, size_t& start);
 
 	/**
 	 * @brief reads argument value from the command
-	 * @param command SMTPString
+	 * @param command std::string
 	 * @param start index where argument value starts
-	 * @return SMTPString with argument value
+	 * @return std::string with argument value
 	 */
-	static SMTPString readArgValue(const SMTPString& command, size_t& start);
+	static std::string readArgValue(const std::string& command, size_t& start);
 
 	/**
 	 * @brief Handles parsing of mandatory arguments
-	 * @param command SMTPString
+	 * @param command std::string
 	 * @param command_index size_t&
-	 * @param command_syntax SMTPString
+	 * @param command_syntax std::string
 	 * @param syntax_index size_t& 
 	 * @param result SMTPCommandParserResult&
 	 */
 	static void handleMandatoryArgument(
-			const SMTPString& command, size_t& command_index,
-			const SMTPString& command_syntax, size_t& syntax_index,
+			const std::string& command, size_t& command_index,
+			const std::string& command_syntax, size_t& syntax_index,
 		SMTPCommandParserResult& result);
 
 	/**
 	 * @brief Handles parsing of optional arguments
-	 * @param command SMTPString
+	 * @param command std::string
 	 * @param command_index size_t&
-	 * @param command_syntax SMTPString
+	 * @param command_syntax std::string
 	 * @param syntax_index size_t
 	 * @param result SMTPCommandParserResult&
 	 */
 	static void handleOptionalArgument(
-		const SMTPString& command, size_t& command_index,
-		const SMTPString& command_syntax, size_t& syntax_index,
+		const std::string& command, size_t& command_index,
+		const std::string& command_syntax, size_t& syntax_index,
 		SMTPCommandParserResult& result);
 
 	/**
 	 * @brief Handles case when command deviates from command syntax
-	 * @param command SMTPString
+	 * @param command std::string
 	 * @param command_index size_t&
-	 * @param command_syntax SMTPString
+	 * @param command_syntax std::string
 	 * @param syntax_index size_t&
 	 * @param result SMTPCommandParserResult&
 	 */
 	static void handleSyntaxDeviation(
-		const SMTPString& command, size_t& command_index,
-		const SMTPString& command_syntax, size_t& syntax_index,
+		const std::string& command, size_t& command_index,
+		const std::string& command_syntax, size_t& syntax_index,
 		SMTPCommandParserResult& result);
 };
 

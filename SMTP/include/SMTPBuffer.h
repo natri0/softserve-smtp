@@ -1,9 +1,7 @@
 #pragma once
 
-#include "SMTPString.h"
-
-#include <vector>
 #include <cstdint>
+#include <string>
 
 namespace ISXSMTP
 {
@@ -14,14 +12,14 @@ namespace ISXSMTP
 class SMTPBuffer
 {
 private:
-	SMTPString m_data;
+	std::string m_data;
 
 public:
 	/**
 	 * @brief Appends data to the buffer
-	 * @param data SMTPString
+	 * @param data std::string
 	 */
-	void Append(const SMTPString& data);
+	void Append(const std::string& data);
 
 	/**
 	 * @brief Appends one character to the buffer
@@ -30,10 +28,10 @@ public:
 	void Append(std::uint8_t data);
 
 	/**
-	 * @brief Returns reference to SMTPString that used to implement SMTPBuffer
-	 * @return SMTPString&
+	 * @brief Returns reference to std::string that used to store data in SMTPBuffer
+	 * @return std::string&
 	 */
-	SMTPString& GetSMTPString();
+	std::string& GetString();
 
 	/**
 	 * @brief Clears the data in the buffer

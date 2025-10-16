@@ -18,8 +18,6 @@ ISXSMTP::SMTPSession::SMTPSession(std::shared_ptr<ISMTPMailbox> mailbox)
 {
 	fillCommandMap();
 	m_context = std::make_shared<SMTPContext>();
-
-	//process();
 }
 
 bool ISXSMTP::SMTPSession::IsFinished()
@@ -29,27 +27,27 @@ bool ISXSMTP::SMTPSession::IsFinished()
 	return false;
 }
 
-std::vector<std::uint8_t> ISXSMTP::SMTPSession::OnConnect()
+std::string ISXSMTP::SMTPSession::OnConnect()
 {
-	return SMTPReply::ServiceReady().ToVector();
+	return SMTPReply::ServiceReady().ToString();
 }
 
-std::vector<std::uint8_t> ISXSMTP::SMTPSession::OnMessage(std::vector<std::uint8_t> message)
+std::string ISXSMTP::SMTPSession::OnMessage(const std::string& message)
 {
 	if (m_context->state == SMTPStates::POST_DATA)
 	{
 		// handle mail data
 		if (handleMailDataInput(message))
 		{
-			return SMTPReply::OK().ToVector();
+			return SMTPReply::OK().ToString();
 		}
 
-		// client hasn't finished inputing mail data
+		// client hasn't finished inputting mail data
 		return {};
 	}
 
-	m_clientInputBuffer.Append(message);
-	if (!m_clientInputBuffer.IsEndingPresent())
+	m_clientInputBuffer.append(message);
+	if (!IsLineEndingPresent(m_clientInputBuffer))
 	{
 		// this means client didn't finish sending command
 		return {};
@@ -59,32 +57,64 @@ std::vector<std::uint8_t> ISXSMTP::SMTPSession::OnMessage(std::vector<std::uint8
 	if (command_parser_result.error_code != SMTPReply::OK())
 	{
 		// failed to parse command
-		return command_parser_result.error_code.ToVector();
+		return command_parser_result.error_code.ToString();
 	}
 
 	// bind context and mailbox
 	command_parser_result.parsed_arguments.context = m_context;
 	command_parser_result.parsed_arguments.mailbox = m_mailbox;
+	// invoke command
 	auto command_result = m_commands[command_parser_result.command_verb]->Invoke(command_parser_result.parsed_arguments);
 	
-	m_clientInputBuffer.Clear();
+	m_clientInputBuffer.clear();
 
-	SMTPString reply;
+	std::string reply;
 	for (auto i : command_result)
 	{
-		reply.Append(i.ToSMTPString());
+		reply.append(i.ToString());
 	}
-	return reply.GetData();
+	return reply;
 }
 
-bool ISXSMTP::SMTPSession::handleMailDataInput(std::vector<std::uint8_t> data)
+bool ISXSMTP::SMTPSession::handleMailDataInput(const std::string& data)
 {
 	m_context->mail_data.Append(data);
-	if (m_context->mail_data.GetSMTPString().IsDataEndingPresent())
+	if (IsDataEndingPresent(m_context->mail_data.GetString()))
 	{
 		m_context->state = SMTPStates::END_DATA;
 		return true;
 	}
+	return false;
+}
+
+bool ISXSMTP::SMTPSession::IsDataEndingPresent(const std::string& data)
+{
+	if (data.size() >= 5)
+	{
+		if (data[data.size() - 1] == ISXSMTP::SMTPConstants::LF &&
+			data[data.size() - 2] == ISXSMTP::SMTPConstants::CR &&
+			data[data.size() - 3] == '.' &&
+			data[data.size() - 4] == ISXSMTP::SMTPConstants::LF &&
+			data[data.size() - 5] == ISXSMTP::SMTPConstants::CR)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool ISXSMTP::SMTPSession::IsLineEndingPresent(const std::string& data)
+{
+	if (data.size() >= 2)
+	{
+		if (data[data.size() - 1] == ISXSMTP::SMTPConstants::LF &&
+			data[data.size() - 2] == ISXSMTP::SMTPConstants::CR)
+		{
+			return true;
+		}
+	}
+
 	return false;
 }
 

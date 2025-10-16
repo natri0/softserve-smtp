@@ -6,12 +6,12 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::HELPCommand::Invoke(SMTPCommandArgument
 	return { SMTPReply::CommandNotImplemented() };
 }
 
-ISXSMTP::SMTPString ISXSMTP::HELPCommand::GetName()
+std::string ISXSMTP::HELPCommand::GetName()
 {
-	return SMTPString("HELP");
+	return "HELP";
 }
 
-ISXSMTP::SMTPString ISXSMTP::HELPCommand::GetSyntax()
+std::string ISXSMTP::HELPCommand::GetSyntax()
 {
-	return SMTPString("HELP") + SMTPConstants::SP + SMTPString("[string]") + SMTPConstants::CR + SMTPConstants::LF;
+	return  std::string("HELP [string]") + SMTPConstants::CR + SMTPConstants::LF;
 }

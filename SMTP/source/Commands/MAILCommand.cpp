@@ -7,7 +7,7 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::MAILCommand::Invoke(SMTPCommandArgument
 	if (arguments.context->state == SMTPStates::FINISH || arguments.context->state == SMTPStates::INITIAL)
 		return { SMTPReply::BadSequenceOfCommands() };
 
-	SMTPString reverse_path;
+	std::string reverse_path;
 	try
 	{
 		reverse_path = arguments.arguments.at("reverse_path");
@@ -28,16 +28,16 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::MAILCommand::Invoke(SMTPCommandArgument
 	return { SMTPReply::OK() };
 }
 
-ISXSMTP::SMTPString ISXSMTP::MAILCommand::GetName()
+std::string ISXSMTP::MAILCommand::GetName()
 {
-	return SMTPString("MAIL");
+	return std::string("MAIL");
 }
 
-ISXSMTP::SMTPString ISXSMTP::MAILCommand::GetSyntax()
+std::string ISXSMTP::MAILCommand::GetSyntax()
 {
 	// mail command should also accept mail params but since 
 	// I couldn't find a singe example what this params could mean or do
 	// I decided to omit them for now
 	// Specifying mail param will invoke Syntax Error, should be fixed in future
-	return SMTPString("MAIL") + SMTPConstants::SP + SMTPString("FROM:") + SMTPString("<!reverse_path!>") + SMTPConstants::CR + SMTPConstants::LF;
+	return  std::string("MAIL FROM:<!reverse_path!>") + SMTPConstants::CR + SMTPConstants::LF;
 }

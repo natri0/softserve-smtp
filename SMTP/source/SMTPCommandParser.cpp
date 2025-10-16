@@ -2,10 +2,11 @@
 #include "SMTPConstants.h"
 
 #include <iostream>
+#include <algorithm>
 
 ISXSMTP::SMTPCommandParserResult ISXSMTP::SMTPCommandParser::Parse(
-		SMTPString command,
-		const std::unordered_map<SMTPString, std::unique_ptr<SMTPCommandBase>>& commands)
+		const std::string& command,
+		const std::unordered_map<std::string, std::unique_ptr<SMTPCommandBase>>& commands)
 {
 	/*
 	* 1. Find command verb
@@ -15,14 +16,14 @@ ISXSMTP::SMTPCommandParserResult ISXSMTP::SMTPCommandParser::Parse(
 
 	// First word in the command followed by the <SP> is a command verb
 	size_t command_verb_index = findCommandVerbIndex(command);
-	if (command_verb_index == SMTPString::NPOS)
+	if (command_verb_index == std::string::npos)
 	{
 		return { {}, {}, SMTPReply::SyntaxError() };
 	}
 
-	SMTPString command_verb = command.GetRange(0, command_verb_index);
-	command_verb.ToUpper();
-	SMTPString command_syntax;
+	std::string command_verb = std::string(command.begin(), command.begin() + command_verb_index);
+	std::transform(command_verb.begin(), command_verb.end(), command_verb.begin(), ::toupper);
+	std::string command_syntax;
 	try
 	{
 		command_syntax = commands.at(command_verb)->GetSyntax();
@@ -33,7 +34,7 @@ ISXSMTP::SMTPCommandParserResult ISXSMTP::SMTPCommandParser::Parse(
 	}
 
 	SMTPCommandParserResult result = { command_verb, {}, SMTPReply::OK() };
-	for (size_t i = 0, j = 0; i < command.Count() && j < command_syntax.Count(); i++, j++)
+	for (size_t i = 0, j = 0; i < command.size() && j < command_syntax.size(); i++, j++)
 	{
 		if (command_syntax[j] == '!') // mandatory argument found
 		{
@@ -67,58 +68,58 @@ ISXSMTP::SMTPCommandParserResult ISXSMTP::SMTPCommandParser::Parse(
 	return result;
 }
 
-size_t ISXSMTP::SMTPCommandParser::findCommandVerbIndex(const SMTPString& command)
+size_t ISXSMTP::SMTPCommandParser::findCommandVerbIndex(const std::string& command)
 {
-	size_t command_verb_index = command.FindFirstOf(SMTPConstants::SP);
-	if (command_verb_index == SMTPString::NPOS)
+	size_t command_verb_index = command.find_first_of(SMTPConstants::SP);
+	if (command_verb_index == std::string::npos)
 	{
 		// this could mean that command have no arguments
 		// in this case string should end with <CLRF>
 
-		command_verb_index = command.FindFirstOf(SMTPString({ SMTPConstants::CR, SMTPConstants::LF }));
-		if (command_verb_index == SMTPString::NPOS)
+		command_verb_index = command.find_first_of(std::string({ SMTPConstants::CR, SMTPConstants::LF }));
+		if (command_verb_index == std::string::npos)
 		{
-			return SMTPString::NPOS;
+			return std::string::npos;
 		}
 	}
 	return command_verb_index;
 }
 
-ISXSMTP::SMTPString ISXSMTP::SMTPCommandParser::readArgName(const SMTPString& command_syntax, size_t& start)
+std::string ISXSMTP::SMTPCommandParser::readArgName(const std::string& command_syntax, size_t& start)
 {
-	SMTPString arg_name;
+	std::string arg_name;
 	std::uint8_t end_char = command_syntax[start];
 	if (end_char == '[')
 		end_char = ']';
 	start++;
 	while (command_syntax[start] != end_char)
 	{
-		if (start >= command_syntax.Count())
+		if (start >= command_syntax.size())
 		{
 			// something wrong with command syntax
 			return {};
 		}
 
-		arg_name.Append(command_syntax[start]);
+		arg_name.append(1, command_syntax[start]);
 		start++;
 	}
 	return arg_name;
 }
 
-ISXSMTP::SMTPString ISXSMTP::SMTPCommandParser::readArgValue(const SMTPString& command, size_t& start)
+std::string ISXSMTP::SMTPCommandParser::readArgValue(const std::string& command, size_t & start)
 {
-	SMTPString arg_value;
+	std::string arg_value;
 	if (command[start] == '\"')
 	{
 		start++;
 		while (command[start] != '\"')
 		{
-			if (start >= command.Count())
+			if (start >= command.size())
 			{
 				return {};
 			}
 
-			arg_value.Append(command[start]);
+			arg_value.append(1, command[start]);
 			start++;
 		}
 	}
@@ -126,7 +127,7 @@ ISXSMTP::SMTPString ISXSMTP::SMTPCommandParser::readArgValue(const SMTPString& c
 	{
 		while (command[start] != SMTPConstants::SP && command[start] != '>')
 		{
-			if (start >= command.Count())
+			if (start >= command.size())
 			{
 				return {};
 			}
@@ -137,7 +138,7 @@ ISXSMTP::SMTPString ISXSMTP::SMTPCommandParser::readArgValue(const SMTPString& c
 				break;
 			}
 
-			arg_value.Append(command[start]);
+			arg_value.append(1, command[start]);
 			start++;
 		}
 	}
@@ -145,9 +146,9 @@ ISXSMTP::SMTPString ISXSMTP::SMTPCommandParser::readArgValue(const SMTPString& c
 }
 
 void ISXSMTP::SMTPCommandParser::handleMandatoryArgument(
-	const SMTPString& command,
+	const std::string& command,
 	size_t& command_index,
-	const SMTPString&
+	const std::string&
 	command_syntax,
 	size_t& syntax_index,
 	SMTPCommandParserResult& result)
@@ -156,16 +157,16 @@ void ISXSMTP::SMTPCommandParser::handleMandatoryArgument(
 	// and the next word in command should be written as value to that argument
 
 	// 1. read arg name
-	SMTPString arg_name = readArgName(command_syntax, syntax_index);
-	if (arg_name.IsEmpty())
+	std::string arg_name = readArgName(command_syntax, syntax_index);
+	if (arg_name.empty())
 	{
 		result.error_code = SMTPReply(541, "Service failed due to internal error");
 		return;
 	}		
 
 	// 2. read arg value
-	SMTPString arg_value = readArgValue(command, command_index);
-	if (arg_value.IsEmpty())
+	std::string arg_value = readArgValue(command, command_index);
+	if (arg_value.empty())
 	{
 		result.error_code = SMTPReply::SyntaxError();
 		return;
@@ -176,9 +177,9 @@ void ISXSMTP::SMTPCommandParser::handleMandatoryArgument(
 }
 
 void ISXSMTP::SMTPCommandParser::handleOptionalArgument(
-		const SMTPString& command,
+		const std::string& command,
 		size_t& command_index,
-		const SMTPString& command_syntax,
+		const std::string& command_syntax,
 		size_t& syntax_index,
 		SMTPCommandParserResult& result)
 {
@@ -186,16 +187,16 @@ void ISXSMTP::SMTPCommandParser::handleOptionalArgument(
 	// and the next word in command may be written as value to that argument
 
 	// 1. read arg name
-	SMTPString arg_name = readArgName(command_syntax, syntax_index	);
-	if (arg_name.IsEmpty())
+	std::string arg_name = readArgName(command_syntax, syntax_index	);
+	if (arg_name.empty())
 	{
 		result.error_code = SMTPReply(541, "Service failed due to internal error");
 		return;
 	}	
 
 	// 2. read arg value
-	SMTPString arg_value = readArgValue(command, command_index);
-	if (!arg_value.IsEmpty())
+	std::string arg_value = readArgValue(command, command_index);
+	if (!arg_value.empty())
 	{
 		result.parsed_arguments.arguments[arg_name] = arg_value;
 	}
@@ -204,9 +205,9 @@ void ISXSMTP::SMTPCommandParser::handleOptionalArgument(
 }
 
 void ISXSMTP::SMTPCommandParser::handleSyntaxDeviation(
-		const SMTPString& command, 
+		const std::string& command, 
 		size_t& command_index,
-		const SMTPString& command_syntax,
+		const std::string& command_syntax,
 		size_t& syntax_index,
 		SMTPCommandParserResult& result)
 {
@@ -226,7 +227,7 @@ void ISXSMTP::SMTPCommandParser::handleSyntaxDeviation(
 		// parser should return syntax error
 
 		// search for mandatory args in command syntax
-		while (syntax_index < command_syntax.Count())
+		while (syntax_index < command_syntax.size())
 		{
 			if (command_syntax[syntax_index] == '!')
 			{

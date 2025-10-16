@@ -25,15 +25,15 @@ public:
 
 	/**
 	 * @brief Returns command verb (first word of the command ended by <SP>)
-	 * @return SMTPString
+	 * @return std::string
 	 */
-	virtual SMTPString GetName() = 0;
+	virtual std::string GetName() = 0;
 
 	/**
 	 * @brief Returns command syntax that used in the SMTPCommandParser to parse the command
-	 * @return SMTPString
+	 * @return std::string
 	 */
-	virtual SMTPString GetSyntax() = 0;
+	virtual std::string GetSyntax() = 0;
 };
 
 }

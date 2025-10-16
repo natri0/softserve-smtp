@@ -1,6 +1,5 @@
 #pragma once
 
-#include "SMTPString.h"
 #include "SMTPBuffer.h"
 
 namespace ISXSMTP
@@ -27,7 +26,7 @@ public:
 	 * @param localpart of a recipient address
 	 * @return bool
 	 */
-	virtual bool IsMailboxAvailable(SMTPString localpart) = 0;
+	virtual bool IsMailboxAvailable(const std::string& localpart) = 0;
 
 	// this method should accept a part of an name and return 
 	// full user name and user address
@@ -35,18 +34,18 @@ public:
 	/**
 	 * @brief This method accepts a part of an name or localpart of an address 
 		and returns all users that matches 
-	 * @param request SMTPString with known part
-	 * @return SMTPString with one or multiple users
+	 * @param request std::string with known part
+	 * @return std::string with one or multiple users
 	 */
-	virtual SMTPString SuggestAddress(SMTPString request) = 0;
+	virtual std::string SuggestAddress(const std::string& request) = 0;
 
 	/**
 	 * @brief This method accepts address that represents mailing list 
 	 *	and returns all addresses that corresponds to that mailing list
 	 * @param mail_list_address address of a mailing list
-	 * @return SMTPString with addresses
+	 * @return std::string with addresses
 	 */
-	virtual SMTPString ExpandMailingList(SMTPString mail_list_address) = 0;
+	virtual std::string ExpandMailingList(const std::string& mail_list_address) = 0;
 };
 
 }

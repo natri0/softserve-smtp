@@ -11,8 +11,8 @@ class NOOPCommand : public SMTPCommandBase
 {
 public:
 	std::vector<SMTPReply> Invoke(SMTPCommandArguments arguments) override;
-	SMTPString GetName() override;
-	SMTPString GetSyntax() override;
+	std::string GetName() override;
+	std::string GetSyntax() override;
 };
 
 }

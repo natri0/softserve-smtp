@@ -7,24 +7,12 @@
 #include <mutex>
 #include <memory>
 
-void writeToConsole(std::vector<std::uint8_t> data)
+void writeToConsole(const std::string& data)
 {
 	for (auto i : data)
 	{
 		std::cout << i;
 	}
-}
-
-std::vector<std::uint8_t> writeToSession(const std::string& msg)
-{
-	std::cout << msg << std::endl;
-	std::vector<std::uint8_t> data(msg.begin(), msg.end());
-	data.push_back(ISXSMTP::SMTPConstants::CR);
-	data.push_back(ISXSMTP::SMTPConstants::LF);
-	data.push_back('.');
-	data.push_back(ISXSMTP::SMTPConstants::CR);
-	data.push_back(ISXSMTP::SMTPConstants::LF);
-	return data;
 }
 
 int main(void)
@@ -39,12 +27,17 @@ int main(void)
 	SMTPSession session(nullptr);
 
 	writeToConsole(session.OnConnect());
-	writeToConsole(session.OnMessage(writeToSession("ehlo test")));
-	writeToConsole(session.OnMessage(writeToSession("mail from:<test>")));
-	writeToConsole(session.OnMessage(writeToSession("rcpt to:<test>")));
-	writeToConsole(session.OnMessage(writeToSession("data")));
-	writeToConsole(session.OnMessage(writeToSession("test mail")));
-	writeToConsole(session.OnMessage(writeToSession("quit")));
+	writeToConsole(session.OnMessage(std::string("ehlo test")		 + SMTPConstants::CR + SMTPConstants::LF));
+	writeToConsole(session.OnMessage(std::string("mail from:<test>") + SMTPConstants::CR + SMTPConstants::LF));
+	writeToConsole(session.OnMessage(std::string("rcpt to:<test>")	 + SMTPConstants::CR + SMTPConstants::LF));
+	writeToConsole(session.OnMessage(std::string("data")			 + SMTPConstants::CR + SMTPConstants::LF));
+	writeToConsole(session.OnMessage(std::string("test mail")		 + SMTPConstants::CR + SMTPConstants::LF + '.' +SMTPConstants::CR + SMTPConstants::LF));
+	writeToConsole(session.OnMessage(std::string("quit")			 + SMTPConstants::CR + SMTPConstants::LF));
+
+	//if (session.IsFinished())
+	//{
+	//	// server should shutdown connection
+	//}
 
 	//SMTPString str(std::string("test"));
 	//SMTPString sub_str(std::string("st"));

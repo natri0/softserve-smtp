@@ -7,7 +7,7 @@
  */
 namespace ISXSMTP::SMTPConstants
 {
-constexpr std::uint8_t LF = { 0x0A };
-constexpr std::uint8_t CR = { 0x0D };
-constexpr std::uint8_t SP = { 0x20 };
+constexpr char LF = { '\012'};
+constexpr char CR = { '\015'};
+constexpr char SP = { '\040'};
 }
