@@ -41,21 +41,26 @@ bool Session::disconnect()
     return true;
 }
 
-void Session::run()
+bool Session::run()
 {
+    if (isRunning) return false;
+    isRunning = true;
+
     try
     {
         read();
     }
     catch (const boost::system::system_error& e) { if (onDisconnect) onDisconnect(); }
+    return true;
 }
 
-void Session::send(const std::string& data)
+bool Session::send(const std::string& data)
 {
-    if (!socket->is_open()) return;
+    if (!socket->is_open()) return false;
 
     writeQueue.push_back(data);
     if (!isWriting) write();
+    return true;
 };
 
 void Session::write()

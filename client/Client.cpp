@@ -19,7 +19,15 @@ Client::~Client()
     stop();
 }
 
-void Client::init()
+bool Client::start()
+{
+    if (!init()) return false;
+    if (!connect()) return false;
+    if (!run()) return false;
+    return true;
+}
+
+bool Client::init()
 {
     session->setOnMessage([this](const std::string& msg)
     {
@@ -29,14 +37,20 @@ void Client::init()
     });
 
     session->setOnDisconnect([this]() { reconnect(); });
+
+    return true;
 }
 
-void Client::connect()
+bool Client::connect()
 {
+    if (session->isConnected()) return false;
+
     if (!session->connect(server_endpoint))
     {
         reconnect();
+        return false;
     }
+    return true;
 }
 
 void Client::reconnect()
@@ -49,17 +63,18 @@ void Client::reconnect()
 }
 
 
-void Client::run()
+bool Client::run()
 {
-    if (!session->isConnected()) return;
+    if (!session->isConnected()) return false;
 
-    if (isRunning) return;
+    if (isRunning) return false;
     isRunning = true;
 
     {
         session->run();
         io_thread = std::thread([this]() { io.run(); });
     }
+    return true;
 };
 
 void Client::sendMail()
@@ -69,12 +84,14 @@ void Client::sendMail()
     session->send("EHLO");
 }
 
-void Client::stop()
+bool Client::stop()
 {
-    if (!isRunning) return;
+    if (!isRunning) return false;
     isRunning = false;
 
     session->disconnect();
-    io_thread.join();
     io.stop();
+    if (io_thread.joinable()) io_thread.join();
+
+    return true;
 }

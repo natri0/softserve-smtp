@@ -13,17 +13,18 @@ public:
     Client(const std::string& host, const unsigned short port);
     ~Client();
 
-    void init();
-    void connect();
-    void reconnect();
-    void run();
-
-    void stop();
+    bool stop();
+    bool start();
 
     void sendMail();
 
 private:
     bool isRunning = false;
+    void reconnect();
+
+    bool init();
+    bool connect();
+    bool run();
 
     // SMTP
     // Mail

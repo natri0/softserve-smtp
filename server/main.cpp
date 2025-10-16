@@ -4,7 +4,7 @@
 int main()
 {
     Server server;
-    std::thread server_thread([&]() { server.run(); });
+    std::thread server_thread([&]() { server.init(); server.run(); });
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
@@ -13,17 +13,13 @@ int main()
 
     std::thread client_thread_00([&]()
     {
-        client00.init();
-        client00.connect();
-        client00.run();
+        client00.start();
         client00.sendMail();
     });
 
     std::thread client_thread_01([&]()
     {
-        client01.init();
-        client01.connect();
-        client01.run();
+        client01.start();
         client01.sendMail();
     });
 

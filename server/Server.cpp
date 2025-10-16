@@ -13,15 +13,15 @@ Server::~Server()
     stopServer();
 }
 
-void Server::initServer()
+bool Server::init()
 {
     // initialization from config
 
-    setUpAcceptor();
-    runAcceptor();
+    if (!setUpAcceptor()) return false;
+    return true;
 }
 
-void Server::stopServer()
+bool Server::stopServer()
 {
     boost::system::error_code ec;
 
@@ -37,17 +37,21 @@ void Server::stopServer()
     sessions.clear();
 
     io.stop();
+    return true;
 }
 
-void Server::run()
+bool Server::run()
 {
-    initServer();
+    if (!acceptor.is_open()) return false;
+    runAcceptor();
+
     io.run();
+
+    return true;
 }
 
 void Server::runAcceptor()
 {
-    if (!acceptor.is_open()) return;
     auto socket = std::make_shared<net::ip::tcp::socket>(io);
 
     acceptor.async_accept(*socket, [this, socket](const boost::system::error_code& ec)
@@ -78,7 +82,7 @@ void Server::runAcceptor()
     });
 }
 
-void Server::setUpAcceptor()
+bool Server::setUpAcceptor()
 {
     acceptor.open(net::ip::tcp::v6());
 
@@ -91,10 +95,11 @@ void Server::setUpAcceptor()
     if (ec)
     {
         std::cerr << "Bind failed: " << ec.message() << std::endl;
-        return;
+        return false;
     }
 
     acceptor.listen();
+    return true;
 }
 
 void Server::onDisconnect(std::shared_ptr<Session> session)

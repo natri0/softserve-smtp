@@ -13,12 +13,12 @@ public:
     Server();
     ~Server();
 
-    void stopServer();
-    void run();
+    bool init();
+
+    bool stopServer();
+    bool run();
 
 private:
-    void initServer();
-
     boost::asio::io_context io;
     std::mutex sessionMutex;
 
@@ -36,7 +36,7 @@ private:
     std::string print(const std::string& str);
     //
     void runAcceptor();
-    void setUpAcceptor();
+    bool setUpAcceptor();
 
     void onDisconnect(std::shared_ptr<Session> session);
 };

@@ -31,8 +31,8 @@ public:
     void setOnDisconnect(OnDisconnect cb) noexcept { onDisconnect = std::move(cb); };
 
     // functional
-    void run();
-    void send(const std::string& data);
+    bool run();
+    bool send(const std::string& data);
 
     // getters
     [[nodiscard]] bool isConnected() const noexcept { return socket->is_open(); }
@@ -46,6 +46,7 @@ private:
     std::array<char, 1024> buffer;
     std::deque<std::string> writeQueue;
     bool isWriting = false;
+    bool isRunning = false;
 
     std::shared_ptr<net::ip::tcp::socket> socket;
 
