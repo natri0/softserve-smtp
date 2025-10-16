@@ -13,9 +13,7 @@ find_package(Threads REQUIRED)
 
 # Add executable for the server
 add_executable(TestServer
-    TestConnection/ServerFromTestClient.cpp
-    src/ThreadPool.cpp
-    src/SMTPSession.cpp
+        src/ThreadPool.cpp
 )
 
 # Settings for TestServer: optimization, Threads
