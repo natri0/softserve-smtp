@@ -1,4 +1,15 @@
-cmake_minimum_required(VERSION 3.30)
-project(SSL)
+add_library(SSL
+        CryptoManager.cpp
+        KeyExchanger.cpp
+        SSLContextFactory.cpp
+)
 
-set(CMAKE_CXX_STANDARD 23)
+target_include_directories(SSL PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(SSL PUBLIC
+        Boost_headers
+        OpenSSL::SSL
+        OpenSSL::Crypto
+)
