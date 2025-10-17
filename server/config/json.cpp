@@ -206,5 +206,6 @@ std::optional<json::Value> json::visit_element(const char *&string) {
     if (auto str = visit_string(string); str.has_value()) return { std::move(*str) };
     if (auto obj = visit_object(string); obj.has_value()) return { std::move(*obj) };
 
-    throw BadJson(std::format("failed to parse json: '{}'", string));
+    // todo: log about invalid json
+    return {};
 }
