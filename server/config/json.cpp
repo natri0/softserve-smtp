@@ -77,7 +77,7 @@ std::optional<std::string> json::visit_string(const char *&string) {
                     case 'r': bytes[0] = '\r'; break;
                     case 't': bytes[0] = '\t'; break;
                     case 'u': {
-                        strncpy(bytes, string + next_escape_or_quote, to_skip = 4);
+                        strncpy(bytes, string + next_escape_or_quote + 2, 4);
                         if (!ishexnumber(bytes[0]) || !ishexnumber(bytes[1]) || !ishexnumber(bytes[2]) || !ishexnumber(bytes[3])) {
                             string = begin;
                             return {};
@@ -90,6 +90,7 @@ std::optional<std::string> json::visit_string(const char *&string) {
                             return {};
                         }
 
+                        to_skip = 5; // u0123
                         break;
                     }
                     default: { string = begin; return {}; }
