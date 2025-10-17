@@ -7,6 +7,9 @@
 
 #include "../networking/Session.h"
 #include <mutex>
+#include <condition_variable>
+#include <memory>
+#include <vector>
 
 class ThreadPool;
 
@@ -16,35 +19,34 @@ public:
     ~Server();
 
     bool init();
-
-    bool stopServer();
-    bool run();
+    bool stop();
+    bool restart();
+    void run();
 
 private:
-    std::shared_ptr<boost::asio::io_context> io;
-    std::mutex sessionMutex;
-    net::executor_work_guard<boost::asio::io_context::executor_type> work;
+    // SMTP
+    // Parser
+    // Logger
 
-    // think about mechanism how to stop server manually
+    std::shared_ptr<boost::asio::io_context> io;
+    net::executor_work_guard<boost::asio::io_context::executor_type> work;
+    net::ip::tcp::acceptor acceptor;
+    unsigned short port = 12345; // temporary value: waiting for parser
+
+    std::vector<std::shared_ptr<Session>> sessions;
+    std::mutex sessionMutex;
+
+    void runAcceptor();
+    bool setUpAcceptor();
+
+    std::unique_ptr<ThreadPool> threadPool;
     bool isStopping = false;
     std::condition_variable mainThreadCV;
     std::mutex mainThreadMutex;
 
-    // SMTP
-    // Parser
-    std::unique_ptr<ThreadPool> threadPool;
-
-    // temporary value: waiting for parser
-    unsigned short port = 12345;
-    net::ip::tcp::acceptor acceptor;
-
-    std::vector<std::shared_ptr<Session>> sessions;
-
     // temp
     std::string print(const std::string& str);
     //
-    void runAcceptor();
-    bool setUpAcceptor();
 };
 
 #endif //SERVER_H

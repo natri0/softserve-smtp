@@ -11,7 +11,7 @@
 class Client
 {
 public:
-    Client(const std::string& host, const unsigned short port);
+    Client(const std::string& host, unsigned short port);
     ~Client();
 
     bool stop();
@@ -28,7 +28,7 @@ private:
     bool run();
 
     // SMTP
-    // Mail
+    // Logger
     void onMessage(std::string& msg);
 
     net::io_context io;

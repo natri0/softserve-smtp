@@ -17,28 +17,18 @@ Session::~Session() { disconnect(); }
 
 bool Session::connect(const net::ip::tcp::endpoint& endpoint)
 {
-    try
+    if (socket->is_open()) socket->close();
+    // socket->connect(endpoint);
+    socket->async_connect(endpoint, [this](const boost::system::error_code& ec)
     {
-        if (socket->is_open()) socket->close();
-        // socket->connect(endpoint);
-        socket->async_connect(endpoint, [](const boost::system::error_code& ec)
+        if (!ec) std::cout << "Connected!" << std::endl;
+        else
         {
-            if (!ec)
-            {
-                std::cout << "Connected!" << std::endl;
-            }
-            else
-            {
-                std::cerr << "Connect failed: " << ec.message() << std::endl;
-            }
-        });
-        return true;
-    }
-    catch (const boost::system::system_error& e)
-    {
-        if (onDisconnect) onDisconnect();
-        return false;
-    }
+            if (onDisconnect) onDisconnect();
+            std::cerr << "Connect failed: " << ec.message() << std::endl;
+        }
+    });
+    return true;
 }
 
 bool Session::disconnect()
@@ -109,7 +99,8 @@ void Session::read()
                                         self->onMessageReceived(std::string(self->buffer.data(), bytes_transferred));
                                     self->read();
                                 }
-                                else if (self->onDisconnect && ec != net::error::operation_aborted) self->
-                                    onDisconnect();
+                                else if (self->onDisconnect && ec != net::error::operation_aborted)
+                                    self->
+                                        onDisconnect();
                             });
 }

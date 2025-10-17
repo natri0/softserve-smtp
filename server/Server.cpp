@@ -3,32 +3,36 @@
 //
 #include <iostream>
 #include "Server.h"
+
+#include <cmath>
+#include <math.h>
+
 #include "ThreadPool/include/ThreadPool.hpp"
 
 // temp till we don't have parser
 constexpr uint8_t THREADS_NUM = 8;
 
-Server::Server() : io(std::make_shared<boost::asio::io_context>()), threadPool(std::make_unique<ThreadPool>(THREADS_NUM)), acceptor(net::ip::tcp::acceptor(*io)),
-                   work(io->get_executor())
+Server::Server() : io(std::make_shared<boost::asio::io_context>()),
+                   work(io->get_executor()), acceptor(net::ip::tcp::acceptor(*io)),
+                   threadPool(std::make_unique<ThreadPool>(THREADS_NUM))
 {
 }
 
 Server::~Server()
 {
-    stopServer();
+    stop();
 }
 
 bool Server::init()
 {
     // initialization from config
-
     if (!setUpAcceptor()) return false;
     threadPool->start();
 
     return true;
 }
 
-bool Server::stopServer()
+bool Server::stop()
 {
     boost::system::error_code ec;
     acceptor.cancel(ec);
@@ -48,9 +52,24 @@ bool Server::stopServer()
     return true;
 }
 
-bool Server::run()
+bool Server::restart()
 {
-    if (!acceptor.is_open()) return false;
+    stop();
+
+    isStopping = false;
+    io->restart();
+    threadPool->start();
+
+    if (!init())return false;
+
+    runAcceptor();
+
+    return true;
+}
+
+void Server::run()
+{
+    if (!acceptor.is_open()) return;
 
     for (uint8_t i = 0; i < THREADS_NUM; ++i)
         threadPool->submit([self = shared_from_this()]()
@@ -62,9 +81,7 @@ bool Server::run()
 
     std::unique_lock lock(mainThreadMutex);
     mainThreadCV.wait(lock, [this]() { return isStopping; });
-    stopServer();
-
-    return true;
+    stop();
 }
 
 void Server::runAcceptor()
