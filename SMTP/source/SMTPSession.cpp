@@ -79,6 +79,11 @@ std::string ISXSMTP::SMTPSession::OnMessage(const std::string& message)
 	return reply;
 }
 
+std::shared_ptr<ISXSMTP::SMTPContext> ISXSMTP::SMTPSession::GetContext()
+{
+	return m_context;
+}
+
 bool ISXSMTP::SMTPSession::handleMailDataInput(const std::string& data)
 {
 	m_context->mail_data.Append(data);
