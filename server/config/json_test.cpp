@@ -11,8 +11,10 @@
 
 #define EXPECT_NO_VALUE(kind, str) do { \
     const char *s = str; \
-    auto res = json::visit_##kind(s);\
-    EXPECT_FALSE(res.has_value()) << "'" str "' parsed successfully while it shouldn't've: " << std::format("{}", *res); \
+    try { \
+        auto res = json::visit_element(s); \
+        EXPECT_FALSE(res.has_value()) << "'" str "' parsed successfully while it shouldn't've: " << std::format("{}", *res); \
+    } catch (const json::BadJson &e) {} \
 } while (0)
 
 #define EXPECT_VALUE_OF_TYPE(kind, str) do { \
@@ -39,8 +41,38 @@ T(visit_string__ReturnsNoneOnInvalidString) {
     EXPECT_NO_VALUE(string, "\"only one quote");
     EXPECT_NO_VALUE(string, "only one quote\"");
     EXPECT_NO_VALUE(string, "\"invalid \\Escape sequence\"");
+    EXPECT_NO_VALUE(string, "\"invalid \\uXXXX\"");
 }
 
 T(visit_string__ReturnsValidValueOnValidString) {
     EXPECT_VALUE_OF_TYPE(String, "\"properly quoted, \\t \\n \\\" \\\\ \\/ \\b \\f \\r \\u0001 \\u0100 \\u1234 \"");
+}
+
+T(visit_element__ReturnsNullOnNullLiteral) {
+    EXPECT_VALUE_OF_TYPE(Null, "null");
+}
+
+T(visit_element__ReturnsBoolOnTrueLiteral) {
+    EXPECT_VALUE_OF_TYPE(Boolean, "true");
+}
+
+T(visit_element__ReturnsBoolOnFalseLiteral) {
+    EXPECT_VALUE_OF_TYPE(Boolean, "false");
+}
+
+T(visit_array__ReturnsNoneOnInvalidArray) {
+    EXPECT_NO_VALUE(array, "[");
+    EXPECT_NO_VALUE(array, "]");
+    EXPECT_NO_VALUE(array, "[invalid]");
+    EXPECT_NO_VALUE(array, "[,]");
+    EXPECT_NO_VALUE(array, "[,");
+    EXPECT_NO_VALUE(array, "[0");
+    EXPECT_NO_VALUE(array, "[0,");
+}
+
+T(visit_array__ReturnsValidValueOnValidArray) {
+    EXPECT_VALUE_OF_TYPE(Array, "[]");
+    EXPECT_VALUE_OF_TYPE(Array, "[0]");
+    EXPECT_VALUE_OF_TYPE(Array, "[\"\"]");
+    EXPECT_VALUE_OF_TYPE(Array, "[0,true]");
 }
