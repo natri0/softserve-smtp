@@ -34,6 +34,9 @@ std::string ISXSMTP::SMTPSession::OnConnect()
 
 std::string ISXSMTP::SMTPSession::OnMessage(const std::string& message)
 {
+	if (IsFinished())
+		return SMTPReply::ServiceNotAvailable().ToString();
+
 	if (m_context->state == SMTPStates::POST_DATA)
 	{
 		// handle mail data

@@ -27,12 +27,12 @@ int main(void)
 	SMTPSession session(nullptr);
 
 	writeToConsole(session.OnConnect());
-	writeToConsole(session.OnMessage(std::string("ehlo test")		 + SMTPConstants::CR + SMTPConstants::LF));
-	writeToConsole(session.OnMessage(std::string("mail from:<test>") + SMTPConstants::CR + SMTPConstants::LF));
-	writeToConsole(session.OnMessage(std::string("rcpt to:<test>")	 + SMTPConstants::CR + SMTPConstants::LF));
-	writeToConsole(session.OnMessage(std::string("data")			 + SMTPConstants::CR + SMTPConstants::LF));
-	writeToConsole(session.OnMessage(std::string("test mail")		 + SMTPConstants::CR + SMTPConstants::LF + '.' +SMTPConstants::CR + SMTPConstants::LF));
-	writeToConsole(session.OnMessage(std::string("quit")			 + SMTPConstants::CR + SMTPConstants::LF));
+	writeToConsole(session.OnMessage(std::string("ehlo test")				 + SMTPConstants::CR + SMTPConstants::LF));
+	writeToConsole(session.OnMessage(std::string("mail from:<>")			 + SMTPConstants::CR + SMTPConstants::LF));
+	writeToConsole(session.OnMessage(std::string("rcpt to:<test@mail.com>")	 + SMTPConstants::CR + SMTPConstants::LF));
+	writeToConsole(session.OnMessage(std::string("data")					 + SMTPConstants::CR + SMTPConstants::LF));
+	writeToConsole(session.OnMessage(std::string("test mail")			     + SMTPConstants::CR + SMTPConstants::LF + '.' +SMTPConstants::CR + SMTPConstants::LF));
+	writeToConsole(session.OnMessage(std::string("quit")					 + SMTPConstants::CR + SMTPConstants::LF));
 
 	//if (session.IsFinished())
 	//{

@@ -26,7 +26,6 @@ private:
 public:
 	/**
 	 * @brief Constructor
-	 * @param transmission_channel ISMTPTransmissionChannel
 	 * @param mailbox ISMTPMailbox
 	 */
 	SMTPSession(std::shared_ptr<ISMTPMailbox> mailbox);
