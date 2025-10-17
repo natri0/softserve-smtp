@@ -3,8 +3,13 @@
 //
 #include <iostream>
 #include "Server.h"
+#include "ThreadPool/include/ThreadPool.hpp"
 
-Server::Server() : acceptor(net::ip::tcp::acceptor(io))
+// temp till we don't have parser
+constexpr uint8_t THREADS_NUM = 8;
+
+Server::Server() : io(std::make_shared<boost::asio::io_context>()), threadPool(std::make_unique<ThreadPool>(THREADS_NUM)), acceptor(net::ip::tcp::acceptor(*io)),
+                   work(io->get_executor())
 {
 }
 
@@ -18,13 +23,14 @@ bool Server::init()
     // initialization from config
 
     if (!setUpAcceptor()) return false;
+    threadPool->start();
+
     return true;
 }
 
 bool Server::stopServer()
 {
     boost::system::error_code ec;
-
     acceptor.cancel(ec);
 
     if (acceptor.is_open())
@@ -36,23 +42,34 @@ bool Server::stopServer()
         session->disconnect();
     sessions.clear();
 
-    io.stop();
+    io->stop();
+
+    threadPool->stop();
     return true;
 }
 
 bool Server::run()
 {
     if (!acceptor.is_open()) return false;
+
+    for (uint8_t i = 0; i < THREADS_NUM; ++i)
+        threadPool->submit([self = shared_from_this()]()
+        {
+            self->io->run();
+        });
+
     runAcceptor();
 
-    io.run();
+    std::unique_lock lock(mainThreadMutex);
+    mainThreadCV.wait(lock, [this]() { return isStopping; });
+    stopServer();
 
     return true;
 }
 
 void Server::runAcceptor()
 {
-    auto socket = std::make_shared<net::ip::tcp::socket>(io);
+    auto socket = std::make_shared<net::ip::tcp::socket>(*io);
 
     acceptor.async_accept(*socket, [this, socket](const boost::system::error_code& ec)
     {
@@ -65,12 +82,16 @@ void Server::runAcceptor()
                 session->send(this->print(msg));
             });
 
-            session->setOnDisconnect([]()
+            session->setOnDisconnect([this]()
             {
                 std::cout << "Client disconnected" << std::endl;
             });
 
-            sessions.push_back(session);
+            {
+                std::lock_guard lock(sessionMutex);
+                sessions.push_back(session);
+            }
+
             session->run();
         }
         else
@@ -100,15 +121,6 @@ bool Server::setUpAcceptor()
 
     acceptor.listen();
     return true;
-}
-
-void Server::onDisconnect(std::shared_ptr<Session> session)
-{
-    session->disconnect();
-
-    sessionMutex.lock();
-    sessions.erase(std::remove(sessions.begin(), sessions.end(), session), sessions.end());
-    sessionMutex.unlock();
 }
 
 std::string Server::print(const std::string& str)

@@ -6,6 +6,7 @@
 #define CLIENT_H
 
 #include "../networking/Session.h"
+#include <thread>
 
 class Client
 {
@@ -35,7 +36,7 @@ private:
     std::shared_ptr<Session> session;
     net::steady_timer timer;
 
-    std::thread io_thread;
+    std::jthread io_thread;
 };
 
 

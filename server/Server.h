@@ -8,7 +8,9 @@
 #include "../networking/Session.h"
 #include <mutex>
 
-class Server {
+class ThreadPool;
+
+class Server : public std::enable_shared_from_this<Server>{
 public:
     Server();
     ~Server();
@@ -19,12 +21,18 @@ public:
     bool run();
 
 private:
-    boost::asio::io_context io;
+    std::shared_ptr<boost::asio::io_context> io;
     std::mutex sessionMutex;
+    net::executor_work_guard<boost::asio::io_context::executor_type> work;
+
+    // think about mechanism how to stop server manually
+    bool isStopping = false;
+    std::condition_variable mainThreadCV;
+    std::mutex mainThreadMutex;
 
     // SMTP
     // Parser
-    // Thread Pool
+    std::unique_ptr<ThreadPool> threadPool;
 
     // temporary value: waiting for parser
     unsigned short port = 12345;
@@ -37,8 +45,6 @@ private:
     //
     void runAcceptor();
     bool setUpAcceptor();
-
-    void onDisconnect(std::shared_ptr<Session> session);
 };
 
 #endif //SERVER_H

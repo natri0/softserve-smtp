@@ -12,7 +12,7 @@
 
 namespace net = boost::asio;
 
-class Session
+class Session : public std::enable_shared_from_this<Session>
 {
 public:
     using OnMessage = std::function<void(const std::string&)>;

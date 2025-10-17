@@ -1,4 +1,4 @@
-#include "ThreadPool.hpp"
+#include "../include/ThreadPool.hpp"
 
 ThreadPool::ThreadPool(int n) {
     cnt_thread = n <= 0 ? std::max(std::thread::hardware_concurrency(), 2u) : n;
