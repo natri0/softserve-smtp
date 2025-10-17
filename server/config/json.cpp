@@ -36,6 +36,10 @@ static size_t code_to_utf8(unsigned char *const buffer, const unsigned int code)
     return 0;
 }
 
+static void skip_whitespace(const char *&string) {
+    while (*string && isspace(*string)) string++;
+}
+
 std::optional<double> json::visit_number(const char *&string) {
     size_t idx_after;
     try {
@@ -127,7 +131,7 @@ std::optional<json::Array> json::visit_array(const char *&string) {
             arr.push_back(*value);
         }
 
-        while (isspace(*string)) string++;
+        skip_whitespace(string);
         switch (*string++) {
             case ']': return { arr };
             case ',': continue;
@@ -159,18 +163,18 @@ std::optional<std::unordered_map<std::string, json::Value>> json::visit_object(c
             return {};
         }
 
-        while (isspace(*string)) string++;
+        skip_whitespace(string);
         if (*string++ != ':') {
             string = begin;
             return {};
         }
 
-        while (isspace(*string)) string++;
+        skip_whitespace(string);
         if (auto value = visit_element(string); value.has_value()) {
             map.insert({ key, *value });
         }
 
-        while (isspace(*string)) string++;
+        skip_whitespace(string);
         switch (*string++) {
             case '}': return { map };
             case ',': continue;
@@ -183,7 +187,7 @@ std::optional<std::unordered_map<std::string, json::Value>> json::visit_object(c
 }
 
 std::optional<json::Value> json::visit_element(const char *&string) {
-    while (isspace(*string)) string++;
+    skip_whitespace(string);
 
     // using memcmp here because we only need to check if it _starts with_ "null" in cases this is part of an array/object
     if (!memcmp(string, "null", 4)) {
