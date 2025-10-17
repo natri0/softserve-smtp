@@ -14,13 +14,14 @@ void SmtpSession::initialize(){
             client_ip = "unknown (socket closed)";
         }
     } catch (const std::exception& e) {
+        //maybe loger 
         client_ip = "unknown (error)";
     }
 }
 
 bool SmtpSession::enqueueCommand(const std::string& cmd) {
     std::lock_guard<std::mutex> lock(session_mutex);
-     if (closed.load(std::memory_order_acquire)) {
+    if (closed.load(std::memory_order_acquire)) {
         return false; 
     }
     commandQueue.push(cmd);

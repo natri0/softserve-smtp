@@ -2,8 +2,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <queue>
-#include "ThreadSafeQueue.hpp"
-
+#include <optional>
 
 /**
 * @class ThreadSafeQueue
@@ -17,9 +16,9 @@
 template<typename T>
 class ThreadSafeQueue {
 private:
-    std::mutex queue_mutex;
+    mutable std::mutex queue_mutex;
     std::condition_variable cv;
-    bool shutdown_flag = false;
+    std::atomic<bool> shutdown_flag = false;
     std::queue<T> safe_queue;
 
 public:
@@ -42,10 +41,24 @@ public:
     * @return true if the element was added, false if queue is shutdown.
     */
     bool push(const T& item) {
+        if (shutdown_flag) return false;
         {
             std::lock_guard<std::mutex> lock(queue_mutex);
-            if (shutdown_flag) return false;
             safe_queue.push(item);
+        }
+        cv.notify_one();
+        return true;
+    }
+
+    /**
+    * @brief Push an element into the queue (move).
+    * @return true if added, false if queue is closed.
+    */
+    bool push(T&& item) {
+        if (shutdown_flag) return false;
+        {
+            std::lock_guard<std::mutex> lock(queue_mutex);
+            safe_queue.push(std::move(item));
         }
         cv.notify_one();
         return true;
@@ -59,7 +72,7 @@ public:
     * @param out Reference where the popped element will be stored.
     * @return true if an element was popped, false if queue is empty and shutdown.
     */
-    bool pop(T& out) {
+    std::optional<T> pop() {
         std::unique_lock<std::mutex> lock(queue_mutex);
 
         cv.wait(lock, [this]() {
@@ -67,11 +80,11 @@ public:
         });
 
         if (safe_queue.empty())
-            return false; 
+            return std::nullopt; 
 
-        out = std::move(safe_queue.front());
+        auto result = std::move(safe_queue.front());
         safe_queue.pop();
-        return true;
+        return result;
     }
 
     /**
@@ -79,9 +92,13 @@ public:
     *
     * @return true if queue is empty, false otherwise.
     */
-    bool isEmpty() {
+    bool isEmpty() const{
         std::lock_guard<std::mutex> lock(queue_mutex);
         return safe_queue.empty();
+    }
+
+    bool isShutdown() const noexcept {
+        return shutdown_flag.load(std::memory_order_acquire);
     }
 
     /**
@@ -90,11 +107,9 @@ public:
     * Sets the shutdown flag and notifies all waiting threads.
     * After shutdown, no more elements can be pushed.
     */
-    void shutDown() {
-        {
-            std::lock_guard<std::mutex> lock(queue_mutex);
-            shutdown_flag = true;
-        }
+    void shutDown() noexcept {
+        shutdown_flag.store(true, std::memory_order_release);
         cv.notify_all();
     }
+
 };
