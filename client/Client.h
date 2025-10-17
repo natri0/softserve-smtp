@@ -6,11 +6,12 @@
 #define CLIENT_H
 
 #include "../networking/Session.h"
+#include <thread>
 
 class Client
 {
 public:
-    Client(const std::string& host, const unsigned short port);
+    Client(const std::string& host, unsigned short port);
     ~Client();
 
     bool stop();
@@ -27,7 +28,7 @@ private:
     bool run();
 
     // SMTP
-    // Mail
+    // Logger
     void onMessage(std::string& msg);
 
     net::io_context io;
@@ -35,7 +36,7 @@ private:
     std::shared_ptr<Session> session;
     net::steady_timer timer;
 
-    std::thread io_thread;
+    std::jthread io_thread;
 };
 
 

@@ -70,10 +70,10 @@ bool Client::run()
     if (isRunning) return false;
     isRunning = true;
 
-    {
-        session->run();
-        io_thread = std::thread([this]() { io.run(); });
-    }
+    io_thread = std::jthread([this]() { io.run(); });
+
+    session->run();
+
     return true;
 };
 
@@ -91,7 +91,6 @@ bool Client::stop()
 
     session->disconnect();
     io.stop();
-    if (io_thread.joinable()) io_thread.join();
 
     return true;
 }

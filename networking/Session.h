@@ -7,12 +7,13 @@
 
 #include <boost/asio.hpp>
 #include <functional>
+#include <memory>
 #include <deque>
 #include <array>
 
 namespace net = boost::asio;
 
-class Session
+class Session : public std::enable_shared_from_this<Session>
 {
 public:
     using OnMessage = std::function<void(const std::string&)>;

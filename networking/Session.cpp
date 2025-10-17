@@ -17,26 +17,31 @@ Session::~Session() { disconnect(); }
 
 bool Session::connect(const net::ip::tcp::endpoint& endpoint)
 {
-    try
+    if (socket->is_open()) socket->close();
+    // socket->connect(endpoint);
+    socket->async_connect(endpoint, [this](const boost::system::error_code& ec)
     {
-        if (socket->is_open()) socket->close();
-        socket->connect(endpoint);
-        return true;
-    }
-    catch (const boost::system::system_error& e)
-    {
-        if (onDisconnect) onDisconnect();
-        return false;
-    }
+        if (!ec) std::cout << "Connected!" << std::endl;
+        else
+        {
+            if (onDisconnect) onDisconnect();
+            std::cerr << "Connect failed: " << ec.message() << std::endl;
+        }
+    });
+    return true;
 }
 
 bool Session::disconnect()
 {
     if (!socket->is_open()) return false;
     boost::system::error_code ec;
+    socket->cancel(ec);
     socket->shutdown(net::socket_base::shutdown_both, ec);
 
     socket->close(ec);
+
+    writeQueue.clear();
+    isWriting = false;
 
     return true;
 }
@@ -67,17 +72,16 @@ void Session::write()
 {
     isWriting = true;
     net::async_write(*socket, net::buffer(writeQueue.front()),
-                     [this](const boost::system::error_code& ec, std::size_t /*bytes_transferred*/)
+                     [self = shared_from_this()](const boost::system::error_code& ec, std::size_t /*bytes_transferred*/)
                      {
                          if (!ec)
                          {
-                             writeQueue.pop_front();
-                             if (!writeQueue.empty()) write();
-                             else isWriting = false;
+                             self->writeQueue.pop_front();
+                             if (!self->writeQueue.empty()) self->write();
+                             else self->isWriting = false;
                          }
                          else
-                             if (onDisconnect && ec != net::error::operation_aborted) onDisconnect();
-
+                             if (self->onDisconnect && ec != net::error::operation_aborted) self->onDisconnect();
                      });
 }
 
@@ -86,14 +90,17 @@ void Session::read()
     if (!socket || !socket->is_open()) return;
 
     socket->async_read_some(net::buffer(buffer),
-                            [this](const boost::system::error_code& ec, std::size_t bytes_transferred)
+                            [self = shared_from_this()](const boost::system::error_code& ec,
+                                                        std::size_t bytes_transferred)
                             {
                                 if (!ec)
                                 {
-                                    if (onMessageReceived)
-                                        onMessageReceived(std::string(buffer.data(), bytes_transferred));
-                                    read();
+                                    if (self->onMessageReceived)
+                                        self->onMessageReceived(std::string(self->buffer.data(), bytes_transferred));
+                                    self->read();
                                 }
-                                else if (onDisconnect && ec != net::error::operation_aborted) onDisconnect();
+                                else if (self->onDisconnect && ec != net::error::operation_aborted)
+                                    self->
+                                        onDisconnect();
                             });
 }

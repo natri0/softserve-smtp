@@ -7,38 +7,46 @@
 
 #include "../networking/Session.h"
 #include <mutex>
+#include <condition_variable>
+#include <memory>
+#include <vector>
 
-class Server {
+class ThreadPool;
+
+class Server : public std::enable_shared_from_this<Server>{
 public:
     Server();
     ~Server();
 
     bool init();
-
-    bool stopServer();
-    bool run();
+    bool stop();
+    bool restart();
+    void run();
 
 private:
-    boost::asio::io_context io;
-    std::mutex sessionMutex;
-
     // SMTP
     // Parser
-    // Thread Pool
+    // Logger
 
-    // temporary value: waiting for parser
-    unsigned short port = 12345;
+    std::shared_ptr<boost::asio::io_context> io;
+    net::executor_work_guard<boost::asio::io_context::executor_type> work;
     net::ip::tcp::acceptor acceptor;
+    unsigned short port = 12345; // temporary value: waiting for parser
 
     std::vector<std::shared_ptr<Session>> sessions;
+    std::mutex sessionMutex;
+
+    void runAcceptor();
+    bool setUpAcceptor();
+
+    std::unique_ptr<ThreadPool> threadPool;
+    bool isStopping = false;
+    std::condition_variable mainThreadCV;
+    std::mutex mainThreadMutex;
 
     // temp
     std::string print(const std::string& str);
     //
-    void runAcceptor();
-    bool setUpAcceptor();
-
-    void onDisconnect(std::shared_ptr<Session> session);
 };
 
 #endif //SERVER_H
