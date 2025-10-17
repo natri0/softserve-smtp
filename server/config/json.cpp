@@ -3,11 +3,6 @@
 #include <ostream>
 #include <format>
 
-#include "formatutil/optional.h"
-#include "formatutil/jsonvalue.h"
-
-static auto json_doc = R"({ "key1": "value1", "key2": ["array", null, 1.0], "key3": true, "key4": { "nested": "yes" } })";
-
 /// convert unicode codepoint to utf8
 static size_t code_to_utf8(unsigned char *const buffer, const unsigned int code)
 {
@@ -212,8 +207,4 @@ std::optional<json::Value> json::visit_element(const char *&string) {
     if (auto obj = visit_object(string); obj.has_value()) return { std::move(*obj) };
 
     throw BadJson(std::format("failed to parse json: '{}'", string));
-}
-
-int main() {
-    std::println("{}", json::visit_element(json_doc));
 }
