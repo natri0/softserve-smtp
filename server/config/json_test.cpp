@@ -76,3 +76,22 @@ T(visit_array__ReturnsValidValueOnValidArray) {
     EXPECT_VALUE_OF_TYPE(Array, "[\"\"]");
     EXPECT_VALUE_OF_TYPE(Array, "[0,true]");
 }
+
+T(visit_object__ReturnsNoneOnInvalidObject) {
+    EXPECT_NO_VALUE(object, "{");
+    EXPECT_NO_VALUE(object, "}");
+    EXPECT_NO_VALUE(object, "{\"a");
+    EXPECT_NO_VALUE(object, "{\"a\"");
+    EXPECT_NO_VALUE(object, "{\"a\":");
+    EXPECT_NO_VALUE(object, "{\"a\":123");
+    EXPECT_NO_VALUE(object, "{true");
+    EXPECT_NO_VALUE(object, "{0:");
+    EXPECT_NO_VALUE(object, "{0:123}");
+    EXPECT_NO_VALUE(object, "{\"a\":123,}");
+    EXPECT_NO_VALUE(object, "{\"a\":123,\"b\"}");
+}
+
+T(visit_object__ReturnsValidValueOnValidObject) {
+    EXPECT_VALUE_OF_TYPE(Object, "{\"a\":123}");
+    EXPECT_VALUE_OF_TYPE(Object, "{    \"a\" :   \n123  ,\t\"b\" : true   }");
+}
