@@ -34,17 +34,17 @@ TEST_F(SMTPTest, OnConnectTest)
 
 TEST_F(SMTPTest, BasicUsageTest)
 {
-	ASSERT_STREQ("220 <domain> Service ready\r\n", 
-			session.OnConnect().c_str());
+	ASSERT_STREQ("220 <domain> Service ready\r\n",
+		session.OnConnect().c_str());
 
 	ASSERT_STREQ("250-<domain> greets some@domain.com\r\n250 HELP\r\n",
-			session.OnMessage("EHLO some@domain.com\r\n").c_str());
+		session.OnMessage("EHLO some@domain.com\r\n").c_str());
 
 	ASSERT_STREQ("250 Action completed\r\n",
-			session.OnMessage("MAIL FROM:<reverse@path.com>\r\n").c_str());
+		session.OnMessage("MAIL FROM:<reverse@path.com>\r\n").c_str());
 
 	ASSERT_STREQ("250 Action completed\r\n",
-			session.OnMessage("RCPT TO:<forward1@path.com>\r\n").c_str());
+		session.OnMessage("RCPT TO:<forward1@path.com>\r\n").c_str());
 
 	ASSERT_STREQ("250 Action completed\r\n",
 		session.OnMessage("RCPT TO:<forward2@path.com>\r\n").c_str());
@@ -54,11 +54,11 @@ TEST_F(SMTPTest, BasicUsageTest)
 
 	ASSERT_STREQ("", session.OnMessage("First part of data\r\n").c_str());
 
-	ASSERT_STREQ("250 Action completed\r\n", 
-			session.OnMessage("Last part of data\r\n.\r\n").c_str());
+	ASSERT_STREQ("250 Action completed\r\n",
+		session.OnMessage("Last part of data\r\n.\r\n").c_str());
 
 	ASSERT_STREQ("221 <domain> Service closing transmission channel\r\n",
-			session.OnMessage("QUIT\r\n").c_str());
+		session.OnMessage("QUIT\r\n").c_str());
 
 	auto context = session.GetContext();
 
@@ -78,3 +78,8 @@ TEST_F(SMTPTest, CaseInsensitivityTest)
 	ASSERT_STREQ("250 Action completed\r\n",
 		session.OnMessage("rSeT\r\n").c_str());
 }
+
+//int main(int argc, char** argv) {
+//	testing::InitGoogleTest(&argc, argv);
+//	return RUN_ALL_TESTS();
+//}

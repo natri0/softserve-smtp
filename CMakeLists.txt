@@ -9,7 +9,6 @@ add_subdirectory(client)
 add_subdirectory(networking)
 add_subdirectory(db)
 add_subdirectory(SMTP)
-add_subdirectory(gtests)
 
 # Temporery project
 add_subdirectory(SMTPTest)

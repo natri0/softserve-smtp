@@ -21,3 +21,5 @@ add_library(SMTP
 	 "source/SMTPCommandParser.cpp" 
 	  )
 target_include_directories(SMTP PUBLIC "include")
+
+add_subdirectory(gtests)
