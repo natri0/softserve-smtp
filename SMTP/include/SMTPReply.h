@@ -65,8 +65,8 @@ public:
 	static SMTPReply CommandParameterNotImplemented();
 	static SMTPReply HelpReply();
 	static SMTPReply HelpMessage();
-	static SMTPReply ServiceReady();
-	static SMTPReply ServiceClosing();
+	static SMTPReply ServiceReady(const std::string& domain);
+	static SMTPReply ServiceClosing(const std::string& domain);
 	static SMTPReply ServiceNotAvailable();
 	static SMTPReply OK();
 	static SMTPReply UserNotLocal251(); 

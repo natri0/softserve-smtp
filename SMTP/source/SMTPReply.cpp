@@ -80,14 +80,14 @@ ISXSMTP::SMTPReply ISXSMTP::SMTPReply::HelpMessage()
 	return SMTPReply(214, "");
 }
 
-ISXSMTP::SMTPReply ISXSMTP::SMTPReply::ServiceReady()
+ISXSMTP::SMTPReply ISXSMTP::SMTPReply::ServiceReady(const std::string& domain)
 {
-	return SMTPReply(220, "<domain> Service ready");
+	return SMTPReply(220, domain + " Service ready");
 }
 
-ISXSMTP::SMTPReply ISXSMTP::SMTPReply::ServiceClosing()
+ISXSMTP::SMTPReply ISXSMTP::SMTPReply::ServiceClosing(const std::string& domain)
 {
-	return SMTPReply(221, "<domain> Service closing transmission channel");
+	return SMTPReply(221, domain + " Service closing transmission channel");
 }
 
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::ServiceNotAvailable()

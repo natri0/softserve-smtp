@@ -15,6 +15,8 @@ struct SMTPContext
 	SMTPBuffer forward_path;
 	SMTPBuffer mail_data;
 	SMTPState state;
+
+	std::string domain = "smtp.test";
 };
 
 }

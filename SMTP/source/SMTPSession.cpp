@@ -29,7 +29,7 @@ bool ISXSMTP::SMTPSession::IsFinished()
 
 std::string ISXSMTP::SMTPSession::OnConnect()
 {
-	return SMTPReply::ServiceReady().ToString();
+	return SMTPReply::ServiceReady(m_context->domain).ToString();
 }
 
 std::string ISXSMTP::SMTPSession::OnMessage(const std::string& message)
