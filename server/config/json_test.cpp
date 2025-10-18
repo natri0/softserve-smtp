@@ -64,7 +64,6 @@ T(visit_array__ReturnsNoneOnInvalidArray) {
     EXPECT_NO_VALUE(array, "[");
     EXPECT_NO_VALUE(array, "]");
     EXPECT_NO_VALUE(array, "[invalid]");
-    EXPECT_NO_VALUE(array, "[,]");
     EXPECT_NO_VALUE(array, "[,");
     EXPECT_NO_VALUE(array, "[0");
     EXPECT_NO_VALUE(array, "[0,");
@@ -75,6 +74,8 @@ T(visit_array__ReturnsValidValueOnValidArray) {
     EXPECT_VALUE_OF_TYPE(Array, "[0]");
     EXPECT_VALUE_OF_TYPE(Array, "[\"\"]");
     EXPECT_VALUE_OF_TYPE(Array, "[0,true]");
+    EXPECT_VALUE_OF_TYPE(Array, "[\n\t  0,  true\n]");
+    EXPECT_VALUE_OF_TYPE(Array, "[0,]"); // we support trailing comma
 }
 
 T(visit_object__ReturnsNoneOnInvalidObject) {
