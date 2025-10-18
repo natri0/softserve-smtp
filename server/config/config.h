@@ -41,6 +41,10 @@ public:
     bool has_key(const std::string_view &key) const;
     std::any get_any(const std::string_view &key) const;
 
+    size_t size() const {
+        return data.size();
+    }
+
     template<class T>
     T get(const std::string_view &key) const {
         if (!has_key(key)) throw std::invalid_argument("Key not found");

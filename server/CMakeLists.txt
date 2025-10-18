@@ -18,6 +18,7 @@ add_executable(json_test
         config/formatutil/optional.h
         config/formatutil/variant.h
         config/formatutil/jsonvalue.h
-        config/json_test.cpp)
+        config/json_test.cpp
+        config/config_test.cpp)
 
 target_link_libraries(json_test PRIVATE GTest::gtest_main config_parser)
