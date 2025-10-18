@@ -63,11 +63,13 @@ std::string ISXSMTP::SMTPSession::OnMessage(const std::string& message)
 		return command_parser_result.error_code.ToString();
 	}
 
-	// bind context and mailbox
-	command_parser_result.parsed_arguments.context = m_context;
-	command_parser_result.parsed_arguments.mailbox = m_mailbox;
+	SMTPCommandArguments command_arguments;
+	command_arguments.arguments = command_parser_result.parsed_arguments;
+	command_arguments.context = m_context;
+	command_arguments.mailbox = m_mailbox;
+
 	// invoke command
-	auto command_result = m_commands[command_parser_result.command_verb]->Invoke(command_parser_result.parsed_arguments);
+	auto command_result = m_commands[command_parser_result.command_verb]->Invoke(command_arguments);
 	
 	m_clientInputBuffer.clear();
 

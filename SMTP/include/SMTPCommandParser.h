@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Commands/SMTPCommandArguments.h"
 #include "Commands/SMTPCommandBase.h"
 
 #include <vector>
@@ -22,7 +21,7 @@ struct SMTPCommandParserResult
 	 * @brief SMTPCommandParser fill map with arguments passed with the command
 	 *	Context and mailbox left untouched
 	 */
-	SMTPCommandArguments parsed_arguments;
+	std::unordered_map<std::string, std::string> parsed_arguments;
 
 	/**
 	 * @brief If syntax error occurs SMTPCommandParser writes it's code to this variable
