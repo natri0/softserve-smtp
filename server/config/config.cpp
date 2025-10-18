@@ -11,6 +11,16 @@ static void populate(const json::Value &root, std::unordered_map<std::string, st
                 std::string child_path = prefix.empty() ? key : prefix + "." + key;
                 populate(value, map, child_path);
             }
+
+            std::string length_path = (prefix.empty() ? "_length" : prefix + "._length");
+            populate(double(obj.size()), map, length_path);
+
+            int i = 0;
+            for (const auto &[key, _] : obj) {
+                std::string path = (prefix.empty() ? "_keys." : prefix + "._keys.") + std::to_string(i);
+                map[path] = root.as_string();
+                i++;
+            }
             break;
         }
         case json::Value::Array: {
@@ -19,6 +29,9 @@ static void populate(const json::Value &root, std::unordered_map<std::string, st
                 std::string child_path = prefix + "." + std::to_string(i);
                 populate(arr[i], map, child_path);
             }
+
+            std::string length_path = (prefix.empty() ? "_length" : prefix + "._length");
+            populate(double(arr.size()), map, length_path);
             break;
         }
         case json::Value::Number:
