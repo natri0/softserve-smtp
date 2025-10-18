@@ -6,7 +6,7 @@
 #include "formatutil/jsonvalue.h"
 #include "formatutil/optional.h"
 
-#define SUITE JSONParser
+#define SUITE JSONParserTest
 #define T(nm) TEST(SUITE, nm)
 
 #define EXPECT_NO_VALUE(kind, str) do { \
