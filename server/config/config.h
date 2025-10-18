@@ -4,6 +4,21 @@
 #include <filesystem>
 #include <unordered_map>
 
+/// This is the config parser. Values are available by dot-separated keys, for example in the following:
+///
+/// ```json
+/// {
+///     "server": {
+///         "bind_address": [
+///             "127.0.0.1"
+///         ]
+///     }
+/// }
+/// ```
+///
+/// the 127.0.0.1 would be available by `server.bind_address.0`.
+///
+/// Every object/map/dict/whatever you call it also has its keys available by `._keys.[i]`, and every object and list has its length available by `._length`.
 class Config {
 public:
     Config() = default;
