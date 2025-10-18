@@ -3,9 +3,9 @@
 
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::QUITCommand::Invoke(SMTPCommandArguments arguments)
 {
-	arguments.context->state.Set(SMTPStates::FINISH);
+	arguments.context.state.Set(SMTPStates::FINISH);
 
-	return { SMTPReply::ServiceClosing(arguments.context->domain) };
+	return { SMTPReply::ServiceClosing(arguments.context.domain) };
 }
 
 std::string ISXSMTP::QUITCommand::GetName()

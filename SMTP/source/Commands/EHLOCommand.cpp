@@ -3,7 +3,7 @@
 
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::EHLOCommand::Invoke(SMTPCommandArguments arguments)
 {
-	if (arguments.context->state == SMTPStates::FINISH)
+	if (arguments.context.state == SMTPStates::FINISH)
 		return { SMTPReply::BadSequenceOfCommands() };
 
 	std::string domain;
@@ -16,10 +16,10 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::EHLOCommand::Invoke(SMTPCommandArgument
 		return { SMTPReply::SyntaxError() };
 	}
 
-	arguments.context->state = SMTPStates::POST_EHLO;
+	arguments.context.state = SMTPStates::POST_EHLO;
 
 	return {
-		SMTPReply(250, std::string(arguments.context->domain + " greets ") + domain, true),
+		SMTPReply(250, std::string(arguments.context.domain + " greets ") + domain, true),
 		SMTPReply(250, std::string("HELP"))
 	};
 }

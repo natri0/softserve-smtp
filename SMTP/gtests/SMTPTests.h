@@ -31,15 +31,15 @@ protected:
 
 TEST_F(SMTPTest, OnConnectTest)
 {
-	ASSERT_STREQ(std::string("220 " + session.GetContext()->domain + " Service ready\r\n").c_str(), session.OnConnect().c_str());
+	ASSERT_STREQ(std::string("220 " + session.GetContext().domain + " Service ready\r\n").c_str(), session.OnConnect().c_str());
 }
 
 TEST_F(SMTPTest, BasicUsageTest)
 {
-	ASSERT_STREQ(std::string("220 " + session.GetContext()->domain + " Service ready\r\n").c_str(),
+	ASSERT_STREQ(std::string("220 " + session.GetContext().domain + " Service ready\r\n").c_str(),
 		session.OnConnect().c_str());
 
-	ASSERT_STREQ(std::string("250-" + session.GetContext()->domain + " greets some@domain.com\r\n250 HELP\r\n").c_str(),
+	ASSERT_STREQ(std::string("250-" + session.GetContext().domain + " greets some@domain.com\r\n250 HELP\r\n").c_str(),
 		session.OnMessage("EHLO some@domain.com\r\n").c_str());
 
 	ASSERT_STREQ("250 Action completed\r\n",
@@ -59,14 +59,14 @@ TEST_F(SMTPTest, BasicUsageTest)
 	ASSERT_STREQ("250 Action completed\r\n",
 		session.OnMessage("Last part of data\r\n.\r\n").c_str());
 
-	ASSERT_STREQ(std::string("221 " + session.GetContext()->domain + " Service closing transmission channel\r\n").c_str(),
+	ASSERT_STREQ(std::string("221 " + session.GetContext().domain + " Service closing transmission channel\r\n").c_str(),
 		session.OnMessage("QUIT\r\n").c_str());
 
 	auto context = session.GetContext();
 
-	ASSERT_STREQ(context->forward_path.GetString().c_str(), "forward1@path.com;forward2@path.com;");
-	ASSERT_STREQ(context->reverse_path.GetString().c_str(), "reverse@path.com");
-	ASSERT_STREQ(context->mail_data.GetString().c_str(), "First part of data\r\nLast part of data\r\n.\r\n");
+	ASSERT_STREQ(context.forward_path.GetString().c_str(), "forward1@path.com;forward2@path.com;");
+	ASSERT_STREQ(context.reverse_path.GetString().c_str(), "reverse@path.com");
+	ASSERT_STREQ(context.mail_data.GetString().c_str(), "First part of data\r\nLast part of data\r\n.\r\n");
 }
 
 TEST_F(SMTPTest, CaseInsensitivityTest)

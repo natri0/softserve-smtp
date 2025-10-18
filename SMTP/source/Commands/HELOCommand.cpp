@@ -13,9 +13,9 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::HELOCommand::Invoke(SMTPCommandArgument
 		return { SMTPReply::SyntaxError() };
 	}
 
-	arguments.context->state = SMTPStates::POST_EHLO;
+	arguments.context.state = SMTPStates::POST_EHLO;
 
-	std::string comment = std::string("<domain> greets ") + domain;
+	std::string comment = std::string(arguments.context.domain + " greets ") + domain;
 	return { SMTPReply(250, comment) };
 }
 

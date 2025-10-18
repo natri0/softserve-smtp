@@ -19,8 +19,7 @@ class SMTPSession
 private:
 	std::shared_ptr<ISMTPMailbox> m_mailbox;
 
-	// I don't know why I decided to wrap m_context in shared_ptr. Will remove this in future
-	std::shared_ptr<SMTPContext> m_context;
+	SMTPContext m_context;
 
 	std::unordered_map<std::string, std::unique_ptr<SMTPCommandBase>> m_commands;
 
@@ -56,7 +55,7 @@ public:
 	 * @brief Returns pointer to current context
 	 * @return std::shared_ptr<SMTPContext>
 	 */
-	std::shared_ptr<SMTPContext> GetContext();
+	SMTPContext GetContext();
 
 private:
 	/**

@@ -3,10 +3,10 @@
 
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::RSETCommand::Invoke(SMTPCommandArguments arguments)
 {
-	arguments.context->forward_path.Clear();
-	arguments.context->reverse_path.Clear();
-	arguments.context->mail_data.Clear();
-	arguments.context->state.Set(SMTPStates::INITIAL);
+	arguments.context.forward_path.Clear();
+	arguments.context.reverse_path.Clear();
+	arguments.context.mail_data.Clear();
+	arguments.context.state.Set(SMTPStates::INITIAL);
 
 	return { SMTPReply::OK() };
 }

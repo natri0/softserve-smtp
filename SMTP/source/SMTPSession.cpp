@@ -17,19 +17,18 @@ ISXSMTP::SMTPSession::SMTPSession(std::shared_ptr<ISMTPMailbox> mailbox)
 	: m_mailbox(mailbox)
 {
 	fillCommandMap();
-	m_context = std::make_shared<SMTPContext>();
 }
 
 bool ISXSMTP::SMTPSession::IsFinished()
 {
-	if (m_context->state == ISXSMTP::SMTPStates::FINISH)
+	if (m_context.state == ISXSMTP::SMTPStates::FINISH)
 		return true;
 	return false;
 }
 
 std::string ISXSMTP::SMTPSession::OnConnect()
 {
-	return SMTPReply::ServiceReady(m_context->domain).ToString();
+	return SMTPReply::ServiceReady(m_context.domain).ToString();
 }
 
 std::string ISXSMTP::SMTPSession::OnMessage(const std::string& message)
@@ -37,7 +36,7 @@ std::string ISXSMTP::SMTPSession::OnMessage(const std::string& message)
 	if (IsFinished())
 		return SMTPReply::ServiceNotAvailable().ToString();
 
-	if (m_context->state == SMTPStates::POST_DATA)
+	if (m_context.state == SMTPStates::POST_DATA)
 	{
 		// handle mail data
 		if (handleMailDataInput(message))
@@ -63,10 +62,10 @@ std::string ISXSMTP::SMTPSession::OnMessage(const std::string& message)
 		return command_parser_result.error_code.ToString();
 	}
 
-	SMTPCommandArguments command_arguments;
-	command_arguments.arguments = command_parser_result.parsed_arguments;
-	command_arguments.context = m_context;
-	command_arguments.mailbox = m_mailbox;
+	SMTPCommandArguments command_arguments(
+		m_context,
+		command_parser_result.parsed_arguments,
+		m_mailbox);
 
 	// invoke command
 	auto command_result = m_commands[command_parser_result.command_verb]->Invoke(command_arguments);
@@ -81,17 +80,17 @@ std::string ISXSMTP::SMTPSession::OnMessage(const std::string& message)
 	return reply;
 }
 
-std::shared_ptr<ISXSMTP::SMTPContext> ISXSMTP::SMTPSession::GetContext()
+ISXSMTP::SMTPContext ISXSMTP::SMTPSession::GetContext()
 {
 	return m_context;
 }
 
 bool ISXSMTP::SMTPSession::handleMailDataInput(const std::string& data)
 {
-	m_context->mail_data.Append(data);
-	if (IsDataEndingPresent(m_context->mail_data.GetString()))
+	m_context.mail_data.Append(data);
+	if (IsDataEndingPresent(m_context.mail_data.GetString()))
 	{
-		m_context->state = SMTPStates::END_DATA;
+		m_context.state = SMTPStates::END_DATA;
 		return true;
 	}
 	return false;

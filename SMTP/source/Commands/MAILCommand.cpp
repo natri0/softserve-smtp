@@ -4,7 +4,7 @@
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::MAILCommand::Invoke(SMTPCommandArguments arguments)
 {
 	// mail command should be called after ehlo or helo
-	if (arguments.context->state == SMTPStates::FINISH || arguments.context->state == SMTPStates::INITIAL)
+	if (arguments.context.state == SMTPStates::FINISH || arguments.context.state == SMTPStates::INITIAL)
 		return { SMTPReply::BadSequenceOfCommands() };
 
 	std::string reverse_path;
@@ -18,13 +18,13 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::MAILCommand::Invoke(SMTPCommandArgument
 		//return { SMTPReply::SyntaxError() };
 	}
 
-	arguments.context->forward_path.Clear();
-	arguments.context->reverse_path.Clear();
-	arguments.context->mail_data.Clear();
-
-	arguments.context->reverse_path.Append(reverse_path);
-
-	arguments.context->state.Set(SMTPStates::POST_MAIL);
+	arguments.context.forward_path.Clear();
+	arguments.context.reverse_path.Clear();
+	arguments.context.mail_data.Clear();
+					 
+	arguments.context.reverse_path.Append(reverse_path);
+					 
+	arguments.context.state.Set(SMTPStates::POST_MAIL);
 
 	return { SMTPReply::OK() };
 }

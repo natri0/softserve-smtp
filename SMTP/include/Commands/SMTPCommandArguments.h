@@ -16,9 +16,18 @@ namespace ISXSMTP
  */
 struct SMTPCommandArguments
 {
-	std::unordered_map<std::string, std::string> arguments;
+	SMTPCommandArguments(
+			SMTPContext& context,
+			std::unordered_map<std::string, std::string> arguments,
+			std::shared_ptr<ISMTPMailbox> mailbox)
+		: context(context)
+		, arguments(arguments)
+		, mailbox(mailbox)
+	{
+	}
 
-	std::shared_ptr<SMTPContext> context;
+	std::unordered_map<std::string, std::string> arguments;
+	SMTPContext& context;
 	std::shared_ptr<ISMTPMailbox> mailbox;
 };
 

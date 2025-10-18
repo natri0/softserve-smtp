@@ -3,7 +3,7 @@
 
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::RCPTCommand::Invoke(SMTPCommandArguments arguments)
 {
-	if (arguments.context->state != SMTPStates::POST_MAIL && arguments.context->state != SMTPStates::POST_RCPT)
+	if (arguments.context.state != SMTPStates::POST_MAIL && arguments.context.state != SMTPStates::POST_RCPT)
 		return { SMTPReply::BadSequenceOfCommands() };
 
 	std::string forward_path;
@@ -21,9 +21,9 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::RCPTCommand::Invoke(SMTPCommandArgument
 
 	// there can be multiple recipients
 	// so delimiter uses to distinguish them
-	arguments.context->forward_path.Append(forward_path + ";");
+	arguments.context.forward_path.Append(forward_path + ";");
 	
-	arguments.context->state = SMTPStates::POST_RCPT;
+	arguments.context.state = SMTPStates::POST_RCPT;
 
 	return { SMTPReply::OK() };
 }
