@@ -21,13 +21,6 @@ static size_t code_to_utf8(unsigned char *const buffer, const unsigned int code)
         buffer[2] = 0x80 | (code & 0x3F);          /* 10xxxxxx */
         return 3;
     }
-    if (code <= 0x10FFFF) {
-        buffer[0] = 0xF0 | (code >> 18);           /* 11110xxx */
-        buffer[1] = 0x80 | ((code >> 12) & 0x3F);  /* 10xxxxxx */
-        buffer[2] = 0x80 | ((code >> 6) & 0x3F);   /* 10xxxxxx */
-        buffer[3] = 0x80 | (code & 0x3F);          /* 10xxxxxx */
-        return 4;
-    }
     return 0;
 }
 
@@ -80,10 +73,8 @@ std::optional<std::string> json::visit_string(const char *&string) {
 
                         int codepoint = strtol(bytes, nullptr, 16);
                         n_bytes_to_add = code_to_utf8(reinterpret_cast<unsigned char *>(bytes), codepoint);
-                        if (n_bytes_to_add == 0) {
-                            string = begin;
-                            return {};
-                        }
+                        // not checking for n_bytes_to_add==0 here because the only way for it to return 0 is if we supply a value of >0xffff
+                        // which is impossible because we only have 4 hex digits
 
                         to_skip = 5; // u0123
                         break;
@@ -108,7 +99,11 @@ std::optional<std::string> json::visit_string(const char *&string) {
         }
     }
 
-    return {};
+    // CLion code analysis says that without a return here the function doesn't return on all control paths
+    // that's not true because strcspn() will return the offset to \0 if there's no \ or " found
+    // in that case, we go to the default: and return
+    // so there's no way to get here
+    std::unreachable();
 }
 
 
