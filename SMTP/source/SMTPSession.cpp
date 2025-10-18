@@ -13,8 +13,9 @@
 
 #include <iostream>
 
-ISXSMTP::SMTPSession::SMTPSession(std::shared_ptr<ISMTPMailbox> mailbox)
+ISXSMTP::SMTPSession::SMTPSession(std::shared_ptr<ISMTPMailbox> mailbox, SMTPContext context /*= {}*/)
 	: m_mailbox(mailbox)
+	, m_context(context)
 {
 	fillCommandMap();
 }

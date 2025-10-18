@@ -28,9 +28,9 @@ private:
 public:
 	/**
 	 * @brief Constructor
-	 * @param mailbox ISMTPMailbox
+	 * @param mailbox ISMTPMailbox; optionally context SMTPContext can be passed
 	 */
-	SMTPSession(std::shared_ptr<ISMTPMailbox> mailbox);
+	SMTPSession(std::shared_ptr<ISMTPMailbox> mailbox, SMTPContext context = {});
 
 	/**
 	 * @brief Returns true if the SMTPSession is finished its business with user
