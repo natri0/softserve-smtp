@@ -33,8 +33,8 @@ public:
 	void Set(SMTPStates state);
 
 public:
-	bool operator==(SMTPStates other);
-	bool operator!=(SMTPStates other);
+	bool operator==(const SMTPStates& other) const;
+	bool operator!=(const SMTPStates& other) const;
 	SMTPState& operator=(SMTPStates state);
 };
 
