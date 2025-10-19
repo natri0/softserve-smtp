@@ -13,6 +13,8 @@
 
 #include <iostream>
 
+std::string ISXSMTP::SMTPSession::s_domain = "smtp.test";
+
 ISXSMTP::SMTPSession::SMTPSession(std::shared_ptr<ISMTPMailbox> mailbox, SMTPContext context /*= {}*/)
 	: m_mailbox(mailbox)
 	, m_context(context)
@@ -29,7 +31,7 @@ bool ISXSMTP::SMTPSession::IsFinished()
 
 std::string ISXSMTP::SMTPSession::OnConnect()
 {
-	return SMTPReply::ServiceReady(m_context.domain).ToString();
+	return SMTPReply::ServiceReady(ISXSMTP::SMTPSession::GetDomain()).ToString();
 }
 
 std::string ISXSMTP::SMTPSession::OnMessage(const std::string& message)
@@ -84,6 +86,16 @@ std::string ISXSMTP::SMTPSession::OnMessage(const std::string& message)
 ISXSMTP::SMTPContext ISXSMTP::SMTPSession::GetContext()
 {
 	return m_context;
+}
+
+std::string ISXSMTP::SMTPSession::GetDomain()
+{
+	return ISXSMTP::SMTPSession::s_domain;
+}
+
+void ISXSMTP::SMTPSession::SetDomain(const std::string& domain)
+{
+	ISXSMTP::SMTPSession::s_domain = domain;
 }
 
 bool ISXSMTP::SMTPSession::handleMailDataInput(const std::string& data)

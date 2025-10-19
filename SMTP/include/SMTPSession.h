@@ -25,6 +25,8 @@ private:
 
 	std::string m_clientInputBuffer;
 
+	static std::string s_domain;
+
 public:
 	/**
 	 * @brief Constructor
@@ -53,9 +55,21 @@ public:
 
 	/**
 	 * @brief Returns pointer to current context
-	 * @return std::shared_ptr<SMTPContext>
+	 * @return SMTPContext
 	 */
 	SMTPContext GetContext();
+
+	/**
+	 * @brief Returns domain
+	 * @return std::string
+	 */
+	static std::string GetDomain();
+
+	/**
+	 * @brief Sets domain
+	 * @param domain const std::string&
+	 */
+	static void SetDomain(const std::string& domain);
 
 private:
 	/**

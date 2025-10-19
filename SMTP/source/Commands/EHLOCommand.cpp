@@ -1,5 +1,6 @@
 #include "Commands/EHLOCommand.h"
 #include "SMTPConstants.h"
+#include "SMTPSession.h"
 
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::EHLOCommand::Invoke(SMTPCommandArguments arguments)
 {
@@ -19,7 +20,7 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::EHLOCommand::Invoke(SMTPCommandArgument
 	arguments.context.state = SMTPStates::POST_EHLO;
 
 	return {
-		SMTPReply(250, std::string(arguments.context.domain + " greets ") + domain, true),
+		SMTPReply(250, std::string(ISXSMTP::SMTPSession::GetDomain() + " greets ") + domain, true),
 		SMTPReply(250, std::string("HELP"))
 	};
 }
