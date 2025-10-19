@@ -20,7 +20,7 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::RCPTCommand::Invoke(SMTPCommandArgument
 		return { SMTPReply::MailboxUnavailable550() };*/
 
 	// there can be multiple recipients
-	// so delimiter uses to distinguish them
+	// so delimiter used to distinguish them
 	arguments.context.forward_path.Append(forward_path + ";");
 	
 	arguments.context.state = SMTPStates::POST_RCPT;

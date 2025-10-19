@@ -6,7 +6,7 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::RSETCommand::Invoke(SMTPCommandArgument
 	arguments.context.forward_path.Clear();
 	arguments.context.reverse_path.Clear();
 	arguments.context.mail_data.Clear();
-	arguments.context.state.Set(SMTPStates::INITIAL);
+	arguments.context.state.Set(SMTPStates::POST_EHLO);
 
 	return { SMTPReply::OK() };
 }
