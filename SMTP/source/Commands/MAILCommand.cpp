@@ -3,8 +3,10 @@
 
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::MAILCommand::Invoke(SMTPCommandArguments arguments)
 {
-	// mail command should be called after ehlo or helo
-	if (arguments.context.state == SMTPStates::FINISH || arguments.context.state == SMTPStates::INITIAL)
+	if (arguments.context.state == SMTPStates::POST_RCPT || // mail command cannot be called when another transaction is in progress
+		arguments.context.state == SMTPStates::INITIAL   || // mail should be called after ehlo or helo command
+		arguments.context.state == SMTPStates::POST_DATA || // mail command cannot be called when another transaction is in progress
+		arguments.context.state == SMTPStates::FINISH)		// mail command cannot be called after quit 
 		return { SMTPReply::BadSequenceOfCommands() };
 
 	std::string reverse_path;
