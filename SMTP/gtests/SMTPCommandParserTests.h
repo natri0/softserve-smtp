@@ -18,7 +18,6 @@
 #include <unordered_map>
 #include <memory>
 
-
 using namespace ISXSMTP;
 
 class SMTPCommandParserTest : public testing::Test
