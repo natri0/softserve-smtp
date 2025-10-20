@@ -1,5 +1,8 @@
 #include "Commands/RCPTCommand.h"
 #include "SMTPConstants.h"
+#include "SMTPSession.h"
+
+#include <regex>
 
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::RCPTCommand::Invoke(SMTPCommandArguments arguments)
 {
@@ -16,11 +19,23 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::RCPTCommand::Invoke(SMTPCommandArgument
 		return { SMTPReply::SyntaxError() };
 	}
 
+	// check if forward_path is valid mail address
+	static std::regex mail_pattern("(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+");
+	if (!std::regex_match(forward_path, mail_pattern))
+		return { SMTPReply::MailboxSyntaxIncorrect() };
+		
+	// then we check if this address is from our domain
+	auto snail_pos = forward_path.find_first_of('@');
+	std::string domain = std::string(forward_path.begin() + snail_pos + 1, forward_path.end());
+	if (domain != ISXSMTP::SMTPSession::GetDomain())
+		return { SMTPReply::MailboxUnavailable550() };
+
+
 	/*if (!arguments.mailbox->IsMailboxAvailable(forward_path))
 		return { SMTPReply::MailboxUnavailable550() };*/
 
 	// there can be multiple recipients
-	// so delimiter used to distinguish them
+	// so we add a delimiter used to distinguish them
 	arguments.context.forward_path.Append(forward_path + ";");
 	
 	arguments.context.state = SMTPStates::POST_RCPT;

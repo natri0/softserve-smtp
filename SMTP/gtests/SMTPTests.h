@@ -13,7 +13,7 @@ protected:
 	SMTPTest()
 		: session(nullptr)
 	{
-
+		session.SetDomain("path.com");
 	}
 
 	void SetUp() override {

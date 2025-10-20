@@ -79,6 +79,7 @@ public:
 	static SMTPReply ExceededStorageAllocation();
 	static SMTPReply StartMailInput();
 	static SMTPReply TransactionFailed();
+	static SMTPReply MailboxSyntaxIncorrect();
 	
 	bool operator==(const SMTPReply& other);
 	bool operator!=(const SMTPReply& other);

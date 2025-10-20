@@ -150,6 +150,11 @@ ISXSMTP::SMTPReply ISXSMTP::SMTPReply::TransactionFailed()
 	return SMTPReply(554, "Transaction failed");
 }
 
+ISXSMTP::SMTPReply ISXSMTP::SMTPReply::MailboxSyntaxIncorrect()
+{
+	return SMTPReply(553, "Requested action not taken: mailbox syntax is incorrect");
+}
+
 bool ISXSMTP::SMTPReply::operator!=(const SMTPReply& other)
 {
 	return !(*this == other);
