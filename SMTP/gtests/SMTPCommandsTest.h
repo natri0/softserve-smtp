@@ -136,6 +136,25 @@ TEST(SMTPCommandsTest, MAILBadSequenceTest)
 		response.c_str());
 }
 
+TEST(SMTPCommandsTest, MAILBadArgTest)
+{
+	MAILCommand command;
+	SMTPContext context;
+	SMTPCommandArguments args(context, {}, nullptr);
+	args.arguments["reverse_path"] = "not mail address";
+	context.state = SMTPStates::POST_EHLO;
+
+	auto reply = command.Invoke(args);
+	std::string response;
+	for (auto i : reply)
+	{
+		response.append_range(i.ToString());
+	}
+
+	ASSERT_STREQ(std::string("553 Requested action not taken: mailbox syntax is incorrect\r\n").c_str(),
+		response.c_str());
+}
+
 TEST(SMTPCommandsTest, RCPTTest)
 {
 	RCPTCommand command;

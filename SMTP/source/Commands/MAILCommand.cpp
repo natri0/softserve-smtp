@@ -1,6 +1,8 @@
 #include "Commands/MAILCommand.h"
 #include "SMTPConstants.h"
 
+#include <regex>
+
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::MAILCommand::Invoke(SMTPCommandArguments arguments)
 {
 	if (arguments.context.state == SMTPStates::POST_RCPT || // mail command cannot be called when another transaction is in progress
@@ -18,6 +20,14 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::MAILCommand::Invoke(SMTPCommandArgument
 	{
 		reverse_path = "";
 		//return { SMTPReply::SyntaxError() };
+	}
+
+	// check if forward_path is valid mail address
+	if (!reverse_path.empty())
+	{ 
+		static std::regex mail_pattern("(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+");
+		if (!std::regex_match(reverse_path, mail_pattern))
+			return { SMTPReply::MailboxSyntaxIncorrect() };
 	}
 
 	arguments.context.forward_path.Clear();
