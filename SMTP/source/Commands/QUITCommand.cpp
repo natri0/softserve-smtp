@@ -1,12 +1,12 @@
 #include "Commands/QUITCommand.h"
 #include "SMTPConstants.h"
-#include "SMTPSession.h"
+#include "SMTPDomain.h"
 
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::QUITCommand::Invoke(SMTPCommandArguments arguments)
 {
 	arguments.context.state.Set(SMTPStates::FINISH);
 
-	return { SMTPReply::ServiceClosing(ISXSMTP::SMTPSession::GetDomain()) };
+	return { SMTPReply::ServiceClosing(ISXSMTP::g_ServerDomain) };
 }
 
 std::string ISXSMTP::QUITCommand::GetName()

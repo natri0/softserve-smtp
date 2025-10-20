@@ -33,7 +33,7 @@ TEST(SMTPCommandsTest, EHLOTest)
 		response.append_range(i.ToString());
 	}
 
-	ASSERT_STREQ(std::string("250-" + ISXSMTP::SMTPSession::GetDomain() + " greets test.string\r\n250 HELP\r\n").c_str(),
+	ASSERT_STREQ(std::string("250-" + ISXSMTP::g_ServerDomain + " greets test.string\r\n250 HELP\r\n").c_str(),
 		response.c_str());
 	ASSERT_EQ(context.state, SMTPStates::POST_EHLO);
 
@@ -72,7 +72,7 @@ TEST(SMTPCommandsTest, HELOTest)
 		response.append_range(i.ToString());
 	}
 
-	ASSERT_STREQ(std::string("250 " + ISXSMTP::SMTPSession::GetDomain() + " greets test.string\r\n").c_str(),
+	ASSERT_STREQ(std::string("250 " + ISXSMTP::g_ServerDomain + " greets test.string\r\n").c_str(),
 		response.c_str());
 	ASSERT_EQ(context.state, SMTPStates::POST_EHLO);
 }
@@ -141,7 +141,7 @@ TEST(SMTPCommandsTest, RCPTTest)
 	RCPTCommand command;
 	SMTPContext context;
 	SMTPCommandArguments args(context, {}, nullptr);
-	args.arguments["forward_path"] = "forward@path.com";
+	args.arguments["forward_path"] = "forward@smtp.test";
 	context.state = SMTPStates::POST_MAIL;
 
 	auto reply = command.Invoke(args);
@@ -154,7 +154,7 @@ TEST(SMTPCommandsTest, RCPTTest)
 	ASSERT_STREQ(std::string("250 Action completed\r\n").c_str(),
 		response.c_str());
 	ASSERT_EQ(context.state, SMTPStates::POST_RCPT);
-	ASSERT_STREQ(context.forward_path.GetString().c_str(), "forward@path.com;");
+	ASSERT_STREQ(context.forward_path.GetString().c_str(), "forward@smtp.test;");
 }
 
 TEST(SMTPCommandsTest, RCPTBadSequenceTest)
@@ -192,6 +192,25 @@ TEST(SMTPCommandsTest, RCPTNoArgTest)
 	}
 
 	ASSERT_STREQ(std::string("501 Syntax error in parameters or arguments\r\n").c_str(),
+		response.c_str());
+}
+
+TEST(SMTPCommandsTest, RCPTBadArgTest)
+{
+	RCPTCommand command;
+	SMTPContext context;
+	SMTPCommandArguments args(context, {}, nullptr);
+	args.arguments["forward_path"] = "not mail address";
+	context.state = SMTPStates::POST_RCPT;
+
+	auto reply = command.Invoke(args);
+	std::string response;
+	for (auto i : reply)
+	{
+		response.append_range(i.ToString());
+	}
+
+	ASSERT_STREQ(std::string("553 Requested action not taken: mailbox syntax is incorrect\r\n").c_str(),
 		response.c_str());
 }
 
@@ -287,7 +306,7 @@ TEST(SMTPCommandsTest, QUITTest)
 		response.append_range(i.ToString());
 	}
 
-	ASSERT_STREQ(std::string("221 " + ISXSMTP::SMTPSession::GetDomain() + " Service closing transmission channel\r\n").c_str(),
+	ASSERT_STREQ(std::string("221 " + ISXSMTP::g_ServerDomain + " Service closing transmission channel\r\n").c_str(),
 		response.c_str());
 	ASSERT_EQ(context.state, SMTPStates::FINISH);
 }

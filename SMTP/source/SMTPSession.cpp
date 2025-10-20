@@ -10,10 +10,10 @@
 #include "Commands/HELOCommand.h"
 #include "SMTPConstants.h"
 #include "SMTPCommandParser.h"
+#include "SMTPDomain.h"
 
 #include <iostream>
 
-std::string ISXSMTP::SMTPSession::s_domain = "smtp.test";
 std::unordered_map<std::string, std::unique_ptr<ISXSMTP::SMTPCommandBase>> ISXSMTP::SMTPSession::s_commands = {};
 
 ISXSMTP::SMTPSession::SMTPSession(std::shared_ptr<ISMTPMailbox> mailbox, SMTPContext context /*= {}*/)
@@ -33,7 +33,7 @@ bool ISXSMTP::SMTPSession::IsFinished()
 
 std::string ISXSMTP::SMTPSession::OnConnect()
 {
-	return SMTPReply::ServiceReady(ISXSMTP::SMTPSession::GetDomain()).ToString();
+	return SMTPReply::ServiceReady(ISXSMTP::g_ServerDomain).ToString();
 }
 
 std::string ISXSMTP::SMTPSession::OnMessage(const std::string& message)
@@ -88,16 +88,6 @@ std::string ISXSMTP::SMTPSession::OnMessage(const std::string& message)
 ISXSMTP::SMTPContext ISXSMTP::SMTPSession::GetContext()
 {
 	return m_context;
-}
-
-std::string ISXSMTP::SMTPSession::GetDomain()
-{
-	return ISXSMTP::SMTPSession::s_domain;
-}
-
-void ISXSMTP::SMTPSession::SetDomain(const std::string& domain)
-{
-	ISXSMTP::SMTPSession::s_domain = domain;
 }
 
 bool ISXSMTP::SMTPSession::handleMailDataInput(const std::string& data)

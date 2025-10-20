@@ -19,7 +19,7 @@ add_library(SMTP
 	 "source/SMTPState.cpp" 
 	 "source/SMTPReply.cpp" 
 	 "source/SMTPCommandParser.cpp" 
-	  )
+	 "source/SMTPDomain.cpp")
 target_include_directories(SMTP PUBLIC "include")
 
 add_subdirectory(gtests)
