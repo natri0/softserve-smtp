@@ -18,13 +18,10 @@ class SMTPSession
 {
 private:
 	std::shared_ptr<ISMTPMailbox> m_mailbox;
-
 	SMTPContext m_context;
-
-	std::unordered_map<std::string, std::unique_ptr<SMTPCommandBase>> m_commands;
-
 	std::string m_clientInputBuffer;
 
+	static std::unordered_map<std::string, std::unique_ptr<SMTPCommandBase>> s_commands;
 	static std::string s_domain;
 
 public:

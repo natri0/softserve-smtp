@@ -14,12 +14,14 @@
 #include <iostream>
 
 std::string ISXSMTP::SMTPSession::s_domain = "smtp.test";
+std::unordered_map<std::string, std::unique_ptr<ISXSMTP::SMTPCommandBase>> ISXSMTP::SMTPSession::s_commands = {};
 
 ISXSMTP::SMTPSession::SMTPSession(std::shared_ptr<ISMTPMailbox> mailbox, SMTPContext context /*= {}*/)
 	: m_mailbox(mailbox)
 	, m_context(context)
 {
-	fillCommandMap();
+	if (s_commands.empty())
+		fillCommandMap();
 }
 
 bool ISXSMTP::SMTPSession::IsFinished()
@@ -58,7 +60,7 @@ std::string ISXSMTP::SMTPSession::OnMessage(const std::string& message)
 		return {};
 	}
 
-	auto command_parser_result = SMTPCommandParser::Parse(m_clientInputBuffer, m_commands);
+	auto command_parser_result = SMTPCommandParser::Parse(m_clientInputBuffer, s_commands);
 	if (command_parser_result.error_code != SMTPReply::OK())
 	{
 		// failed to parse command
@@ -71,7 +73,7 @@ std::string ISXSMTP::SMTPSession::OnMessage(const std::string& message)
 		m_mailbox);
 
 	// invoke command
-	auto command_result = m_commands[command_parser_result.command_verb]->Invoke(command_arguments);
+	auto command_result = s_commands[command_parser_result.command_verb]->Invoke(command_arguments);
 	
 	m_clientInputBuffer.clear();
 
@@ -151,15 +153,15 @@ void ISXSMTP::SMTPSession::fillCommandMap()
 	auto RSET = std::make_unique<RSETCommand>();
 	auto QUIT = std::make_unique<QUITCommand>();
 	auto NOOP = std::make_unique<NOOPCommand>();
-	m_commands[EHLO->GetName()] = std::move(EHLO);
-	m_commands[MAIL->GetName()] = std::move(MAIL);
-	m_commands[RCPT->GetName()] = std::move(RCPT);
-	m_commands[DATA->GetName()] = std::move(DATA);
-	m_commands[HELP->GetName()] = std::move(HELP);
-	m_commands[HELO->GetName()] = std::move(HELO);
-	m_commands[RSET->GetName()] = std::move(RSET);
-	m_commands[QUIT->GetName()] = std::move(QUIT);
-	m_commands[NOOP->GetName()] = std::move(NOOP);
+	s_commands[EHLO->GetName()] = std::move(EHLO);
+	s_commands[MAIL->GetName()] = std::move(MAIL);
+	s_commands[RCPT->GetName()] = std::move(RCPT);
+	s_commands[DATA->GetName()] = std::move(DATA);
+	s_commands[HELP->GetName()] = std::move(HELP);
+	s_commands[HELO->GetName()] = std::move(HELO);
+	s_commands[RSET->GetName()] = std::move(RSET);
+	s_commands[QUIT->GetName()] = std::move(QUIT);
+	s_commands[NOOP->GetName()] = std::move(NOOP);
 }
 
 
