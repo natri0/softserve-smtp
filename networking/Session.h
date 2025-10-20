@@ -7,6 +7,7 @@
 
 #include <boost/asio.hpp>
 #include <functional>
+#include <memory>
 #include <deque>
 #include <array>
 

@@ -7,13 +7,8 @@ set(BOOST_ROOT "C:/Users/alkir/boost_1_89_0/boost_1_89_0")
 
 add_executable(smtp_server main.cpp
         ../networking/Session.cpp
-        ../networking/Session.h
         Server.cpp
-        Server.h
-        ../client/Client.cpp
-        ../client/Client.h
         ThreadPool/src/ThreadPool.cpp
-        ThreadPool/include/ThreadPool.hpp
 )
 
 target_include_directories(smtp_server PRIVATE ${BOOST_ROOT})
