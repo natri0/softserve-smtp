@@ -12,7 +12,7 @@ namespace smtp::ssl {
 
   std::shared_ptr<SSLContextFactory::SSLContext>
   SSLContextFactory::createServerContext() {
-    auto ctx = std::make_shared<SSLContext>(boost::asio::ssl::context::tlsv12_server);
+    auto ctx = std::make_shared<SSLContext>(boost::asio::ssl::context::tlsv13_server);
 
     configureContext(*ctx);
     ctx->set_options(boost::asio::ssl::context::single_dh_use);
@@ -26,7 +26,7 @@ namespace smtp::ssl {
 
   std::shared_ptr<SSLContextFactory::SSLContext>
   SSLContextFactory::createClientContext() {
-    auto ctx = std::make_shared<SSLContext>(boost::asio::ssl::context::tlsv12_client);
+    auto ctx = std::make_shared<SSLContext>(boost::asio::ssl::context::tlsv13_client);
 
     configureContext(*ctx);
 

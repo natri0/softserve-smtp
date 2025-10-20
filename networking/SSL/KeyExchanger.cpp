@@ -15,9 +15,9 @@ namespace smtp::ssl {
       throw std::runtime_error("Failed to init DH paramgen");
     }
 
-    if (EVP_PKEY_CTX_set_dh_paramgen_prime_len(pctx, 2048) != 1) {
+    if (EVP_PKEY_CTX_set_dh_rfc5114(pctx, 2) != 1) {
       EVP_PKEY_CTX_free(pctx);
-      throw std::runtime_error("Failed to set DH prime length");
+      throw std::runtime_error("Failed to set DH RFC 5114 group");
     }
 
     EVP_PKEY *params = nullptr;
@@ -65,24 +65,20 @@ namespace smtp::ssl {
 
   bool KeyExchange::assignKey(std::vector<unsigned char>& keyContainer, EVP_PKEY* pkey, const bool isPublic) {
     unsigned char *buf = nullptr;
-    int len;
-
-    if (isPublic)
-      len = i2d_PUBKEY(pkey, &buf);
-    else
-      len = i2d_PrivateKey(pkey, &buf);
+    const int len = isPublic ? i2d_PUBKEY(pkey, &buf) : i2d_PrivateKey(pkey, &buf);
 
     if (len < 0) {
       EVP_PKEY_free(pkey);
       return false;
     }
+
     keyContainer.assign(buf, buf + len);
     OPENSSL_free(buf);
     return true;
   }
 
   std::vector<unsigned char> KeyExchange::performDHExchange(
-    const std::vector<unsigned char> &peerPublicKey,
+    const std::vector<unsigned char> &publicKey,
     const std::vector<unsigned char> &privateKey)
   {
     const unsigned char *priv_ptr = privateKey.data();
@@ -91,8 +87,8 @@ namespace smtp::ssl {
       throw std::runtime_error("Failed to load private key");
     }
 
-    const unsigned char *pub_ptr = peerPublicKey.data();
-    EVP_PKEY *peerKey = d2i_PUBKEY(nullptr, &pub_ptr, static_cast<long>(peerPublicKey.size()));
+    const unsigned char *pub_ptr = publicKey.data();
+    EVP_PKEY *peerKey = d2i_PUBKEY(nullptr, &pub_ptr, static_cast<long>(publicKey.size()));
     if (!peerKey) {
       EVP_PKEY_free(privKey);
       throw std::runtime_error("Failed to load peer public key");
@@ -144,11 +140,11 @@ namespace smtp::ssl {
     EVP_KDF_free(kdf);
     if (!kctx) throw std::runtime_error("Failed to create KDF context");
 
-    const char *digest = "SHA256";
-    const char *salt = "smtp-ssl-salt";
-    const char *info = "session-key";
+    static auto digest = "SHA256";
+    static auto salt = "smtp-ssl-salt";
+    static auto info = "session-key";
 
-    OSSL_PARAM params[] = {
+    const OSSL_PARAM params[] = {
       OSSL_PARAM_construct_utf8_string("digest", const_cast<char *>(digest), 0),
       OSSL_PARAM_construct_octet_string("key", const_cast<unsigned char *>(sharedSecret.data()), sharedSecret.size()),
       OSSL_PARAM_construct_octet_string("salt", const_cast<char *>(salt), std::strlen(salt)),

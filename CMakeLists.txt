@@ -25,6 +25,16 @@ set_target_properties(OpenSSL::SSL PROPERTIES
 )
 target_link_libraries(OpenSSL::SSL INTERFACE OpenSSL::Crypto)
 
+include(FetchContent)
+FetchContent_Declare(
+        googletest
+        URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
+)
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
+enable_testing()
+
 add_subdirectory(server)
 add_subdirectory(utils)
 add_subdirectory(client)
