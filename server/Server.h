@@ -11,7 +11,10 @@
 #include <memory>
 #include <vector>
 
+#include "ServerConsoleUI.h"
+
 class ThreadPool;
+class ServerConsoleUI;
 
 class Server : public std::enable_shared_from_this<Server>{
 public:
@@ -43,6 +46,8 @@ private:
     bool isStopping = false;
     std::condition_variable mainThreadCV;
     std::mutex mainThreadMutex;
+
+    std::shared_ptr<ServerConsoleUI> ui = std::make_shared<ServerConsoleUI>();
 
     // temp
     std::string print(const std::string& str);

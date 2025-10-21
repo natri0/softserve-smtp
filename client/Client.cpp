@@ -16,13 +16,13 @@ Client::Client(const std::string& host, const unsigned short port) :
 
 Client::~Client()
 {
-    stop();
+    // stop();
 }
 
 bool Client::start()
 {
     if (!init()) return false;
-    if (!connect()) return false;
+    connect();
     if (!run()) return false;
     return true;
 }
@@ -32,8 +32,13 @@ bool Client::init()
     session->setOnMessage([this](const std::string& msg)
     {
         // here will be smtp logic for choosing proper reaction to the command from server
-        std::cout << msg << std::endl;
-        session->send("smth");
+        // std::cout << msg << std::endl;
+        session->send(email_info.body);
+    });
+
+    session->setOnConnected([this]()
+    {
+        std::cout << "Client started" << std::endl;
     });
 
     session->setOnDisconnect([this]() { reconnect(); });
@@ -41,47 +46,48 @@ bool Client::init()
     return true;
 }
 
-bool Client::connect()
+void Client::connect()
 {
-    if (session->isConnected()) return false;
-
-    if (!session->connect(server_endpoint))
-    {
-        reconnect();
-        return false;
-    }
-    return true;
+    if (session->isConnected()) return;
+    session->connect(server_endpoint);
 }
 
 void Client::reconnect()
 {
+    timer.cancel();
     timer.expires_after(std::chrono::seconds(RECONNECT_DELAY_TIME));
     timer.async_wait([this](boost::system::error_code ec)
     {
-        if (!ec) this->connect();
+        if (!ec)
+        {
+            connect();
+            if (!session->isConnected()) reconnect();
+            else run();
+        }
     });
 }
 
 
 bool Client::run()
 {
-    if (!session->isConnected()) return false;
+    // if (!session->isConnected()) return false;
 
     if (isRunning) return false;
     isRunning = true;
 
     io_thread = std::jthread([this]() { io.run(); });
-
-    session->run();
+    session_thread = std::jthread([this]() { session->run(); });
 
     return true;
 };
 
-void Client::sendMail()
+void Client::sendMail(EmailMessage e_msg)
 {
-    if (!isRunning || !session->isConnected()) return;
+    if (!isRunning) return;
     // here will be init msg for e-mail transferring
-    session->send("EHLO");
+
+    email_info = e_msg;
+    session->send(email_info.body);
 }
 
 bool Client::stop()

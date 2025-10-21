@@ -18,12 +18,16 @@ Session::~Session() { disconnect(); }
 bool Session::connect(const net::ip::tcp::endpoint& endpoint)
 {
     if (socket->is_open()) socket->close();
-    // socket->connect(endpoint);
     socket->async_connect(endpoint, [this](const boost::system::error_code& ec)
     {
-        if (!ec) std::cout << "Connected!" << std::endl;
+        if (!ec)
+        {
+            connected = true;
+            if (onConnected) onConnected();
+        }
         else
         {
+            connected = false;
             if (onDisconnect) onDisconnect();
             std::cerr << "Connect failed: " << ec.message() << std::endl;
         }
@@ -33,7 +37,9 @@ bool Session::connect(const net::ip::tcp::endpoint& endpoint)
 
 bool Session::disconnect()
 {
-    if (!socket->is_open()) return false;
+    if (!connected) return false;
+    connected = false;
+
     boost::system::error_code ec;
     socket->cancel(ec);
     socket->shutdown(net::socket_base::shutdown_both, ec);
@@ -55,7 +61,11 @@ bool Session::run()
     {
         read();
     }
-    catch (const boost::system::system_error& e) { if (onDisconnect) onDisconnect(); }
+    catch (const boost::system::system_error& e)
+    {
+        connected = false;
+        if (onDisconnect) onDisconnect();
+    }
     return true;
 }
 
@@ -80,8 +90,11 @@ void Session::write()
                              if (!self->writeQueue.empty()) self->write();
                              else self->isWriting = false;
                          }
-                         else
-                             if (self->onDisconnect && ec != net::error::operation_aborted) self->onDisconnect();
+                         else if (self->onDisconnect && ec != net::error::operation_aborted)
+                         {
+                             self->onDisconnect();
+                             self->connected = false;
+                         }
                      });
 }
 
@@ -100,7 +113,9 @@ void Session::read()
                                     self->read();
                                 }
                                 else if (self->onDisconnect && ec != net::error::operation_aborted)
-                                    self->
-                                        onDisconnect();
+                                {
+                                    self->onDisconnect();
+                                    self->connected = false;
+                                }
                             });
 }
