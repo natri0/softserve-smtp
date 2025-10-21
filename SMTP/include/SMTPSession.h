@@ -26,7 +26,7 @@ private:
 public:
 	/**
 	 * @brief Constructor
-	 * @param optionally context SMTPContext can be passed
+	 * @param optionally config can be passed, default used otherwise
 	 */
 	SMTPSession(const SMTPConfig& config = ISXSMTP::SMTPConfigBuilder::GetDefaultConfig());
 
@@ -50,11 +50,16 @@ public:
 	std::string OnMessage(const std::string& message);
 
 	/**
-	 * @brief Returns pointer to current context
+	 * @brief Returns current context
 	 * @return SMTPContext
 	 */
 	SMTPContext GetContext();
 
+	/**
+	 * @brief Applies passed config
+	 * @param config const SMTPConfig& 
+	 * @return true if successful, false otherwise
+	 */
 	bool ApplyConfig(const SMTPConfig& config);
 
 private:
@@ -70,9 +75,26 @@ private:
 	 */
 	bool handleMailDataInput(const std::string& data);
 
+	/**
+	 * @brief Checks if config is valid
+	 * @param config const SMTPConfig&
+	 * @return true if ok, false otherwise
+	 */
 	bool checkConfig(const SMTPConfig& config);
 
+	/**
+	 * @brief Checks is mail data has proper ending (<CLRF>.<CLRF>)
+	 * @param data const std::string&
+	 * @return true if proper ending is present, false otherwise
+	 */
 	bool IsDataEndingPresent(const std::string& data);
+
+	
+	/**
+	 * @brief Checks is line has proper ending (<CLRF>)
+	 * @param data const std::string&
+	 * @return true if proper ending is present, false otherwise
+	 */
 	bool IsLineEndingPresent(const std::string& data);
 };
 

@@ -18,7 +18,7 @@ std::unordered_map<std::string, std::unique_ptr<ISXSMTP::SMTPCommandBase>> ISXSM
 
 ISXSMTP::SMTPSession::SMTPSession(const SMTPConfig& config /*= SMTPConfigBuilder::GetDefaultConfig()*/)
 {
-	ApplyConfig(config);
+	ApplyConfig(config); // TODO log if apply config failed
 
 	if (s_commands.empty())
 		fillCommandMap();

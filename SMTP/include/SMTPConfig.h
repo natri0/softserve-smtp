@@ -7,7 +7,10 @@
 namespace ISXSMTP
 {
 
-class SMTPConfig
+/**
+ * @brief This struct represents config for SMTP
+ */
+struct SMTPConfig
 {
 public:
 	std::string domain;
