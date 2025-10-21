@@ -3,15 +3,25 @@ project(smtp_client)
 
 set(CMAKE_CXX_STANDARD 23)
 
-set(BOOST_ROOT "C:/Users/alkir/boost_1_89_0/boost_1_89_0")
+find_package(Boost REQUIRED COMPONENTS system thread asio)
+find_package(OpenSSL REQUIRED)
 
 add_executable(smtp_client main.cpp
-
         ../networking/Session.cpp
         Client.cpp
         EmailMessage.cpp
-        EmailMessage.h
 )
 
-target_include_directories(smtp_client PRIVATE ${BOOST_ROOT})
-target_link_libraries(smtp_client PRIVATE ws2_32 mswsock networking)
+target_include_directories(smtp_client PRIVATE ${Boost_INCLUDE_DIRS}
+)
+
+target_link_libraries(smtp_client PRIVATE ws2_32
+        ${Boost_LIBRARIES}
+        mswsock
+        networking
+        ssl_support
+        OpenSSL::SSL
+        OpenSSL::Crypto
+)
+
+#C:/Users/alkir/vcpkg/scripts/buildsystems/vcpkg.cmake

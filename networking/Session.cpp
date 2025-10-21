@@ -4,7 +4,6 @@
 
 #include "Session.h"
 #include <iostream>
-#include <mutex>
 
 constexpr std::size_t BUFFER_SIZE = 1024;
 constexpr int RECONNECT_DELAY_MS = 2000;

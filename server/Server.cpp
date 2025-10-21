@@ -14,6 +14,7 @@ constexpr uint8_t THREADS_NUM = 8;
 Server::Server() : io(std::make_shared<boost::asio::io_context>()),
                    work(io->get_executor()), acceptor(net::ip::tcp::acceptor(*io)),
                    threadPool(std::make_unique<ThreadPool>(THREADS_NUM))
+                   ,sslContext(smtp::ssl::SSLContextFactory::createServerContext())
 {
 }
 
@@ -26,6 +27,7 @@ bool Server::init()
 {
     // initialization from config
     ui->showBanner(port);
+
     if (!setUpAcceptor()) return false;
     threadPool->start();
 
@@ -106,6 +108,8 @@ void Server::runAcceptor()
         if (!ec)
         {
             const auto session = std::make_shared<Session>(socket);
+
+            // auto [serverPub, serverPriv] = smtp::ssl::KeyExchange::generateKeyPair();
 
             session->setOnMessage([this, session](const std::string& msg)
             {
