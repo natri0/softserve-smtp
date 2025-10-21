@@ -29,6 +29,12 @@ ISXSMTP::SMTPConfigBuilder& ISXSMTP::SMTPConfigBuilder::SetContext(const SMTPCon
 	return *this;
 }
 
+ISXSMTP::SMTPConfigBuilder& ISXSMTP::SMTPConfigBuilder::SetMailbox(std::shared_ptr<SMTPIMailbox> mailbox)
+{
+	m_config.mailbox = mailbox;
+	return *this;
+}
+
 ISXSMTP::SMTPConfig ISXSMTP::SMTPConfigBuilder::Build() const
 {
 	return m_config;

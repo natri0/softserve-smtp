@@ -4,6 +4,7 @@
 #include "Commands/SMTPCommandBase.h"
 #include "SMTPConfig.h"
 #include "SMTPConfigBuilder.h"
+#include "SMTPIMailbox.h"
 
 #include <memory>
 #include <unordered_map>
@@ -21,6 +22,7 @@ private:
 	SMTPContext m_context;
 	std::string m_clientInputBuffer;
 	std::string m_domain;
+	std::shared_ptr<SMTPIMailbox> m_mailbox;
 
 	static std::unordered_map<std::string, std::unique_ptr<SMTPCommandBase>> s_commands;
 

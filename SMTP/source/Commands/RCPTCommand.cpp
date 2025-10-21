@@ -29,6 +29,14 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::RCPTCommand::Invoke(SMTPCommandArgument
 	if (domain != arguments.domain)
 		return { SMTPReply::MailboxUnavailable550() };
 
+	if (arguments.mailbox != nullptr) 
+	{
+		if (!arguments.mailbox->IsMailboxAvailable(forward_path))
+		{
+			return { SMTPReply::MailboxUnavailable550() };
+		}
+	}
+
 	// there can be multiple recipients
 	// so we add a delimiter used to distinguish them
 	arguments.context.forward_path.Append(forward_path + ";");

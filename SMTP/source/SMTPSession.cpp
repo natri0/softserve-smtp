@@ -45,6 +45,10 @@ std::string ISXSMTP::SMTPSession::OnMessage(const std::string& message)
 		// handle mail data
 		if (handleMailDataInput(message))
 		{
+			if (m_mailbox != nullptr)
+			{
+				m_mailbox->DepositMail(m_context.forward_path, m_context.reverse_path, m_context.mail_data);
+			}
 			return SMTPReply::OK().ToString();
 		}
 
@@ -69,7 +73,8 @@ std::string ISXSMTP::SMTPSession::OnMessage(const std::string& message)
 	SMTPCommandArguments command_arguments(
 		m_context,
 		command_parser_result.parsed_arguments,
-		m_domain);
+		m_domain,
+		m_mailbox);
 
 	// invoke command
 	auto command_result = s_commands[command_parser_result.command_verb]->Invoke(command_arguments);
@@ -106,12 +111,14 @@ bool ISXSMTP::SMTPSession::ApplyConfig(const SMTPConfig& config)
 
 		m_context = default_config.context;
 		m_domain = default_config.domain;
+		m_mailbox = default_config.mailbox;
 
 		return false;
 	}
 
 	m_context = config.context;
 	m_domain = config.domain;
+	m_mailbox = config.mailbox;
 
 	return true;
 }

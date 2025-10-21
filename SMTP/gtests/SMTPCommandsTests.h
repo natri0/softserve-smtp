@@ -23,7 +23,7 @@ class SMTPCommandsTest : public testing::Test
 {
 public:
 	SMTPCommandsTest()
-		: args(context, {}, "smtp.test")
+		: args(context, {}, "smtp.test", nullptr)
 	{
 
 	}

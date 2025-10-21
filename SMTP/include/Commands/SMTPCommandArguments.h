@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SMTPContext.h"
+#include "SMTPIMailbox.h"
 
 #include <unordered_map>
 #include <string>
@@ -18,16 +19,19 @@ struct SMTPCommandArguments
 	SMTPCommandArguments(
 			SMTPContext& context,
 			std::unordered_map<std::string, std::string> arguments,
-			const std::string& domain)
+			const std::string& domain,
+			std::shared_ptr<SMTPIMailbox> mailbox)
 		: context(context)
 		, arguments(arguments)
 		, domain(domain)
+		, mailbox(mailbox)
 	{
 	}
 
 	std::unordered_map<std::string, std::string> arguments;
 	SMTPContext& context;
 	std::string domain;
+	std::shared_ptr<SMTPIMailbox> mailbox;
 };
 
 }

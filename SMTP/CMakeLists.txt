@@ -21,7 +21,7 @@ add_library(SMTP
 	 "source/SMTPCommandParser.cpp" 
 	 
 	 "source/SMTPConfig.cpp"
-	 "source/SMTPConfigBuilder.cpp")
+	 "source/SMTPConfigBuilder.cpp" "include/SMTPIMailbox.h")
 
 target_include_directories(SMTP PUBLIC "include")
 

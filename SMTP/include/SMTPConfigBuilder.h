@@ -42,6 +42,13 @@ public:
 	SMTPConfigBuilder& SetContext(const SMTPContext& context);
 
 	/**
+	 * @brief Sets mailbox for the config
+	 * @param mailbox std::shared_ptr<SMTPIMailbox>
+	 * @return *this for chaining calls
+	 */
+	SMTPConfigBuilder& SetMailbox(std::shared_ptr<SMTPIMailbox> mailbox);
+
+	/**
 	 * @brief Builds config
 	 * @return SMTPConfig
 	 */
