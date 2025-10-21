@@ -2,7 +2,7 @@
 #include <iostream>
 #include <regex>
 #include <memory>
-#include "SMTPSession.hpp"
+#include "SMTPSessionForTest.hpp"
 
 class SmtpCommandProcessor {
 public:

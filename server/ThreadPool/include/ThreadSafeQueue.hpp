@@ -16,9 +16,16 @@
 template<typename T>
 class ThreadSafeQueue {
 private:
+    /** @brief Mutex for protecting queue access */
     mutable std::mutex queue_mutex;
+
+    /** @brief Condition variable for blocking pop operations */
     std::condition_variable cv;
-    std::atomic<bool> shutdown_flag = false;
+
+    /** @brief Atomic flag indicating if queue is shut down */
+    std::atomic<bool> shutdown_flag{false};
+
+    /** @brief Underlying queue container */
     std::queue<T> safe_queue;
 
 public:
@@ -41,9 +48,9 @@ public:
     * @return true if the element was added, false if queue is shutdown.
     */
     bool push(const T& item) {
-        if (shutdown_flag) return false;
         {
             std::lock_guard<std::mutex> lock(queue_mutex);
+            if (shutdown_flag) return false;
             safe_queue.push(item);
         }
         cv.notify_one();
@@ -55,9 +62,9 @@ public:
     * @return true if added, false if queue is closed.
     */
     bool push(T&& item) {
-        if (shutdown_flag) return false;
         {
             std::lock_guard<std::mutex> lock(queue_mutex);
+            if (shutdown_flag) return false;
             safe_queue.push(std::move(item));
         }
         cv.notify_one();
@@ -69,8 +76,7 @@ public:
     *
     * Blocks until an element is available or the queue is shutdown.
     *
-    * @param out Reference where the popped element will be stored.
-    * @return true if an element was popped, false if queue is empty and shutdown.
+    * @return std::optional<T> containing the element, or std::nullopt if shutdown.
     */
     std::optional<T> pop() {
         std::unique_lock<std::mutex> lock(queue_mutex);
@@ -84,6 +90,7 @@ public:
 
         auto result = std::move(safe_queue.front());
         safe_queue.pop();
+        
         return result;
     }
 
@@ -92,24 +99,69 @@ public:
     *
     * @return true if queue is empty, false otherwise.
     */
-    bool isEmpty() const{
+    bool isEmpty() const noexcept{
         std::lock_guard<std::mutex> lock(queue_mutex);
         return safe_queue.empty();
     }
 
+    /**
+    * @brief Check if the queue is shutdown.
+    *
+    * @return true if queue is shutdown, false otherwise.
+    */
     bool isShutdown() const noexcept {
         return shutdown_flag.load(std::memory_order_acquire);
     }
 
     /**
+    * @brief Clear all elements from the queue.
+    *
+    * Removes all pending elements from the queue in a thread-safe manner.
+    * Does not affect the shutdown state.
+    *
+    * @return true if queue was cleared (had elements), false if queue was already empty.
+    */
+    bool clear() noexcept { 
+        std::lock_guard<std::mutex> lock(queue_mutex);
+        if (safe_queue.empty()) return false;
+        std::queue<T> tmp;
+        std::swap(safe_queue, tmp);
+        return true;
+    }
+
+    /**
+    * @brief Get the number of elements in the queue.
+    *
+    * Thread-safe operation that returns the current queue size.
+    *
+    * @return Number of elements currently in the queue.
+    */
+    size_t size() const noexcept {
+        std::lock_guard<std::mutex> lock(queue_mutex);
+        return safe_queue.size();
+    }
+    /**
     * @brief Shutdown the queue.
     *
     * Sets the shutdown flag and notifies all waiting threads.
     * After shutdown, no more elements can be pushed.
+    *
+    * @param clear If true, clears all pending items from the queue.
     */
-    void shutDown() noexcept {
-        shutdown_flag.store(true, std::memory_order_release);
-        cv.notify_all();
-    }
+    bool shutDown(bool clear = false) noexcept {
+        {
+            std::lock_guard<std::mutex> lock(queue_mutex);
+            if (shutdown_flag.exchange(true, std::memory_order_acq_rel)){
+                return false; 
+            }
 
+            if (clear) {
+                std::queue<T> tmp;
+                std::swap(safe_queue, tmp);
+            }
+        }
+
+        cv.notify_all();
+        return true;
+    }
 };

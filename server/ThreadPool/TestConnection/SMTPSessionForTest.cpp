@@ -1,4 +1,4 @@
-#include "SMTPSession.hpp"
+#include "SMTPSessionForTest.hpp"
 
 SmtpSession::SmtpSession(std::shared_ptr<asio::ip::tcp::socket> sock)
     : socket(sock)

@@ -5,9 +5,9 @@
 #include <functional>
 #include "asio.hpp"
 
-#include "SmtpCommandProcessor.hpp"
+#include "SmtpCommandProcessorForTest.hpp"
 #include "ThreadPool.hpp"
-#include "SMTPSession.hpp"
+#include "SMTPSessionForTest.hpp"
 
 
 auto pool = std::make_unique<ThreadPool>(12);
