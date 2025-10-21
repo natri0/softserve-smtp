@@ -16,9 +16,10 @@
 
 std::unordered_map<std::string, std::unique_ptr<ISXSMTP::SMTPCommandBase>> ISXSMTP::SMTPSession::s_commands = {};
 
-ISXSMTP::SMTPSession::SMTPSession(SMTPContext context /*= {}*/)
-	: m_context(context)
+ISXSMTP::SMTPSession::SMTPSession(const SMTPConfig& config /*= SMTPConfigBuilder::GetDefaultConfig()*/)
 {
+	ApplyConfig(config);
+
 	if (s_commands.empty())
 		fillCommandMap();
 }
@@ -88,6 +89,33 @@ ISXSMTP::SMTPContext ISXSMTP::SMTPSession::GetContext()
 	return m_context;
 }
 
+bool ISXSMTP::SMTPSession::ApplyConfig(const SMTPConfig& config)
+{
+	if (checkConfig(config))
+	{
+		// bad config
+		// apply default
+		auto default_config = ISXSMTP::SMTPConfigBuilder::GetDefaultConfig();
+		if (checkConfig(default_config))
+		{
+			// fatal error
+			// default config is bad
+			// TODO: add logging and may be not terminate app
+			exit(-1);
+		}
+
+		m_context = default_config.context;
+		g_ServerDomain = default_config.domain;
+
+		return false;
+	}
+
+	m_context = config.context;
+	g_ServerDomain = config.domain;
+
+	return true;
+}
+
 bool ISXSMTP::SMTPSession::handleMailDataInput(const std::string& data)
 {
 	m_context.mail_data.Append(data);
@@ -96,6 +124,15 @@ bool ISXSMTP::SMTPSession::handleMailDataInput(const std::string& data)
 		m_context.state = SMTPStates::END_DATA;
 		return true;
 	}
+	return false;
+}
+
+bool ISXSMTP::SMTPSession::checkConfig(const SMTPConfig& config)
+{
+	// later more checks may be added
+
+	if (config.domain.empty())
+		return true;
 	return false;
 }
 

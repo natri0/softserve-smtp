@@ -2,7 +2,8 @@
 
 #include "SMTPTests.h"
 #include "SMTPCommandParserTests.h"
-#include "SMTPCommandsTest.h"
+#include "SMTPCommandsTests.h"
+#include "SMTPConfigBuilderTests.h"
 
 int main(int argc, char** argv) {
 	testing::InitGoogleTest(&argc, argv);

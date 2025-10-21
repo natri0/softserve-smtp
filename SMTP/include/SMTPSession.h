@@ -2,6 +2,8 @@
 
 #include "SMTPContext.h"
 #include "Commands/SMTPCommandBase.h"
+#include "SMTPConfig.h"
+#include "SMTPConfigBuilder.h"
 
 #include <memory>
 #include <unordered_map>
@@ -26,7 +28,7 @@ public:
 	 * @brief Constructor
 	 * @param optionally context SMTPContext can be passed
 	 */
-	SMTPSession(SMTPContext context = {});
+	SMTPSession(const SMTPConfig& config = ISXSMTP::SMTPConfigBuilder::GetDefaultConfig());
 
 	/**
 	 * @brief Returns true if the SMTPSession is finished its business with user
@@ -53,6 +55,8 @@ public:
 	 */
 	SMTPContext GetContext();
 
+	bool ApplyConfig(const SMTPConfig& config);
+
 private:
 	/**
 	 * @brief Fills std::unordered_map with commands and their command verbs (names)
@@ -65,6 +69,8 @@ private:
 	 * @return bool returns true if user finished entering mail data
 	 */
 	bool handleMailDataInput(const std::string& data);
+
+	bool checkConfig(const SMTPConfig& config);
 
 	bool IsDataEndingPresent(const std::string& data);
 	bool IsLineEndingPresent(const std::string& data);

@@ -5,6 +5,8 @@
 #include "SMTPDomain.h"
 #include "SMTPContext.h"
 #include "SMTPSession.h"
+#include "SMTPConfigBuilder.h"
+#include "SMTPConfig.h"
 
 using namespace ISXSMTP;
 

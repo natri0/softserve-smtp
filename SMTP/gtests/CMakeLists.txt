@@ -15,7 +15,7 @@ FetchContent_MakeAvailable(googletest)
 add_library(GTest::GTest INTERFACE IMPORTED)
 target_link_libraries(GTest::GTest INTERFACE gtest_main)
 
-add_executable(gtests "gtests.cpp")
+add_executable(gtests "gtests.cpp" "SMTPConfigBuilderTests.h")
 
 target_link_libraries(gtests SMTP gtest_main)
 
