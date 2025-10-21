@@ -23,7 +23,7 @@ class SMTPCommandsTest : public testing::Test
 {
 public:
 	SMTPCommandsTest()
-		: args(context, {})
+		: args(context, {}, "smtp.test")
 	{
 
 	}
@@ -44,7 +44,7 @@ TEST_F(SMTPCommandsTest, EHLOTest)
 		response.append_range(i.ToString());
 	}
 
-	ASSERT_STREQ(std::string("250-" + ISXSMTP::g_ServerDomain + " greets test.string\r\n250 HELP\r\n").c_str(),
+	ASSERT_STREQ(std::string("250-" + args.domain + " greets test.string\r\n250 HELP\r\n").c_str(),
 		response.c_str());
 	ASSERT_EQ(context.state, SMTPStates::POST_EHLO);
 
@@ -79,7 +79,7 @@ TEST_F(SMTPCommandsTest, HELOTest)
 		response.append_range(i.ToString());
 	}
 
-	ASSERT_STREQ(std::string("250 " + ISXSMTP::g_ServerDomain + " greets test.string\r\n").c_str(),
+	ASSERT_STREQ(std::string("250 " + args.domain + " greets test.string\r\n").c_str(),
 		response.c_str());
 	ASSERT_EQ(context.state, SMTPStates::POST_EHLO);
 }
@@ -307,7 +307,7 @@ TEST_F(SMTPCommandsTest, QUITTest)
 		response.append_range(i.ToString());
 	}
 
-	ASSERT_STREQ(std::string("221 " + ISXSMTP::g_ServerDomain + " Service closing transmission channel\r\n").c_str(),
+	ASSERT_STREQ(std::string("221 " + args.domain + " Service closing transmission channel\r\n").c_str(),
 		response.c_str());
 	ASSERT_EQ(context.state, SMTPStates::FINISH);
 }

@@ -20,6 +20,7 @@ class SMTPSession
 private:
 	SMTPContext m_context;
 	std::string m_clientInputBuffer;
+	std::string m_domain;
 
 	static std::unordered_map<std::string, std::unique_ptr<SMTPCommandBase>> s_commands;
 
@@ -61,6 +62,8 @@ public:
 	 * @return true if successful, false otherwise
 	 */
 	bool ApplyConfig(const SMTPConfig& config);
+
+	std::string GetDomain() const;
 
 private:
 	/**

@@ -19,7 +19,7 @@ add_library(SMTP
 	 "source/SMTPState.cpp" 
 	 "source/SMTPReply.cpp" 
 	 "source/SMTPCommandParser.cpp" 
-	 "source/SMTPDomain.cpp"
+	 
 	 "source/SMTPConfig.cpp"
 	 "source/SMTPConfigBuilder.cpp")
 

@@ -1,6 +1,5 @@
 #include "Commands/RCPTCommand.h"
 #include "SMTPConstants.h"
-#include "SMTPDomain.h"
 
 #include <regex>
 
@@ -27,12 +26,8 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::RCPTCommand::Invoke(SMTPCommandArgument
 	// then we check if this address is from our domain
 	auto snail_pos = forward_path.find_first_of('@');
 	std::string domain = std::string(forward_path.begin() + snail_pos + 1, forward_path.end());
-	if (domain != ISXSMTP::g_ServerDomain)
+	if (domain != arguments.domain)
 		return { SMTPReply::MailboxUnavailable550() };
-
-
-	/*if (!arguments.mailbox->IsMailboxAvailable(forward_path))
-		return { SMTPReply::MailboxUnavailable550() };*/
 
 	// there can be multiple recipients
 	// so we add a delimiter used to distinguish them

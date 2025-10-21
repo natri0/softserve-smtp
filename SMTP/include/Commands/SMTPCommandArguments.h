@@ -17,14 +17,17 @@ struct SMTPCommandArguments
 {
 	SMTPCommandArguments(
 			SMTPContext& context,
-			std::unordered_map<std::string, std::string> arguments)
+			std::unordered_map<std::string, std::string> arguments,
+			const std::string& domain)
 		: context(context)
 		, arguments(arguments)
+		, domain(domain)
 	{
 	}
 
 	std::unordered_map<std::string, std::string> arguments;
 	SMTPContext& context;
+	std::string domain;
 };
 
 }

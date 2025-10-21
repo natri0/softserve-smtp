@@ -1,6 +1,5 @@
 #include "Commands/HELOCommand.h"
 #include "SMTPConstants.h"
-#include "SMTPDomain.h"
 
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::HELOCommand::Invoke(SMTPCommandArguments arguments)
 {
@@ -16,7 +15,7 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::HELOCommand::Invoke(SMTPCommandArgument
 
 	arguments.context.state = SMTPStates::POST_EHLO;
 
-	std::string comment = std::string(ISXSMTP::g_ServerDomain + " greets ") + domain;
+	std::string comment = std::string(arguments.domain + " greets ") + domain;
 	return { SMTPReply(250, comment) };
 }
 

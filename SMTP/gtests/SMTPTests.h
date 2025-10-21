@@ -2,7 +2,6 @@
 
 #include <gtest/gtest.h>
 
-#include "SMTPDomain.h"
 #include "SMTPContext.h"
 #include "SMTPSession.h"
 #include "SMTPConfigBuilder.h"
@@ -33,15 +32,15 @@ protected:
 
 TEST_F(SMTPTest, OnConnectTest)
 {
-	ASSERT_STREQ(std::string("220 " + ISXSMTP::g_ServerDomain + " Service ready\r\n").c_str(), session.OnConnect().c_str());
+	ASSERT_STREQ(std::string("220 " + session.GetDomain() + " Service ready\r\n").c_str(), session.OnConnect().c_str());
 }
 
 TEST_F(SMTPTest, BasicUsageTest)
 {
-	ASSERT_STREQ(std::string("220 " + ISXSMTP::g_ServerDomain + " Service ready\r\n").c_str(),
+	ASSERT_STREQ(std::string("220 " + session.GetDomain() + " Service ready\r\n").c_str(),
 		session.OnConnect().c_str());
 
-	ASSERT_STREQ(std::string("250-" + ISXSMTP::g_ServerDomain + " greets some@domain.com\r\n250 HELP\r\n").c_str(),
+	ASSERT_STREQ(std::string("250-" + session.GetDomain() + " greets some@domain.com\r\n250 HELP\r\n").c_str(),
 		session.OnMessage("EHLO some@domain.com\r\n").c_str());
 
 	ASSERT_STREQ("250 Action completed\r\n",
@@ -61,7 +60,7 @@ TEST_F(SMTPTest, BasicUsageTest)
 	ASSERT_STREQ("250 Action completed\r\n",
 		session.OnMessage("Last part of data\r\n.\r\n").c_str());
 
-	ASSERT_STREQ(std::string("221 " + ISXSMTP::g_ServerDomain + " Service closing transmission channel\r\n").c_str(),
+	ASSERT_STREQ(std::string("221 " + session.GetDomain() + " Service closing transmission channel\r\n").c_str(),
 		session.OnMessage("QUIT\r\n").c_str());
 
 	auto context = session.GetContext();

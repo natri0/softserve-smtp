@@ -10,7 +10,6 @@
 #include "Commands/HELOCommand.h"
 #include "SMTPConstants.h"
 #include "SMTPCommandParser.h"
-#include "SMTPDomain.h"
 
 #include <iostream>
 
@@ -33,7 +32,7 @@ bool ISXSMTP::SMTPSession::IsFinished()
 
 std::string ISXSMTP::SMTPSession::OnConnect()
 {
-	return SMTPReply::ServiceReady(ISXSMTP::g_ServerDomain).ToString();
+	return SMTPReply::ServiceReady(m_domain).ToString();
 }
 
 std::string ISXSMTP::SMTPSession::OnMessage(const std::string& message)
@@ -69,7 +68,8 @@ std::string ISXSMTP::SMTPSession::OnMessage(const std::string& message)
 
 	SMTPCommandArguments command_arguments(
 		m_context,
-		command_parser_result.parsed_arguments);
+		command_parser_result.parsed_arguments,
+		m_domain);
 
 	// invoke command
 	auto command_result = s_commands[command_parser_result.command_verb]->Invoke(command_arguments);
@@ -105,15 +105,20 @@ bool ISXSMTP::SMTPSession::ApplyConfig(const SMTPConfig& config)
 		}
 
 		m_context = default_config.context;
-		g_ServerDomain = default_config.domain;
+		m_domain = default_config.domain;
 
 		return false;
 	}
 
 	m_context = config.context;
-	g_ServerDomain = config.domain;
+	m_domain = config.domain;
 
 	return true;
+}
+
+std::string ISXSMTP::SMTPSession::GetDomain() const
+{
+	return m_domain;
 }
 
 bool ISXSMTP::SMTPSession::handleMailDataInput(const std::string& data)
