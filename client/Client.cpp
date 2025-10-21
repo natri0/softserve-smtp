@@ -10,7 +10,8 @@ constexpr uint8_t RECONNECT_DELAY_TIME = 2;
 Client::Client(const std::string& host, const unsigned short port) :
     server_endpoint(net::ip::make_address(host), port),
     session(std::make_shared<Session>(std::make_shared<net::ip::tcp::socket>(io))),
-    timer(io)
+    timer(io),
+    sslContext(smtp::ssl::SSLContextFactory::createServerContext())
 {
 };
 
@@ -23,22 +24,34 @@ bool Client::start()
 {
     if (!init()) return false;
     connect();
-    if (!run()) return false;
     return true;
 }
 
 bool Client::init()
 {
+    // auto [clientPub, clientPriv] = smtp::ssl::KeyExchange::generateKeyPair();
+    // crypto key exchange section
+    // session->setOnMessage([this, clientPriv, clientPub](const std::string& msg)
     session->setOnMessage([this](const std::string& msg)
     {
-        // here will be smtp logic for choosing proper reaction to the command from server
-        // std::cout << msg << std::endl;
-        session->send(email_info.body);
+        // auto serverPub = Session::deserializeKey(msg);
+        //
+        // session->send(Session::serializeKey(clientPub));
+        //
+        // auto sharedSecret = smtp::ssl::KeyExchange::performDHExchange(serverPub, clientPriv);
+        // auto sessionKey = smtp::ssl::KeyExchange::deriveSessionKey(sharedSecret);
+        //
+        // session->setKey(sessionKey);
+        //
+        // std::cout << "Session key established" << std::endl;
+
+        run();
     });
+    //
 
     session->setOnConnected([this]()
     {
-        std::cout << "Client started" << std::endl;
+        std::cout << "Client connected" << std::endl;
     });
 
     session->setOnDisconnect([this]() { reconnect(); });
@@ -73,9 +86,14 @@ bool Client::run()
     // if (!session->isConnected()) return false;
 
     if (isRunning) return false;
-    isRunning = true;
+
+    session->setOnMessage([](const std::string& msg)
+    {
+        // here will be smtp logic for choosing proper reaction to the command from server
+    });
 
     io_thread = std::jthread([this]() { io.run(); });
+    isRunning = true;
     session_thread = std::jthread([this]() { session->run(); });
 
     return true;

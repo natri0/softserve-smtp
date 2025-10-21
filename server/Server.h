@@ -14,9 +14,9 @@
 #include "ServerConsoleUI.h"
 
 class ThreadPool;
-class ServerConsoleUI;
 
-class Server : public std::enable_shared_from_this<Server>{
+class Server : public std::enable_shared_from_this<Server>
+{
 public:
     Server();
     ~Server();
@@ -48,6 +48,9 @@ private:
     std::mutex mainThreadMutex;
 
     std::shared_ptr<ServerConsoleUI> ui = std::make_shared<ServerConsoleUI>();
+
+    // crypto
+    std::shared_ptr<smtp::ssl::SSLContextFactory::SSLContext> sslContext;
 
     // temp
     std::string print(const std::string& str);

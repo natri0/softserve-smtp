@@ -9,6 +9,7 @@
 #include <thread>
 
 #include "EmailMessage.h"
+#include "../networking/SSL/SSLContextFactory.h"
 
 class Client
 {
@@ -46,6 +47,8 @@ private:
 
     std::jthread io_thread;
     std::jthread session_thread;
+
+    std::shared_ptr<smtp::ssl::SSLContextFactory::SSLContext> sslContext;
 };
 
 

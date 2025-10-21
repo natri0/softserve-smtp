@@ -6,7 +6,8 @@
 #include <stdexcept>
 #include <cstring>
 
-namespace smtp::ssl {
+namespace smtp::ssl
+{
   CryptoManager::CryptoManager(const std::vector<unsigned char> &sessionKey) : sessionKey(sessionKey) {
     if (sessionKey.size() != 32) {
       throw std::invalid_argument("Session key must be 32 bytes");
