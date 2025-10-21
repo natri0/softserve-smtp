@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ISMTPMailbox.h"
 #include "SMTPContext.h"
 #include "Commands/SMTPCommandBase.h"
 
@@ -17,7 +16,6 @@ namespace ISXSMTP
 class SMTPSession
 {
 private:
-	std::shared_ptr<ISMTPMailbox> m_mailbox;
 	SMTPContext m_context;
 	std::string m_clientInputBuffer;
 
@@ -26,9 +24,9 @@ private:
 public:
 	/**
 	 * @brief Constructor
-	 * @param mailbox ISMTPMailbox; optionally context SMTPContext can be passed
+	 * @param optionally context SMTPContext can be passed
 	 */
-	SMTPSession(std::shared_ptr<ISMTPMailbox> mailbox, SMTPContext context = {});
+	SMTPSession(SMTPContext context = {});
 
 	/**
 	 * @brief Returns true if the SMTPSession is finished its business with user

@@ -12,7 +12,7 @@ class SMTPTest : public testing::Test
 {
 protected:
 	SMTPTest()
-		: session(nullptr)
+		: session()
 	{
 	}
 

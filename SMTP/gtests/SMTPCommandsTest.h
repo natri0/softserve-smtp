@@ -19,11 +19,22 @@
 #include <unordered_map>
 #include <memory>
 
-TEST(SMTPCommandsTest, EHLOTest)
+class SMTPCommandsTest : public testing::Test
+{
+public:
+	SMTPCommandsTest()
+		: args(context, {})
+	{
+
+	}
+protected:
+	ISXSMTP::SMTPContext context;
+	ISXSMTP::SMTPCommandArguments args;
+};
+
+TEST_F(SMTPCommandsTest, EHLOTest)
 {
 	EHLOCommand command;
-	SMTPContext context;
-	SMTPCommandArguments args(context, {}, nullptr);
 	args.arguments["domain"] = "test.string";
 
 	auto reply = command.Invoke(args);
@@ -39,11 +50,9 @@ TEST(SMTPCommandsTest, EHLOTest)
 
 }
 
-TEST(SMTPCommandsTest, EHLONoArgsTest)
+TEST_F(SMTPCommandsTest, EHLONoArgsTest)
 {
 	EHLOCommand command;
-	SMTPContext context;
-	SMTPCommandArguments args(context, {}, nullptr);
 	//args.arguments["domain"] = "test.string";
 
 	auto reply = command.Invoke(args);
@@ -58,11 +67,9 @@ TEST(SMTPCommandsTest, EHLONoArgsTest)
 
 }
 
-TEST(SMTPCommandsTest, HELOTest)
+TEST_F(SMTPCommandsTest, HELOTest)
 {
 	HELOCommand command;
-	SMTPContext context;
-	SMTPCommandArguments args(context, {}, nullptr);
 	args.arguments["domain"] = "test.string";
 
 	auto reply = command.Invoke(args);
@@ -77,11 +84,9 @@ TEST(SMTPCommandsTest, HELOTest)
 	ASSERT_EQ(context.state, SMTPStates::POST_EHLO);
 }
 
-TEST(SMTPCommandsTest, HELONoArgsTest)
+TEST_F(SMTPCommandsTest, HELONoArgsTest)
 {
 	HELOCommand command;
-	SMTPContext context;
-	SMTPCommandArguments args(context, {}, nullptr);
 	//args.arguments["domain"] = "test.string";
 
 	auto reply = command.Invoke(args);
@@ -96,11 +101,9 @@ TEST(SMTPCommandsTest, HELONoArgsTest)
 
 }
 
-TEST(SMTPCommandsTest, MAILTest)
+TEST_F(SMTPCommandsTest, MAILTest)
 {
 	MAILCommand command;
-	SMTPContext context;
-	SMTPCommandArguments args(context, {}, nullptr);
 	args.arguments["reverse_path"] = "reverse@path.com";
 	context.state = SMTPStates::POST_EHLO;
 
@@ -117,11 +120,9 @@ TEST(SMTPCommandsTest, MAILTest)
 	ASSERT_STREQ(context.reverse_path.GetString().c_str(), "reverse@path.com");
 }
 
-TEST(SMTPCommandsTest, MAILBadSequenceTest)
+TEST_F(SMTPCommandsTest, MAILBadSequenceTest)
 {
 	MAILCommand command;
-	SMTPContext context;
-	SMTPCommandArguments args(context, {}, nullptr);
 	args.arguments["reverse_path"] = "reverse@path.com";
 	context.state = SMTPStates::POST_RCPT;
 
@@ -136,11 +137,9 @@ TEST(SMTPCommandsTest, MAILBadSequenceTest)
 		response.c_str());
 }
 
-TEST(SMTPCommandsTest, MAILBadArgTest)
+TEST_F(SMTPCommandsTest, MAILBadArgTest)
 {
 	MAILCommand command;
-	SMTPContext context;
-	SMTPCommandArguments args(context, {}, nullptr);
 	args.arguments["reverse_path"] = "not mail address";
 	context.state = SMTPStates::POST_EHLO;
 
@@ -155,11 +154,9 @@ TEST(SMTPCommandsTest, MAILBadArgTest)
 		response.c_str());
 }
 
-TEST(SMTPCommandsTest, RCPTTest)
+TEST_F(SMTPCommandsTest, RCPTTest)
 {
 	RCPTCommand command;
-	SMTPContext context;
-	SMTPCommandArguments args(context, {}, nullptr);
 	args.arguments["forward_path"] = "forward@smtp.test";
 	context.state = SMTPStates::POST_MAIL;
 
@@ -176,11 +173,9 @@ TEST(SMTPCommandsTest, RCPTTest)
 	ASSERT_STREQ(context.forward_path.GetString().c_str(), "forward@smtp.test;");
 }
 
-TEST(SMTPCommandsTest, RCPTBadSequenceTest)
+TEST_F(SMTPCommandsTest, RCPTBadSequenceTest)
 {
 	RCPTCommand command;
-	SMTPContext context;
-	SMTPCommandArguments args(context, {}, nullptr);
 	args.arguments["forward_path"] = "forward@path.com";
 	context.state = SMTPStates::POST_DATA;
 
@@ -195,11 +190,9 @@ TEST(SMTPCommandsTest, RCPTBadSequenceTest)
 		response.c_str());
 }
 
-TEST(SMTPCommandsTest, RCPTNoArgTest)
+TEST_F(SMTPCommandsTest, RCPTNoArgTest)
 {
 	RCPTCommand command;
-	SMTPContext context;
-	SMTPCommandArguments args(context, {}, nullptr);
 	//args.arguments["forward_path"] = "forward@path.com";
 	context.state = SMTPStates::POST_RCPT;
 
@@ -214,11 +207,9 @@ TEST(SMTPCommandsTest, RCPTNoArgTest)
 		response.c_str());
 }
 
-TEST(SMTPCommandsTest, RCPTBadArgTest)
+TEST_F(SMTPCommandsTest, RCPTBadArgTest)
 {
 	RCPTCommand command;
-	SMTPContext context;
-	SMTPCommandArguments args(context, {}, nullptr);
 	args.arguments["forward_path"] = "not mail address";
 	context.state = SMTPStates::POST_RCPT;
 
@@ -233,11 +224,9 @@ TEST(SMTPCommandsTest, RCPTBadArgTest)
 		response.c_str());
 }
 
-TEST(SMTPCommandsTest, NOOPTest)
+TEST_F(SMTPCommandsTest, NOOPTest)
 {
 	NOOPCommand command;
-	SMTPContext context;
-	SMTPCommandArguments args(context, {}, nullptr);
 
 	auto reply = command.Invoke(args);
 	std::string response;
@@ -250,11 +239,9 @@ TEST(SMTPCommandsTest, NOOPTest)
 		response.c_str());
 }
 
-TEST(SMTPCommandsTest, DATATest)
+TEST_F(SMTPCommandsTest, DATATest)
 {
 	DATACommand command;
-	SMTPContext context;
-	SMTPCommandArguments args(context, {}, nullptr);
 	context.state = SMTPStates::POST_RCPT;
 
 	auto reply = command.Invoke(args);
@@ -269,12 +256,11 @@ TEST(SMTPCommandsTest, DATATest)
 	ASSERT_EQ(context.state, SMTPStates::POST_DATA);
 }
 
-TEST(SMTPCommandsTest, DATABadSequenceTest)
+TEST_F(SMTPCommandsTest, DATABadSequenceTest)
 {
 	DATACommand command;
-	SMTPContext context;
-	SMTPCommandArguments args(context, {}, nullptr);
 	context.state = SMTPStates::POST_MAIL;
+
 	auto reply = command.Invoke(args);
 	std::string response;
 	for (auto i : reply)
@@ -286,11 +272,9 @@ TEST(SMTPCommandsTest, DATABadSequenceTest)
 		response.c_str());
 }
 
-TEST(SMTPCommandsTest, RSETTest)
+TEST_F(SMTPCommandsTest, RSETTest)
 {
 	RSETCommand command;
-	SMTPContext context;
-	SMTPCommandArguments args(context, {}, nullptr);
 	context.state = SMTPStates::POST_RCPT;
 	context.reverse_path.Append("some data");
 	context.forward_path.Append("some data");
@@ -311,11 +295,9 @@ TEST(SMTPCommandsTest, RSETTest)
 	ASSERT_STREQ(context.mail_data.GetString().c_str(), "");
 }
 
-TEST(SMTPCommandsTest, QUITTest)
+TEST_F(SMTPCommandsTest, QUITTest)
 {
 	QUITCommand command;
-	SMTPContext context;
-	SMTPCommandArguments args(context, {}, nullptr);
 	context.state = SMTPStates::POST_RCPT;
 
 	auto reply = command.Invoke(args);

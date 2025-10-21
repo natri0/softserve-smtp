@@ -16,9 +16,8 @@
 
 std::unordered_map<std::string, std::unique_ptr<ISXSMTP::SMTPCommandBase>> ISXSMTP::SMTPSession::s_commands = {};
 
-ISXSMTP::SMTPSession::SMTPSession(std::shared_ptr<ISMTPMailbox> mailbox, SMTPContext context /*= {}*/)
-	: m_mailbox(mailbox)
-	, m_context(context)
+ISXSMTP::SMTPSession::SMTPSession(SMTPContext context /*= {}*/)
+	: m_context(context)
 {
 	if (s_commands.empty())
 		fillCommandMap();
@@ -69,8 +68,7 @@ std::string ISXSMTP::SMTPSession::OnMessage(const std::string& message)
 
 	SMTPCommandArguments command_arguments(
 		m_context,
-		command_parser_result.parsed_arguments,
-		m_mailbox);
+		command_parser_result.parsed_arguments);
 
 	// invoke command
 	auto command_result = s_commands[command_parser_result.command_verb]->Invoke(command_arguments);
