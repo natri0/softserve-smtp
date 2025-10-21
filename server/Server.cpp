@@ -5,7 +5,6 @@
 #include "Server.h"
 
 #include <cmath>
-#include <math.h>
 
 #include "ThreadPool/include/ThreadPool.hpp"
 
@@ -26,6 +25,7 @@ Server::~Server()
 bool Server::init()
 {
     // initialization from config
+    ui->showBanner(port);
     if (!setUpAcceptor()) return false;
     threadPool->start();
 
@@ -79,8 +79,21 @@ void Server::run()
 
     runAcceptor();
 
-    std::unique_lock lock(mainThreadMutex);
-    mainThreadCV.wait(lock, [this]() { return isStopping; });
+    ui->logEvent("Server is Running");
+
+    bool running = true;
+    while (running)
+    {
+        ui->showMenu();
+        int cmd;
+        std::cin >> cmd;
+        running = ui->handleCommand(cmd);
+    }
+
+    ui->logEvent("Server shut down.");
+
+    // std::unique_lock lock(mainThreadMutex);
+    // mainThreadCV.wait(lock, [this]() { return isStopping; });
     stop();
 }
 
@@ -96,7 +109,13 @@ void Server::runAcceptor()
 
             session->setOnMessage([this, session](const std::string& msg)
             {
+                // temp instead of waiting for smtp
                 session->send(this->print(msg));
+            });
+
+            session->setOnConnected([this]()
+            {
+                std::cout << "Client connected" << std::endl;
             });
 
             session->setOnDisconnect([this]()
@@ -113,7 +132,7 @@ void Server::runAcceptor()
         }
         else
         {
-            std::cerr << "Accept failed: " << ec.message() << std::endl;
+            // std::cerr << "Accept failed: " << ec.message() << std::endl;
         }
 
         runAcceptor();
@@ -143,5 +162,5 @@ bool Server::setUpAcceptor()
 std::string Server::print(const std::string& str)
 {
     std::cout << str << std::endl;
-    return "hey";
+    return str;
 }

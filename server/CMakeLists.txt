@@ -3,13 +3,12 @@ project(smtp_server)
 
 set(CMAKE_CXX_STANDARD 23)
 
-set(BOOST_ROOT "C:/Users/alkir/boost_1_89_0/boost_1_89_0")
-
 add_executable(smtp_server main.cpp
         ../networking/Session.cpp
         Server.cpp
         ThreadPool/src/ThreadPool.cpp
+        ServerConsoleUI.cpp
+        ServerConsoleUI.h
 )
 
-target_include_directories(smtp_server PRIVATE ${BOOST_ROOT})
-target_link_libraries(smtp_server PRIVATE ws2_32 mswsock)
+target_link_libraries(smtp_server PRIVATE ws2_32 mswsock networking)

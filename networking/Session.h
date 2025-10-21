@@ -17,6 +17,7 @@ class Session : public std::enable_shared_from_this<Session>
 {
 public:
     using OnMessage = std::function<void(const std::string&)>;
+    using OnConnected = std::function<void()>;
     using OnDisconnect = std::function<void()>;
 
     //for server
@@ -29,6 +30,7 @@ public:
 
     // setters
     void setOnMessage(OnMessage cb) noexcept { onMessageReceived = std::move(cb); }
+    void setOnConnected(OnConnected cb) noexcept { onConnected = std::move(cb); };
     void setOnDisconnect(OnDisconnect cb) noexcept { onDisconnect = std::move(cb); };
 
     // functional
@@ -36,7 +38,7 @@ public:
     bool send(const std::string& data);
 
     // getters
-    [[nodiscard]] bool isConnected() const noexcept { return socket->is_open(); }
+    [[nodiscard]] bool isConnected() const noexcept { return connected; }
 
     std::shared_ptr<net::ip::tcp::socket> getSocket() const noexcept { return socket; };
 
@@ -48,11 +50,13 @@ private:
     std::deque<std::string> writeQueue;
     bool isWriting = false;
     bool isRunning = false;
+    std::atomic<bool> connected = false;
 
     std::shared_ptr<net::ip::tcp::socket> socket;
 
     // callbacks for smtp
     OnMessage onMessageReceived;
+    OnConnected onConnected;
     OnDisconnect onDisconnect;
 };
 

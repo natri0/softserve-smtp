@@ -8,6 +8,8 @@
 #include "../networking/Session.h"
 #include <thread>
 
+#include "EmailMessage.h"
+
 class Client
 {
 public:
@@ -17,14 +19,16 @@ public:
     bool stop();
     bool start();
 
-    void sendMail();
+    void sendMail(EmailMessage e_msg);
 
 private:
+    EmailMessage email_info;
+
     bool isRunning = false;
     void reconnect();
 
     bool init();
-    bool connect();
+    void connect();
     bool run();
 
     // SMTP
@@ -36,7 +40,12 @@ private:
     std::shared_ptr<Session> session;
     net::steady_timer timer;
 
+    bool isStopping = false;
+    std::condition_variable mainThreadCV;
+    std::mutex mainThreadMutex;
+
     std::jthread io_thread;
+    std::jthread session_thread;
 };
 
 

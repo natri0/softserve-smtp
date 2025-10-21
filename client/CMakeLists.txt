@@ -9,7 +9,9 @@ add_executable(smtp_client main.cpp
 
         ../networking/Session.cpp
         Client.cpp
+        EmailMessage.cpp
+        EmailMessage.h
 )
 
 target_include_directories(smtp_client PRIVATE ${BOOST_ROOT})
-target_link_libraries(smtp_client PRIVATE ws2_32 mswsock)
+target_link_libraries(smtp_client PRIVATE ws2_32 mswsock networking)
