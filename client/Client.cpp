@@ -32,9 +32,8 @@ bool Client::start()
     return true;
 }
 
-bool Client::init()
+void Client::init()
 {
-    // crypto key exchange section
     session->setOnConnected([this]()
     {
         std::cout << "Client connected" << std::endl;
@@ -72,11 +71,8 @@ bool Client::init()
         session->run();
         // });
     });
-    //
 
     session->setOnDisconnect([this]() { reconnect(); });
-
-    return true;
 }
 
 void Client::connect()
@@ -111,13 +107,19 @@ bool Client::run()
     return true;
 };
 
-void Client::sendMail(EmailMessage e_msg)
+bool Client::sendMail(EmailMessage e_msg)
 {
-    if (!isRunning) return;
+    if (!isRunning)
+    {
+        std::cout << "Client is not connected" << std::endl;
+        return false;
+    }
     // here will be init msg for e-mail transferring
 
     email_info = e_msg;
     session->send(net::buffer(email_info.body));
+    std::cout << "Sending..." << std::endl;
+    return true;
 }
 
 bool Client::stop()

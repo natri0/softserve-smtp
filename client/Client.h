@@ -20,7 +20,7 @@ public:
     bool stop();
     bool start();
 
-    void sendMail(EmailMessage e_msg);
+    bool sendMail(EmailMessage e_msg);
 
 private:
     EmailMessage email_info;
@@ -28,7 +28,7 @@ private:
     bool isRunning = false;
     void reconnect();
 
-    bool init();
+    void init();
     void connect();
     bool run();
 
