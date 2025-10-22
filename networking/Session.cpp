@@ -108,7 +108,7 @@ void Session::read()
                                 if (!ec)
                                 {
                                     if (self->onMessageReceived)
-                                        self->onMessageReceived(net::buffer(self->buffer));
+                                        self->onMessageReceived(net::buffer(self->buffer.data(), bytes_transferred));
                                     self->read();
                                 }
                                 else if (self->onDisconnect && ec != net::error::operation_aborted)
