@@ -21,7 +21,7 @@ namespace net = boost::asio;
 class Session : public std::enable_shared_from_this<Session>
 {
 public:
-    using OnMessage = std::function<void(const std::string&)>;
+    using OnMessage = std::function<void(boost::asio::const_buffer)>;
     using OnConnected = std::function<void()>;
     using OnDisconnect = std::function<void()>;
 
@@ -30,7 +30,7 @@ public:
 
     ~Session();
 
-    bool connect(const net::ip::tcp::endpoint& endpoint);
+    void connect(const net::ip::tcp::endpoint& endpoint);
     bool disconnect();
 
     // setters
@@ -40,35 +40,12 @@ public:
 
     // functional
     bool run();
-    bool send(const std::string& data);
+    bool send(boost::asio::const_buffer data);
 
     // getters
     [[nodiscard]] bool isConnected() const noexcept { return connected; }
 
     std::shared_ptr<net::ip::tcp::socket> getSocket() const noexcept { return socket; };
-
-    static std::string serializeKey(const std::vector<unsigned char>& key)
-    {
-        std::string encoded;
-        encoded.resize(boost::beast::detail::base64::encoded_size(key.size()));
-
-        auto len = boost::beast::detail::base64::encode(
-            &encoded[0],
-            key.data(),
-            key.size()
-        );
-
-        encoded.resize(len);
-        return encoded;
-    }
-
-    static std::vector<unsigned char> deserializeKey(const std::string& encoded)
-    {
-        std::vector<unsigned char> decoded(boost::beast::detail::base64::decoded_size(encoded.size()));
-        auto [fst, snd] = boost::beast::detail::base64::decode(decoded.data(), encoded.data(), encoded.size());
-        decoded.resize(fst);
-        return decoded;
-    }
 
     void setKey(std::vector<unsigned char> key) {Key = key;}
 
@@ -79,7 +56,7 @@ private:
     // std::unique_ptr<smtp::ssl::CryptoManager> cryptoManager;
 
     std::array<char, 1024> buffer;
-    std::deque<std::string> writeQueue;
+    std::deque<boost::asio::const_buffer> writeQueue;
     bool isWriting = false;
     bool isRunning = false;
     std::atomic<bool> connected = false;

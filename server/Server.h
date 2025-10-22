@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ServerConsoleUI.h"
+#include "../networking/SSL/SSLContextFactory.h"
 
 class ThreadPool;
 
@@ -44,8 +45,6 @@ private:
 
     std::unique_ptr<ThreadPool> threadPool;
     bool isStopping = false;
-    std::condition_variable mainThreadCV;
-    std::mutex mainThreadMutex;
 
     std::shared_ptr<ServerConsoleUI> ui = std::make_shared<ServerConsoleUI>();
 

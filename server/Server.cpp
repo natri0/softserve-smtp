@@ -6,15 +6,17 @@
 
 #include <cmath>
 
+#include "CryptoManager.h"
 #include "ThreadPool/include/ThreadPool.hpp"
+#include "../networking/SSL/KeyExchanger.h"
 
 // temp till we don't have parser
 constexpr uint8_t THREADS_NUM = 8;
 
 Server::Server() : io(std::make_shared<boost::asio::io_context>()),
                    work(io->get_executor()), acceptor(net::ip::tcp::acceptor(*io)),
-                   threadPool(std::make_unique<ThreadPool>(THREADS_NUM))
-                   ,sslContext(smtp::ssl::SSLContextFactory::createServerContext())
+                   threadPool(std::make_unique<ThreadPool>(THREADS_NUM)),
+                   sslContext(smtp::ssl::SSLContextFactory::createServerContext())
 {
 }
 
@@ -94,8 +96,6 @@ void Server::run()
 
     ui->logEvent("Server shut down.");
 
-    // std::unique_lock lock(mainThreadMutex);
-    // mainThreadCV.wait(lock, [this]() { return isStopping; });
     stop();
 }
 
@@ -107,37 +107,47 @@ void Server::runAcceptor()
     {
         if (!ec)
         {
+            std::cout << "New connection from " << socket->remote_endpoint() << std::endl;
             const auto session = std::make_shared<Session>(socket);
+            auto [serverPriv, serverPub] = smtp::ssl::KeyExchange::generateKeyPair();
 
-            // auto [serverPub, serverPriv] = smtp::ssl::KeyExchange::generateKeyPair();
+            session->send(net::buffer(serverPub));
 
-            session->setOnMessage([this, session](const std::string& msg)
+            session->run();
+            std::cout << "Sent server public key" << std::endl;
+
+            session->setOnMessage([this, session, serverPriv, serverPub](boost::asio::const_buffer msg)
             {
-                // temp instead of waiting for smtp
-                session->send(this->print(msg));
+                std::cout << "Get msg: " << std::string(reinterpret_cast<const char*>(msg.data()), msg.size()) <<
+                    std::endl;
+                std::cout << "My client private key: " << serverPriv.size() << std::endl;
+                std::cout << "My client public key: " << serverPub.size() << std::endl;
+
+                std::vector<unsigned char> clientPub(
+                    static_cast<const unsigned char*>(msg.data()),
+                    static_cast<const unsigned char*>(msg.data()) + msg.size()
+                );
+
+                const auto sharedSecret = smtp::ssl::KeyExchange::performDHExchange(clientPub, serverPriv);
+                const auto sessionKey = smtp::ssl::KeyExchange::deriveSessionKey(sharedSecret);
+
+                session->setKey(sessionKey);
+                std::cout << "Session key established" << std::endl;
+
+                session->setOnMessage([this, session](boost::asio::const_buffer msg)
+                {
+                    // temp instead of waiting for smtp
+                });
             });
 
-            session->setOnConnected([this]()
-            {
-                std::cout << "Client connected" << std::endl;
-            });
-
-            session->setOnDisconnect([this]()
-            {
-                std::cout << "Client disconnected" << std::endl;
-            });
+            session->setOnDisconnect([this]() { std::cout << "Client disconnected" << std::endl; });
 
             {
                 std::lock_guard lock(sessionMutex);
                 sessions.push_back(session);
             }
-
-            session->run();
         }
-        else
-        {
-            // std::cerr << "Accept failed: " << ec.message() << std::endl;
-        }
+        else { std::cerr << "Accept failed: " << ec.message() << std::endl; }
 
         runAcceptor();
     });

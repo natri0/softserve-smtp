@@ -16,10 +16,8 @@ int main()
     {
         client00.start();
 
-        // temp till there's no proper email manager snd UI loop to keep server alive
-
+        // temp loop till there's no proper email manager snd UI loop to keep server alive
         uint8_t escape;
-
         do
         {
             std::cout << "FROM: ";
@@ -34,7 +32,7 @@ int main()
             client00.sendMail(e_msg);
             std::cout << "Want to proceed? Yes: 1\tNo: 0" << std::endl;
             std::cin >> escape;
-        } while (escape);
+        } while (escape == 0);
     });
 
     client_thread_00.join();

@@ -11,8 +11,6 @@ target_include_directories(networking
         ${boost_INLCUDE_DIRS}
 )
 
-link_directories("${BOOST_ROOT}/stage/lib")
-
 target_link_libraries(networking
         PUBLIC
         ${Boost_LIBRARIES}
