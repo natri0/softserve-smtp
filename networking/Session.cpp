@@ -53,8 +53,8 @@ bool Session::disconnect()
 
 bool Session::run()
 {
-    // if (isRunning) return false;
-    // isRunning = true;
+    if (isRunning) return false;
+    isRunning = true;
 
     try
     {
@@ -91,7 +91,8 @@ void Session::write()
                          }
                          else if (self->onDisconnect && ec != net::error::operation_aborted)
                          {
-                             self->onDisconnect();
+                             if (self->onDisconnect) self->onDisconnect();
+                             std::cout << "write failed: " << ec.message() << std::endl;
                              self->connected = false;
                          }
                      });
@@ -113,7 +114,8 @@ void Session::read()
                                 }
                                 else if (self->onDisconnect && ec != net::error::operation_aborted)
                                 {
-                                    self->onDisconnect();
+                                    if (self->onDisconnect) self->onDisconnect();
+                                    std::cout << "read failed: " << ec.message() << std::endl;
                                     self->connected = false;
                                 }
                             });

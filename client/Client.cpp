@@ -62,12 +62,14 @@ bool Client::init()
         //
         //     std::cout << "Session key established" << std::endl;
 
-            session->setOnMessage([this](boost::asio::const_buffer msg)
-            {
-                std::cout << "Received message: " << std::string(static_cast<const char*>(msg.data()),  msg.size()) << std::endl;
-                session->send(msg);
-                // here will be smtp logic for choosing proper reaction to the command from server
-            });
+        session->setOnMessage([this](boost::asio::const_buffer msg)
+        {
+            std::cout << "Received message: " << std::string(static_cast<const char*>(msg.data()), msg.size()) <<
+                std::endl;
+            session->send(msg);
+            // here will be smtp logic for choosing proper reaction to the command from server
+        });
+        session->run();
         // });
     });
     //
@@ -79,7 +81,7 @@ bool Client::init()
 
 void Client::connect()
 {
-    // if (session->isConnected()) return;
+    if (session->isConnected()) return;
     session->connect(server_endpoint);
 }
 
@@ -98,7 +100,6 @@ void Client::reconnect()
     });
 }
 
-
 bool Client::run()
 {
     if (isRunning) return false;
@@ -106,7 +107,6 @@ bool Client::run()
 
     io_thread = std::jthread([this]() { io.run(); });
     isRunning = true;
-    session_thread = std::jthread([this]() { session->run(); });
 
     return true;
 };

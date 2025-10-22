@@ -113,8 +113,7 @@ void Server::runAcceptor()
             //
             // session->send(net::buffer(serverPub));
 
-            session->run();
-            std::cout << "Sent server public key" << std::endl;
+            // std::cout << "Sent server public key" << std::endl;
 
             // session->setOnMessage([this, session, serverPriv, serverPub](boost::asio::const_buffer msg)
             // {
@@ -143,6 +142,7 @@ void Server::runAcceptor()
             // });
 
             session->setOnDisconnect([this]() { std::cout << "Client disconnected" << std::endl; });
+            session->run();
 
             {
                 std::lock_guard lock(sessionMutex);
