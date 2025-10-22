@@ -14,7 +14,7 @@ Session::Session(std::shared_ptr<net::ip::tcp::socket> _socket) : socket(_socket
 
 Session::~Session() { disconnect(); }
 
-bool Session::connect(const net::ip::tcp::endpoint& endpoint)
+void Session::connect(const net::ip::tcp::endpoint& endpoint)
 {
     if (socket->is_open()) socket->close();
     socket->async_connect(endpoint, [this](const boost::system::error_code& ec)
@@ -23,6 +23,7 @@ bool Session::connect(const net::ip::tcp::endpoint& endpoint)
         {
             connected = true;
             if (onConnected) onConnected();
+            std::cerr << "Connected" << std::endl;
         }
         else
         {
@@ -31,7 +32,6 @@ bool Session::connect(const net::ip::tcp::endpoint& endpoint)
             std::cerr << "Connect failed: " << ec.message() << std::endl;
         }
     });
-    return true;
 }
 
 bool Session::disconnect()
@@ -53,8 +53,8 @@ bool Session::disconnect()
 
 bool Session::run()
 {
-    if (isRunning) return false;
-    isRunning = true;
+    // if (isRunning) return false;
+    // isRunning = true;
 
     try
     {
@@ -68,9 +68,9 @@ bool Session::run()
     return true;
 }
 
-bool Session::send(const std::string& data)
+bool Session::send(boost::asio::const_buffer data)
 {
-    if (!socket->is_open()) return false;
+    // if (!socket->is_open()) return false;
 
     writeQueue.push_back(data);
     if (!isWriting) write();
@@ -108,7 +108,7 @@ void Session::read()
                                 if (!ec)
                                 {
                                     if (self->onMessageReceived)
-                                        self->onMessageReceived(std::string(self->buffer.data(), bytes_transferred));
+                                        self->onMessageReceived(net::buffer(self->buffer));
                                     self->read();
                                 }
                                 else if (self->onDisconnect && ec != net::error::operation_aborted)
