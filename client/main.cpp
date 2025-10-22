@@ -28,7 +28,6 @@ int main()
             std::cin >> e_msg.subj;
             std::cout << "\nContent: ";
             std::cin >> e_msg.body;
-            // how about several mails at once?
             client00.sendMail(e_msg);
             std::cout << "Want to proceed? Yes: 1\tNo: 0" << std::endl;
             std::cin >> escape;
