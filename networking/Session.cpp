@@ -21,9 +21,9 @@ void Session::connect(const net::ip::tcp::endpoint& endpoint)
     {
         if (!ec)
         {
+            std::cerr << "Connected" << std::endl;
             connected = true;
             if (onConnected) onConnected();
-            std::cerr << "Connected" << std::endl;
         }
         else
         {

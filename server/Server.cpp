@@ -108,35 +108,12 @@ void Server::runAcceptor()
         {
             std::cout << "New connection from " << socket->remote_endpoint() << std::endl;
             const auto session = std::make_shared<Session>(socket);
-            // auto [serverPriv, serverPub] = smtp::ssl::KeyExchange::generateKeyPair();
-            //
-            // session->send(net::buffer(serverPub));
-
-            // std::cout << "Sent server public key" << std::endl;
-
-            // session->setOnMessage([this, session, serverPriv, serverPub](boost::asio::const_buffer msg)
-            // {
-            //     std::cout << "Get msg: " << std::string(reinterpret_cast<const char*>(msg.data()), msg.size()) <<
-            //         std::endl;
-            //     std::cout << "My client private key: " << serverPriv.size() << std::endl;
-            //     std::cout << "My client public key: " << serverPub.size() << std::endl;
-            //
-            //     std::vector<unsigned char> clientPub(
-            //         static_cast<const unsigned char*>(msg.data()),
-            //         static_cast<const unsigned char*>(msg.data()) + msg.size()
-            //     );
-            //
-            //     const auto sharedSecret = smtp::ssl::KeyExchange::performDHExchange(clientPub, serverPriv);
-            //     const auto sessionKey = smtp::ssl::KeyExchange::deriveSessionKey(sharedSecret);
-            //
-            //     session->setKey(sessionKey);
-            //     std::cout << "Session key established" << std::endl;
 
             session->setOnMessage([this, session](boost::asio::const_buffer msg)
             {
                 const std::string cmd(std::string(static_cast<const char*>(msg.data()), msg.size()));
 
-                std::cout << "Received message: " << cmd << std::endl;
+                std::cout << "Received message from: " << cmd << std::endl;
 
                 if (cmd.starts_with("HELO"))
                     session->send(net::buffer("250 Hello, pleased to meet you\r\n"));
@@ -153,7 +130,6 @@ void Server::runAcceptor()
                 else
                     session->send(net::buffer("500 Unknown command\r\n"));
             });
-            // });
 
             session->setOnDisconnect([this, session]()
             {

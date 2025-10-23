@@ -16,6 +16,7 @@ Client::Client(const std::string& host, const unsigned short port) :
     timer(io),
     sslContext(smtp::ssl::SSLContextFactory::createClientContext())
 {
+    std::cout << "Client[" << port << "]" << std::endl;
 };
 
 Client::~Client()
@@ -36,30 +37,7 @@ void Client::init()
 {
     session->setOnConnected([this]()
     {
-        std::cout << "Client connected" << std::endl;
-        // auto [clientPriv, clientPub] = smtp::ssl::KeyExchange::generateKeyPair();
-
-        // session->setOnMessage([this, clientPriv, clientPub](boost::asio::const_buffer msg)
-        // {
-        //     std::cout << "My client private key: " << clientPriv.size() << std::endl;
-        //
-        //     std::cout << "Get msg: " << std::string(reinterpret_cast<const char*>(msg.data()), msg.size()) <<
-        //         std::endl;
-        //     std::cout << "My client private key: " << clientPriv.size() << std::endl;
-        //
-        //     session->send(net::buffer(clientPub));
-        //
-        //     std::vector<unsigned char> serverPub(
-        //         static_cast<const unsigned char*>(msg.data()),
-        //         static_cast<const unsigned char*>(msg.data()) + msg.size()
-        //     );
-        //
-        //     const auto sharedSecret = smtp::ssl::KeyExchange::performDHExchange(serverPub, clientPriv);
-        //     const auto sessionKey = smtp::ssl::KeyExchange::deriveSessionKey(sharedSecret);
-        //
-        //     session->setKey(sessionKey);
-        //
-        //     std::cout << "Session key established" << std::endl;
+        // std::cout << "Connected to server " << server_endpoint << std::endl;
 
         session->setOnMessage([this](boost::asio::const_buffer msg)
         {
@@ -85,15 +63,19 @@ void Client::init()
             }
             else if (cmd.starts_with("354"))
             {
-                session->send(net::buffer("Hello from test!\r\n.\r\n"));
+                // session->send(net::buffer("Hello from test!\r\n.\r\n"));
+                session->send(net::buffer(email_info.body + "\r\n.\r\n"));
             }
             else if (cmd.starts_with("250 Message"))
             {
                 session->send(net::buffer("QUIT\r\n"));
             }
+            else
+            {
+                std::cout << "Want to proceed? Yes: 1\tNo: 0" << std::endl;
+            }
         });
         session->run();
-        // });
     });
 
     session->setOnDisconnect([this]() { reconnect(); });
@@ -123,7 +105,7 @@ void Client::reconnect()
 bool Client::run()
 {
     if (isRunning) return false;
-    std::cout << "Client running" << std::endl;
+    std::cout << "Client is running" << std::endl;
 
     io_thread = std::jthread([this]() { io.run(); });
     isRunning = true;
@@ -139,8 +121,7 @@ bool Client::sendMail(EmailMessage e_msg)
         return false;
     }
 
-    // email_info = e_msg;
-    // session->send(net::buffer(email_info.body));
+    email_info = e_msg;
     session->send(net::buffer("HELO example.com\r\n"));
     std::cout << "Sending..." << std::endl;
     return true;
