@@ -1,0 +1,91 @@
+QWidget {
+    background-color: #f0f2f5;
+    color: #333333;
+    font-family: "Segoe UI", "Cantarell", "Helvetica Neue", sans-serif;
+    font-size: 10pt;
+    border-radius: 4px;
+}
+
+
+QMainWindow {
+    background-color: #e9edf0;
+}
+
+QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QComboBox {
+    background-color: #ffffff;
+    border: 1px solid #c0c4cc;
+    padding: 6px;
+    border-radius: 4px;
+}
+QLineEdit:focus, QTextEdit:focus, QPlainTextEdit:focus, QSpinBox:focus, QComboBox:focus {
+    border: 1px solid #409eff; /* Blue highlight on focus */
+}
+QComboBox::drop-down {
+    border: none;
+}
+QComboBox::down-arrow {
+    image: url(:/qt-project.org/styles/commonstyle/images/down-arrow-disabled-16.png);
+}
+
+QPushButton {
+    background-color: #ffffff;
+    border: 1px solid #c0c4cc;
+    padding: 8px 16px;
+    font-weight: bold;
+}
+QPushButton:hover {
+    background-color: #f5f7fa;
+    border-color: #a6abb3;
+}
+QPushButton:pressed {
+    background-color: #e4e7ed;
+}
+
+QPushButton#PrimaryButton {
+    background-color: #409eff;
+    color: #ffffff;
+    border: none;
+}
+QPushButton#PrimaryButton:hover {
+    background-color: #66b1ff;
+}
+QPushButton#PrimaryButton:pressed {
+    background-color: #3a8ee6;
+}
+
+QGroupBox {
+    border: 1px solid #dcdfe6;
+    margin-top: 10px;
+    font-weight: bold;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 5px;
+    background-color: #f0f2f5;
+}
+
+QToolBar {
+    background-color: #ffffff;
+    border-bottom: 1px solid #dcdfe6;
+    padding: 5px;
+    spacing: 8px;
+}
+
+QSplitter::handle {
+    background-color: #dcdfe6;
+}
+QSplitter::handle:vertical {
+    height: 3px;
+}
+
+QListWidget {
+    border: 1px solid #c0c4cc;
+    background-color: #ffffff;
+}
+
+
+QStatusBar {
+    background-color: #e9edf0;
+    border-top: 1px solid #dcdfe6;
+}
