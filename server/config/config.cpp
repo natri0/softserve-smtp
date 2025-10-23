@@ -18,7 +18,7 @@ static void populate(const json::Value &root, std::unordered_map<std::string, st
             int i = 0;
             for (const auto &[key, _] : obj) {
                 std::string path = (prefix.empty() ? "_keys." : prefix + "._keys.") + std::to_string(i);
-                map[path] = root.as_string();
+                map[path] = key;
                 i++;
             }
             break;
