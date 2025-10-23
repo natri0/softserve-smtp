@@ -8,14 +8,14 @@
 
 int main()
 {
-    Client client00("127.0.0.1", 12345);
+    Client client("127.0.0.1", 12345);
 
     EmailMessage e_msg;
 
-    client00.start();
+    client.start();
 
     // temp loop till there's no proper email manager snd UI loop to keep server alive
-    uint8_t escape;
+    int escape = 1;
     do
     {
         std::cout << "FROM: ";
@@ -26,9 +26,9 @@ int main()
         std::cin >> e_msg.subj;
         std::cout << "\nContent: ";
         std::cin >> e_msg.body;
-        client00.sendMail(e_msg);
+        client.sendMail(e_msg);
         std::cout << "Want to proceed? Yes: 1\tNo: 0" << std::endl;
         std::cin >> escape;
     }
-    while (escape == 0);
+    while (escape == 1);
 }
