@@ -41,8 +41,7 @@ bool Server::stop()
     boost::system::error_code ec;
     acceptor.cancel(ec);
 
-    if (acceptor.is_open())
-        acceptor.close(ec);
+    if (acceptor.is_open()) acceptor.close(ec);
 
     if (ec) std::cerr << "Error closing acceptor: " << ec.message() << std::endl;
 
@@ -135,13 +134,37 @@ void Server::runAcceptor()
 
             session->setOnMessage([this, session](boost::asio::const_buffer msg)
             {
-                std::cout << "Received message: " << std::string(static_cast<const char*>(msg.data()),  msg.size()) << std::endl;
-                session->send(msg);
-                // temp instead of waiting for smtp
+                const std::string cmd(std::string(static_cast<const char*>(msg.data()), msg.size()));
+
+                std::cout << "Received message: " << cmd << std::endl;
+
+                if (cmd.starts_with("HELO"))
+                    session->send(net::buffer("250 Hello, pleased to meet you\r\n"));
+                else if (cmd.starts_with("MAIL FROM"))
+                    session->send(net::buffer("250 OK\r\n"));
+                else if (cmd.starts_with("RCPT TO"))
+                    session->send(net::buffer("250 Accepted\r\n"));
+                else if (cmd.starts_with("DATA"))
+                    session->send(net::buffer("354 End data with <CR><LF>.<CR><LF>\r\n"));
+                else if (cmd.find("\r\n.\r\n") != std::string::npos)
+                    session->send(net::buffer("250 Message accepted for delivery\r\n"));
+                else if (cmd.starts_with("QUIT"))
+                    session->send(net::buffer("221 Bye\r\n"));
+                else
+                    session->send(net::buffer("500 Unknown command\r\n"));
             });
             // });
 
-            session->setOnDisconnect([this]() { std::cout << "Client disconnected" << std::endl; });
+            session->setOnDisconnect([this, session]()
+            {
+                {
+                    std::lock_guard lock(sessionMutex);
+                    sessions.remove(session);
+                }
+                std::cout << "Client disconnected" << std::endl;
+                std::cout << "Number of active clients: " << sessions.size() << std::endl;
+            });
+
             session->run();
 
             {

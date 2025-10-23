@@ -33,7 +33,13 @@ private:
     bool run();
 
     // SMTP
+    std::string lastResponse;
+    std::promise<void> done;
+    //
+
     // Logger
+    //
+
     void onMessage(std::string& msg);
 
     net::io_context io;

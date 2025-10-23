@@ -37,7 +37,7 @@ private:
     net::ip::tcp::acceptor acceptor;
     unsigned short port = 12345; // temporary value: waiting for parser
 
-    std::vector<std::shared_ptr<Session>> sessions;
+    std::list<std::shared_ptr<Session>> sessions;
     std::mutex sessionMutex;
 
     void runAcceptor();

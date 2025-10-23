@@ -63,14 +63,18 @@ bool Session::run()
     catch (const boost::system::system_error& e)
     {
         connected = false;
-        if (onDisconnect) onDisconnect();
+        if (onDisconnect)
+        {
+            disconnect();
+            onDisconnect();
+        }
     }
     return true;
 }
 
 bool Session::send(boost::asio::const_buffer data)
 {
-    // if (!socket->is_open()) return false;
+    if (!socket->is_open()) return false;
 
     writeQueue.push_back(data);
     if (!isWriting) write();
@@ -94,6 +98,7 @@ void Session::write()
                              if (self->onDisconnect) self->onDisconnect();
                              std::cout << "write failed: " << ec.message() << std::endl;
                              self->connected = false;
+                             self->disconnect();
                          }
                      });
 }
@@ -116,7 +121,7 @@ void Session::read()
                                 {
                                     if (self->onDisconnect) self->onDisconnect();
                                     std::cout << "read failed: " << ec.message() << std::endl;
-                                    self->connected = false;
+                                    self->disconnect();
                                 }
                             });
 }

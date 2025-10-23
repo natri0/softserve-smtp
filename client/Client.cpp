@@ -63,10 +63,34 @@ void Client::init()
 
         session->setOnMessage([this](boost::asio::const_buffer msg)
         {
-            std::cout << "Received message: " << std::string(static_cast<const char*>(msg.data()), msg.size()) <<
-                std::endl;
-            session->send(msg);
-            // here will be smtp logic for choosing proper reaction to the command from server
+            std::string cmd(static_cast<const char*>(msg.data()), msg.size());
+
+            std::cout << "Received message: " << cmd << std::endl;
+
+            if (cmd.starts_with("220"))
+            {
+                session->send(net::buffer("HELO example.com\r\n"));
+            }
+            else if (cmd.starts_with("250") && cmd.find("Hello") != std::string::npos)
+            {
+                session->send(net::buffer("MAIL FROM:<test@example.com>\r\n"));
+            }
+            else if (cmd.starts_with("250 OK"))
+            {
+                session->send(net::buffer("RCPT TO:<admin@example.com>\r\n"));
+            }
+            else if (cmd.starts_with("250 Accepted"))
+            {
+                session->send(net::buffer("DATA\r\n"));
+            }
+            else if (cmd.starts_with("354"))
+            {
+                session->send(net::buffer("Hello from test!\r\n.\r\n"));
+            }
+            else if (cmd.starts_with("250 Message"))
+            {
+                session->send(net::buffer("QUIT\r\n"));
+            }
         });
         session->run();
         // });
@@ -109,15 +133,15 @@ bool Client::run()
 
 bool Client::sendMail(EmailMessage e_msg)
 {
-    if (!isRunning)
+    if (!session->isConnected())
     {
         std::cout << "Client is not connected" << std::endl;
         return false;
     }
-    // here will be init msg for e-mail transferring
 
-    email_info = e_msg;
-    session->send(net::buffer(email_info.body));
+    // email_info = e_msg;
+    // session->send(net::buffer(email_info.body));
+    session->send(net::buffer("HELO example.com\r\n"));
     std::cout << "Sending..." << std::endl;
     return true;
 }
