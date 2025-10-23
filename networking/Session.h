@@ -40,7 +40,7 @@ public:
 
     // functional
     bool run();
-    bool send(boost::asio::const_buffer data);
+    bool send(const std::vector<unsigned char>& data);
 
     // getters
     [[nodiscard]] bool isConnected() const noexcept { return connected; }
@@ -56,7 +56,7 @@ private:
     // std::unique_ptr<smtp::ssl::CryptoManager> cryptoManager;
 
     std::array<char, 1024> buffer;
-    std::deque<boost::asio::const_buffer> writeQueue;
+    std::deque<std::vector<unsigned char>> writeQueue;
     bool isWriting = false;
     bool isRunning = false;
     std::atomic<bool> connected = false;

@@ -68,14 +68,13 @@ bool Session::run()
     return true;
 }
 
-bool Session::send(boost::asio::const_buffer data)
-{
+bool Session::send(const std::vector<unsigned char>& data) {
     // if (!socket->is_open()) return false;
 
     writeQueue.push_back(data);
     if (!isWriting) write();
     return true;
-};
+}
 
 void Session::write()
 {
@@ -103,12 +102,12 @@ void Session::read()
 
     socket->async_read_some(net::buffer(buffer),
                             [self = shared_from_this()](const boost::system::error_code& ec,
-                                                        std::size_t bytes_transferred)
+                                                        const std::size_t bytes_transferred)
                             {
                                 if (!ec)
                                 {
                                     if (self->onMessageReceived)
-                                        self->onMessageReceived(net::buffer(self->buffer));
+                                        self->onMessageReceived(net::buffer(self->buffer, bytes_transferred));
                                     self->read();
                                 }
                                 else if (self->onDisconnect && ec != net::error::operation_aborted)

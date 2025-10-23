@@ -42,13 +42,11 @@ bool Client::init()
 
         session->setOnMessage([this, clientPriv, clientPub](boost::asio::const_buffer msg)
         {
-            std::cout << "My client private key: " << clientPriv.size() << std::endl;
+            std::cout << "client private key size: " << clientPriv.size() << std::endl;
+            std::cout << "client public key size: " << clientPub.size() << std::endl;
+            std::cout << "Get msg: [Received " << msg.size() << " bytes of server public key]" << std::endl;
 
-            std::cout << "Get msg: " << std::string(reinterpret_cast<const char*>(msg.data()), msg.size()) <<
-                std::endl;
-            std::cout << "My client private key: " << clientPriv.size() << std::endl;
-
-            session->send(net::buffer(clientPub));
+            session->send(clientPub);
 
             std::vector<unsigned char> serverPub(
                 static_cast<const unsigned char*>(msg.data()),
