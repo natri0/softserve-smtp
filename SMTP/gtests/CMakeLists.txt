@@ -3,19 +3,20 @@ project(gtests DESCRIPTION "Google Tests")
 set(CMAKE_CXX_STANDARD 23)
 
 #get googletest
-include(FetchContent)
-option(BUILD_GMOCK OFF)
-option(INSTALL_GTEST OFF)
-FetchContent_Declare(
-  googletest
-  GIT_REPOSITORY https://github.com/google/googletest.git
-  GIT_TAG        release-1.11.0
-)
-FetchContent_MakeAvailable(googletest)
-add_library(GTest::GTest INTERFACE IMPORTED)
-target_link_libraries(GTest::GTest INTERFACE gtest_main)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/CPM.cmake)
+if (NOT TARGET GTest::GTest)
+    CPMAddPackage(
+        NAME googletest
+        GITHUB_REPOSITORY google/googletest
+        VERSION 1.17.0
+        OPTIONS
+            "BUILD_GMOCK OFF"
+            "INSTALL_GTEST OFF"
+    )
+endif()
 
-add_executable(gtests "gtests.cpp" "SMTPConfigBuilderTests.h")
-
-target_link_libraries(gtests SMTP gtest_main)
+add_executable(SMTP_tests "gtests.cpp" "SMTPConfigBuilderTests.h")
+target_link_libraries(SMTP_tests SMTP GTest::gtest_main)
+include(GoogleTest)
+gtest_discover_tests(SMTP_tests)
 
