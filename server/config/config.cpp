@@ -80,5 +80,7 @@ bool Config::has_key(const std::string_view &key) const {
 }
 
 std::any Config::get_any(const std::string_view &key) const {
+    if (!has_key(key)) throw std::invalid_argument("Key not found");
+
     return data.at(std::string(key));
 }
