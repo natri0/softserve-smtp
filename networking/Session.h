@@ -11,10 +11,9 @@
 #include <memory>
 #include <deque>
 #include <array>
+#include <iostream>
 
-// #include "SSL/CryptoManager.h"
-// #include "SSL/KeyExchanger.h"
-// #include "SSL/SSLContextFactory.h"
+#include "SSL/CryptoManager.h"
 
 namespace net = boost::asio;
 
@@ -39,6 +38,7 @@ public:
     void setOnDisconnect(OnDisconnect cb) noexcept { onDisconnect = std::move(cb); };
 
     // functional
+    bool init();
     bool run();
     bool send(boost::asio::const_buffer data);
 
@@ -47,13 +47,15 @@ public:
 
     std::shared_ptr<net::ip::tcp::socket> getSocket() const noexcept { return socket; };
 
-    void setKey(std::vector<unsigned char> key) {Key = key;}
+    void setKey(std::vector<unsigned char> key)
+    {
+        std::cout << Key.size() << std::endl;
+        // cryptoManager = std::make_unique<smtp::ssl::CryptoManager>(Key);
+    }
 
 private:
     void read();
     void write();
-
-    // std::unique_ptr<smtp::ssl::CryptoManager> cryptoManager;
 
     std::array<char, 1024> buffer;
     std::deque<boost::asio::const_buffer> writeQueue;
@@ -68,6 +70,7 @@ private:
     OnConnected onConnected;
     OnDisconnect onDisconnect;
 
+    std::unique_ptr<smtp::ssl::CryptoManager> cryptoManager;
     std::vector<unsigned char> Key{};
 };
 

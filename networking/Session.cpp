@@ -57,10 +57,7 @@ bool Session::run()
     if (isRunning) return false;
     isRunning = true;
 
-    try
-    {
-        read();
-    }
+    try { read(); }
     catch (const boost::system::system_error& e)
     {
         connected = false;
@@ -85,7 +82,16 @@ bool Session::send(boost::asio::const_buffer data)
 void Session::write()
 {
     isWriting = true;
-    net::async_write(*socket, net::buffer(writeQueue.front()),
+
+    boost::asio::const_buffer data = writeQueue.front();
+
+    if (cryptoManager.get())
+    {
+        data = net::buffer(cryptoManager->encrypt(std::string(static_cast<const char*>(writeQueue.front().data()),
+                                                              writeQueue.front().size())));
+    }
+
+    net::async_write(*socket, net::buffer(data),
                      [self = shared_from_this()](const boost::system::error_code& ec, std::size_t /*bytes_transferred*/)
                      {
                          if (!ec)
@@ -110,7 +116,7 @@ void Session::read()
 
     socket->async_read_some(net::buffer(buffer),
                             [self = shared_from_this()](const boost::system::error_code& ec,
-                                                       const std::size_t bytes_transferred)
+                                                        const std::size_t bytes_transferred)
                             {
                                 if (!ec)
                                 {
