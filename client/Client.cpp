@@ -16,7 +16,6 @@ Client::Client(const std::string& host, const unsigned short port) :
     timer(io),
     sslContext(smtp::ssl::SSLContextFactory::createClientContext())
 {
-    std::cout << "Client[" << port << "]" << std::endl;
 };
 
 Client::~Client()
@@ -63,7 +62,6 @@ void Client::init()
             }
             else if (cmd.starts_with("354"))
             {
-                // session->send(net::buffer("Hello from test!\r\n.\r\n"));
                 session->send(net::buffer(email_info.body + "\r\n.\r\n"));
             }
             else if (cmd.starts_with("250 Message"))

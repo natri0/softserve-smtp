@@ -113,7 +113,8 @@ void Server::runAcceptor()
             {
                 const std::string cmd(std::string(static_cast<const char*>(msg.data()), msg.size()));
 
-                std::cout << "Received message from: " << cmd << std::endl;
+                std::cout << "Received message from: " << session->getSocket()->remote_endpoint() << std::endl;
+                std::cout << "Received message: " << cmd << std::endl;
 
                 if (cmd.starts_with("HELO"))
                     session->send(net::buffer("250 Hello, pleased to meet you\r\n"));
