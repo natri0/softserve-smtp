@@ -49,8 +49,7 @@ public:
 
     void setKey(std::vector<unsigned char> key)
     {
-        std::cout << Key.size() << std::endl;
-        // cryptoManager = std::make_unique<smtp::ssl::CryptoManager>(Key);
+        cryptoManager = std::make_unique<smtp::ssl::CryptoManager>(key);
     }
 
 private:
@@ -71,7 +70,7 @@ private:
     OnDisconnect onDisconnect;
 
     std::unique_ptr<smtp::ssl::CryptoManager> cryptoManager;
-    std::vector<unsigned char> Key{};
+    std::string decrypted_data;
 };
 
 #endif //SESSION_H

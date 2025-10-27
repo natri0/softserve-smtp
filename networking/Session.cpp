@@ -85,14 +85,22 @@ void Session::write()
 
     boost::asio::const_buffer data = writeQueue.front();
 
+    std::shared_ptr<std::vector<unsigned char>> encryptedData;
+
     if (cryptoManager.get())
     {
-        data = net::buffer(cryptoManager->encrypt(std::string(static_cast<const char*>(writeQueue.front().data()),
-                                                              writeQueue.front().size())));
+        std::string plain = std::string(static_cast<const char*>(writeQueue.front().data()),
+                                        writeQueue.front().size());
+        encryptedData = std::make_shared<std::vector<unsigned char>>(cryptoManager->encrypt(plain));
+
+        // std::cout << "write data size:" << encryptedData->size() << std::endl;
+        // std::cout << encryptedData->data() << std::endl;
+        data = net::buffer(*encryptedData);
     }
 
-    net::async_write(*socket, net::buffer(data),
-                     [self = shared_from_this()](const boost::system::error_code& ec, std::size_t /*bytes_transferred*/)
+    net::async_write(*socket, data,
+                     [self = shared_from_this(), encryptedData](const boost::system::error_code& ec,
+                                                                std::size_t /*bytes_transferred*/)
                      {
                          if (!ec)
                          {
@@ -121,7 +129,25 @@ void Session::read()
                                 if (!ec)
                                 {
                                     if (self->onMessageReceived)
-                                        self->onMessageReceived(net::buffer(self->buffer.data(), bytes_transferred));
+                                    {
+                                        if (self->cryptoManager.get())
+                                        {
+                                            const std::vector<unsigned char> data{
+                                                self->buffer.begin(), self->buffer.begin() + bytes_transferred
+                                            };
+                                            // std::cout << "read data size:" << data.size() << std::endl;
+                                            // std::cout << data.data() << std::endl;
+                                            // std::cout << self->buffer.data() << std::endl;
+
+                                            self->decrypted_data = self->cryptoManager->decrypt(data);
+
+                                            self->onMessageReceived(
+                                                net::buffer(self->decrypted_data, self->decrypted_data.size()));
+                                        }
+                                        else
+                                            self->onMessageReceived(
+                                                net::buffer(self->buffer.data(), bytes_transferred));
+                                    }
                                     self->read();
                                 }
                                 else if (self->onDisconnect && ec != net::error::operation_aborted)

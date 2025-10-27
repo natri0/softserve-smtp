@@ -59,6 +59,7 @@ void Client::init()
             session->setKey(sessionKey);
 
             std::cout << "Session key established" << std::endl;
+            std::cout << sessionKey.size() << std::endl;
 
             session->setOnMessage([this](boost::asio::const_buffer msg)
             {
