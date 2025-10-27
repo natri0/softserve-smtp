@@ -108,43 +108,76 @@ void Server::runAcceptor()
         {
             std::cout << "New connection from " << socket->remote_endpoint() << std::endl;
             const auto session = std::make_shared<Session>(socket);
+            auto [serverPriv, serverPub] = smtp::ssl::KeyExchange::generateKeyPair();
 
-            session->setOnMessage([this, session](boost::asio::const_buffer msg)
+            session->setOnDisconnect([this, session]()
+{
+    {
+        std::lock_guard lock(sessionMutex);
+        sessions.remove(session);
+    }
+    std::cout << "Client disconnected" << std::endl;
+    std::cout << "Number of active clients: " << sessions.size() << std::endl;
+});
+
+            session->send(serverPub);
+
+            session->run();
+            std::cout << "Sent server public key" << std::endl;
+
+            session->setOnMessage([this, session, serverPriv, serverPub](boost::asio::const_buffer msg)
             {
-                const std::string cmd(std::string(static_cast<const char*>(msg.data()), msg.size()));
+                std::cout << "Get msg: [Received " << msg.size() << " bytes of client public key]" << std::endl;
+                std::cout << "Server private key size: " << serverPriv.size() << std::endl;
+                std::cout << "Server public key size: " << serverPub.size() << std::endl;
 
-                std::cout << "Received message from: " << session->getSocket()->remote_endpoint() << std::endl;
-                std::cout << "Received message: " << cmd << std::endl;
+                std::vector<unsigned char> clientPub(
+                    static_cast<const unsigned char*>(msg.data()),
+                    static_cast<const unsigned char*>(msg.data()) + msg.size()
+                );
 
-                if (cmd.starts_with("HELO"))
-                    session->send(net::buffer("250 Hello, pleased to meet you\r\n"));
-                else if (cmd.starts_with("MAIL FROM"))
-                    session->send(net::buffer("250 OK\r\n"));
-                else if (cmd.starts_with("RCPT TO"))
-                    session->send(net::buffer("250 Accepted\r\n"));
-                else if (cmd.starts_with("DATA"))
-                    session->send(net::buffer("354 End data with <CR><LF>.<CR><LF>\r\n"));
-                else if (cmd.find("\r\n.\r\n") != std::string::npos)
-                    session->send(net::buffer("250 Message accepted for delivery\r\n"));
-                else if (cmd.starts_with("QUIT"))
-                    session->send(net::buffer("221 Bye\r\n"));
-                else
-                    session->send(net::buffer("500 Unknown command\r\n"));
+                const auto sharedSecret = smtp::ssl::KeyExchange::performDHExchange(clientPub, serverPriv);
+                const auto sessionKey = smtp::ssl::KeyExchange::deriveSessionKey(sharedSecret);
+
+                session->setKey(sessionKey);
+                std::cout << "Session key established" << std::endl;
+
+                session->setOnMessage([this, session](boost::asio::const_buffer msg)
+ {
+     const std::string cmd(std::string(static_cast<const char*>(msg.data()), msg.size()));
+
+     std::cout << "Received message from: " << session->getSocket()->remote_endpoint() << std::endl;
+     std::cout << "Received message: " << cmd << std::endl;
+
+     if (cmd.starts_with("HELO"))
+         session->send(net::buffer("250 Hello, pleased to meet you\r\n"));
+     else if (cmd.starts_with("MAIL FROM"))
+         session->send(net::buffer("250 OK\r\n"));
+     else if (cmd.starts_with("RCPT TO"))
+         session->send(net::buffer("250 Accepted\r\n"));
+     else if (cmd.starts_with("DATA"))
+         session->send(net::buffer("354 End data with <CR><LF>.<CR><LF>\r\n"));
+     else if (cmd.find("\r\n.\r\n") != std::string::npos)
+         session->send(net::buffer("250 Message accepted for delivery\r\n"));
+     else if (cmd.starts_with("QUIT"))
+         session->send(net::buffer("221 Bye\r\n"));
+     else
+         session->send(net::buffer("500 Unknown command\r\n"));
+ });
             });
 
             session->setOnDisconnect([this, session]()
-            {
-                {
-                    std::lock_guard lock(sessionMutex);
-                    sessions.remove(session);
-                }
-                std::cout << "Client disconnected" << std::endl;
-                std::cout << "Number of active clients: " << sessions.size() << std::endl;
-            });
+             {
+                 {
+                     std::lock_guard lock(sessionMutex);
+                     sessions.remove(session);
+                 }
+                 std::cout << "Client disconnected" << std::endl;
+                 std::cout << "Number of active clients: " << sessions.size() << std::endl;
+             });
 
-            session->run();
 
-            {
+  {
                 std::lock_guard lock(sessionMutex);
                 sessions.push_back(session);
             }

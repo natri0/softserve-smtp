@@ -4,6 +4,7 @@
 
 #include "Session.h"
 #include <iostream>
+#include <mutex>
 
 constexpr std::size_t BUFFER_SIZE = 1024;
 constexpr int RECONNECT_DELAY_MS = 2000;
@@ -79,7 +80,7 @@ bool Session::send(boost::asio::const_buffer data)
     writeQueue.push_back(data);
     if (!isWriting) write();
     return true;
-};
+}
 
 void Session::write()
 {
@@ -109,7 +110,7 @@ void Session::read()
 
     socket->async_read_some(net::buffer(buffer),
                             [self = shared_from_this()](const boost::system::error_code& ec,
-                                                        std::size_t bytes_transferred)
+                                                       const std::size_t bytes_transferred)
                             {
                                 if (!ec)
                                 {

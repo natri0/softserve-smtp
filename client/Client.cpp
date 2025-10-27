@@ -34,44 +34,67 @@ bool Client::start()
 
 void Client::init()
 {
+    // crypto key exchange section
     session->setOnConnected([this]()
     {
-        // std::cout << "Connected to server " << server_endpoint << std::endl;
+        std::cout << "Client connected" << std::endl;
+        auto [clientPriv, clientPub] = smtp::ssl::KeyExchange::generateKeyPair();
 
-        session->setOnMessage([this](boost::asio::const_buffer msg)
+        session->setOnMessage([this, clientPriv, clientPub](boost::asio::const_buffer msg)
         {
-            std::string cmd(static_cast<const char*>(msg.data()), msg.size());
+            std::cout << "client private key size: " << clientPriv.size() << std::endl;
+            std::cout << "client public key size: " << clientPub.size() << std::endl;
+            std::cout << "Get msg: [Received " << msg.size() << " bytes of server public key]" << std::endl;
 
-            std::cout << "Received message: " << cmd << std::endl;
+            session->send(clientPub);
 
-            if (cmd.starts_with("220"))
+            std::vector<unsigned char> serverPub(
+                static_cast<const unsigned char*>(msg.data()),
+                static_cast<const unsigned char*>(msg.data()) + msg.size()
+            );
+
+            const auto sharedSecret = smtp::ssl::KeyExchange::performDHExchange(serverPub, clientPriv);
+            const auto sessionKey = smtp::ssl::KeyExchange::deriveSessionKey(sharedSecret);
+
+            session->setKey(sessionKey);
+
+            std::cout << "Session key established" << std::endl;
+
+            session->setOnMessage([this](boost::asio::const_buffer msg)
             {
-                session->send(net::buffer("HELO example.com\r\n"));
-            }
-            else if (cmd.starts_with("250") && cmd.find("Hello") != std::string::npos)
-            {
-                session->send(net::buffer("MAIL FROM:<test@example.com>\r\n"));
-            }
-            else if (cmd.starts_with("250 OK"))
-            {
-                session->send(net::buffer("RCPT TO:<admin@example.com>\r\n"));
-            }
-            else if (cmd.starts_with("250 Accepted"))
-            {
-                session->send(net::buffer("DATA\r\n"));
-            }
-            else if (cmd.starts_with("354"))
-            {
-                session->send(net::buffer(email_info.body + "\r\n.\r\n"));
-            }
-            else if (cmd.starts_with("250 Message"))
-            {
-                session->send(net::buffer("QUIT\r\n"));
-            }
-            else
-            {
-                std::cout << "Want to proceed? Yes: 1\tNo: 0" << std::endl;
-            }
+                std::string cmd(static_cast<const char*>(msg.data()), msg.size());
+
+std::cout << "Received message: " << cmd << std::endl;
+
+if (cmd.starts_with("220"))
+{
+    session->send(net::buffer("HELO example.com\r\n"));
+}
+else if (cmd.starts_with("250") && cmd.find("Hello") != std::string::npos)
+{
+    session->send(net::buffer("MAIL FROM:<test@example.com>\r\n"));
+}
+else if (cmd.starts_with("250 OK"))
+{
+    session->send(net::buffer("RCPT TO:<admin@example.com>\r\n"));
+}
+else if (cmd.starts_with("250 Accepted"))
+{
+    session->send(net::buffer("DATA\r\n"));
+}
+else if (cmd.starts_with("354"))
+{
+    session->send(net::buffer(email_info.body + "\r\n.\r\n"));
+}
+else if (cmd.starts_with("250 Message"))
+{
+    session->send(net::buffer("QUIT\r\n"));
+}
+else
+{
+    std::cout << "Want to proceed? Yes: 1\tNo: 0" << std::endl;
+}
+            });
         });
         session->run();
     });
@@ -99,6 +122,7 @@ void Client::reconnect()
         }
     });
 }
+
 
 bool Client::run()
 {

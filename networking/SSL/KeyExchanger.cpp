@@ -14,8 +14,7 @@ namespace smtp::ssl {
       EVP_PKEY_CTX_free(pctx);
       throw std::runtime_error("Failed to init DH paramgen");
     }
-
-    if (EVP_PKEY_CTX_set_dh_paramgen_prime_len(pctx, 2048) != 1) {
+    if (EVP_PKEY_CTX_set_dh_rfc5114(pctx, 2) != 1) {
       EVP_PKEY_CTX_free(pctx);
       throw std::runtime_error("Failed to set DH prime length");
     }
