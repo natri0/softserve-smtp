@@ -6,7 +6,7 @@
 #define SESSION_H
 
 #include <boost/asio.hpp>
-#include <boost/beast/core/detail/base64.hpp>
+#include <boost/beast/core.hpp>
 #include <functional>
 #include <memory>
 #include <deque>
@@ -35,7 +35,7 @@ public:
 
     // setters
     void setOnMessage(OnMessage cb) noexcept { onMessageReceived = std::move(cb); }
-    void setOnConnected(OnConnected cb) noexcept { onConnected = std::move(cb); };
+    void setOnConnected(OnConnected cb) noexcept { onConnected = std::move(cb); }
     void setOnDisconnect(OnDisconnect cb) noexcept { onDisconnect = std::move(cb); };
 
     // functional
