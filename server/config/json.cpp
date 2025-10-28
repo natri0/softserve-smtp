@@ -26,6 +26,10 @@ static size_t code_to_utf8(unsigned char *const buffer, const unsigned int code)
     return 0;
 }
 
+static bool is_hex(char x) {
+    return (x >= '0' && x <= '9') || (x >= 'A' && x <= 'F') || (x >= 'a' && x <= 'f');
+}
+
 static void skip_whitespace(const char *&string) {
     while (*string && isspace(*string)) string++;
 }
@@ -68,7 +72,7 @@ std::optional<std::string> json::visit_string(const char *&string) {
                     case 't': bytes[0] = '\t'; break;
                     case 'u': {
                         strncpy(bytes, string + next_escape_or_quote + 2, 4);
-                        if (!ishexnumber(bytes[0]) || !ishexnumber(bytes[1]) || !ishexnumber(bytes[2]) || !ishexnumber(bytes[3])) {
+                        if (!is_hex(bytes[0]) || !is_hex(bytes[1]) || !is_hex(bytes[2]) || !is_hex(bytes[3])) {
                             string = begin;
                             return {};
                         }
