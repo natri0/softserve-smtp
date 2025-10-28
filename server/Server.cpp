@@ -6,16 +6,13 @@
 
 #include <cmath>
 
-#include "CryptoManager.h"
 #include "ThreadPool/include/ThreadPool.hpp"
 #include "../networking/SSL/KeyExchanger.h"
 
 // temp till we don't have parser
-constexpr uint8_t THREADS_NUM = 8;
 
 Server::Server() : io(std::make_shared<boost::asio::io_context>()),
                    work(io->get_executor()), acceptor(net::ip::tcp::acceptor(*io)),
-                   threadPool(std::make_unique<ThreadPool>(THREADS_NUM)),
                    sslContext(smtp::ssl::SSLContextFactory::createServerContext())
 {
 }
@@ -28,6 +25,17 @@ Server::~Server()
 bool Server::init()
 {
     // initialization from config
+    if (Config config; !config.load_from_file("server/config/config.json"))
+        std::cout << "Couldn't load config.json" << std::endl;
+    else
+    {
+        if (config.has_key("port")) port = config.get<unsigned short>("port");
+        if (config.has_key("thread_pool_size")) thread_pool_size = config.get<unsigned short>("thread_pool_size");
+    }
+
+    threadPool = std::make_unique<ThreadPool>(thread_pool_size);
+
+    //
     ui->showBanner(port);
 
     if (!setUpAcceptor()) return false;
@@ -74,7 +82,7 @@ void Server::run()
 {
     if (!acceptor.is_open()) return;
 
-    for (uint8_t i = 0; i < THREADS_NUM; ++i)
+    for (uint8_t i = 0; i < thread_pool_size; ++i)
         threadPool->submit([self = shared_from_this()]()
         {
             self->io->run();
