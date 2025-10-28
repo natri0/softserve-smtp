@@ -6,7 +6,7 @@
 //std::unique_ptr<Logger> Logger::instance = nullptr;
 
 Logger::Logger(const LogLevel& level, const std::string& path, const unsigned int amount)
-    : queue(4096), location{ FUNCTION_NAME }, local_level{ level }, output_path{ path }, amount{ amount }, end(false), do_flush(true) {
+    : queue(8192), location{ FUNCTION_NAME }, local_level{ level }, output_path{ path }, amount{ amount }, end(false), do_flush(true) {
     fileInit(this->amount);
 
     thrd = std::thread([this]() {
@@ -25,6 +25,7 @@ Logger::Logger(const LogLevel& level, const std::string& path, const unsigned in
 }
 
 Logger& Logger::getInstance(const LogLevel& level, const std::string& path, const unsigned int amount) {
+
     static Logger instance(level, path, amount);
     return instance;
 }
@@ -67,24 +68,28 @@ void Logger::fileInit(const unsigned int amount)
     output_path = buff_name;
 
     if (error)
-        log("invalid output path, default will be used", "[WARNING]", FUNCTION_NAME, local_level, std::this_thread::get_id());
+        log("invalid output path, default will be used", "[WARNING]", FUNCTION_NAME, local_level, std::this_thread::get_id(), nullptr);
 }
 
-Logger::~Logger() {
+void Logger::shutDown() {
     end = true;
     if (thrd.joinable())
         thrd.join();
     file.close();
 }
 
-void Logger::setOutput(const std::string& path)
+Logger::~Logger() {
+    shutDown();
+}
+
+void Logger::setOutputPath(const std::string& path)
 {
 
     std::lock_guard guard{ mutex };
     output_path = path;
 }
 
-const std::string& Logger::getPath() const
+const std::string& Logger::getOutputPath() const
 {
 
     std::lock_guard<std::mutex> guard{ mutex };
@@ -93,11 +98,13 @@ const std::string& Logger::getPath() const
 
 void Logger::setLevel(LogLevel level)
 {
+    std::lock_guard guard{ mutex };
     local_level = level;
 }
 
 const LogLevel& Logger::getLevel() const
 {
+    std::lock_guard guard{ mutex };
     return local_level;
 }
 
@@ -107,7 +114,7 @@ void Logger::setFlush(const bool if_flush) {
 
 bool Logger::blockLog(LogLevel level)
 {
-    return static_cast<std::underlying_type<LogLevel>::type>(level) < \
+    return static_cast<std::underlying_type<LogLevel>::type>(level) > \
         static_cast<std::underlying_type<LogLevel>::type>(local_level);
 }
 
@@ -125,7 +132,7 @@ void Logger::flushMessage(const LogData& data, bool if_flush)
     if (blockLog(data.level))
         return;
 
-    if (!do_flush || static_cast<int>(local_level) == 0) return;
+    if (static_cast<int>(local_level) == 0) return;
 
     std::string file_output;
 
@@ -168,49 +175,55 @@ void Logger::flushMessage(const LogData& data, bool if_flush)
     console_output += data.msg;
     console_output += '\n';
 
-
-    std::cout << console_output;
+    if (do_flush) std::cout << console_output;
     file << file_output;
     file.flush();
 }
 
-void Logger::shutDown() {
-    end = true;
-    thrd.join();
+void Logger::operator+=(const LogData& data) {
+    log(data);
 }
 
+void Logger::log(const LogData& data) {
+    LogData* msg = new LogData{ data };
+    while (!queue.push(msg)) {
+        std::this_thread::yield();
+    }
+}
 void Logger::log(const std::string& str, const std::string& type, const std::string& location,
     const LogLevel& level, std::thread::id id = std::this_thread::get_id())
+    //void* ptr_this = nullptr)
 {
-    LogData* msg = new LogData{ str, type, location, level, id };
+    LogData* msg = new LogData{ str, type, location, level, id };//, ptr_this };
     while (!queue.push(msg)) {
         std::this_thread::yield();
     }
 }
 
+
 void Logger::logError(const std::string& msg)
 {
-    log(msg, "[ERROR]", FUNCTION_NAME, local_level);
+    log(msg, "[ERROR]", LOG_GET_FUNC(), local_level);
 }
 
 void Logger::logWarning(const std::string& msg)
 {
-    log(msg, "[WARNING]", FUNCTION_NAME, local_level);
+    log(msg, "[WARNING]", LOG_GET_FUNC(), local_level);
 }
 
 void Logger::logInfo(const std::string& msg)
 {
-    log(msg, "[INFO]", FUNCTION_NAME, local_level);
+    log(msg, "[INFO]", LOG_GET_FUNC(), local_level);
 }
 
 void Logger::logFuncStart() {
 
     if (static_cast<int>(local_level) >= 2)
-        log("Function is started", "[INFO]", FUNCTION_NAME, local_level);
+        log("Function is started", "[INFO]", location, local_level);
 }
 
 void Logger::logFuncEnd()
 {
     if (static_cast<int>(local_level) >= 2)
-        log("Function is successfully executed", "[INFO]", FUNCTION_NAME, local_level);
+        log("Function is successfully executed", "[INFO]", location, local_level);
 }

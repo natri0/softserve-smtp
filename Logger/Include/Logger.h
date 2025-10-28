@@ -18,7 +18,7 @@
 
 
 
-class LogData;
+struct LogData;
 enum class LogLevel : int;
 
 
@@ -32,7 +32,7 @@ const std::unordered_map<std::string, std::string> colored{
 
 class Logger {
 private:
-    std::mutex mutex;
+    mutable std::mutex mutex;
     std::ofstream file;
     boost::lockfree::queue<LogData*> queue;
     std::string location;
@@ -46,12 +46,18 @@ private:
 
     Logger(const LogLevel&, const std::string&, const unsigned int);
 
+    void fileInit(const unsigned int);
+
+    void log(const std::string&, const std::string&, const std::string&, const LogLevel&, std::thread::id);//, void*);
+
+    void log(const LogData&);
+
 
 public:
 
     static Logger& getInstance(const LogLevel& level = DEFAULT_LOG_LEVEL, const std::string& path = DEFAULT_PATH, const unsigned int amount = DEFAULT_AMOUNT);
-    void fileInit(const unsigned int);
 
+    void operator+=(const LogData& data);
 
     Logger(const Logger&) = delete;
     void operator=(const Logger&) = delete;
@@ -61,19 +67,17 @@ public:
 
     ~Logger();
 
+    bool blockLog(LogLevel level);
 
-    void setOutput(const std::string& path);
+    void setOutputPath(const std::string& path);
 
-    const std::string& getPath() const;
+    const std::string& getOutputPath() const;
 
     void setLevel(LogLevel level);
 
     void setFlush(const bool);
 
     const LogLevel& getLevel() const;
-
-    bool blockLog(LogLevel level);
-
 
     std::string toString(LogLevel level);
 
@@ -82,7 +86,6 @@ public:
     void shutDown();
 
 
-    void log(const std::string&, const std::string&, const std::string&, const LogLevel&, std::thread::id);
 
 
     void logError(const std::string&);
