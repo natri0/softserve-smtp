@@ -3,3 +3,5 @@
 /.idea/
 
 /build/
+server/ThreadPool/.vscode/
+server/ThreadPool/build/
