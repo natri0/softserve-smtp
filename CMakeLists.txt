@@ -4,6 +4,7 @@ project(softserve_smtp)
 set(CMAKE_CXX_STANDARD 23)
 
 add_subdirectory(server)
+add_subdirectory(server/config)
 add_subdirectory(utils)
 add_subdirectory(client)
 add_subdirectory(networking)
