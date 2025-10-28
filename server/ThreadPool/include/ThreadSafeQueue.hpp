@@ -2,8 +2,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <queue>
-#include "ThreadSafeQueue.hpp"
-
+#include <optional>
 
 /**
 * @class ThreadSafeQueue
@@ -17,9 +16,16 @@
 template<typename T>
 class ThreadSafeQueue {
 private:
-    std::mutex queue_mutex;
+    /** @brief Mutex for protecting queue access */
+    mutable std::mutex queue_mutex;
+
+    /** @brief Condition variable for blocking pop operations */
     std::condition_variable cv;
-    bool shutdown_flag = false;
+
+    /** @brief Atomic flag indicating if queue is shut down */
+    std::atomic<bool> shutdown_flag{false};
+
+    /** @brief Underlying queue container */
     std::queue<T> safe_queue;
 
 public:
@@ -52,14 +58,27 @@ public:
     }
 
     /**
+    * @brief Push an element into the queue (move).
+    * @return true if added, false if queue is closed.
+    */
+    bool push(T&& item) {
+        {
+            std::lock_guard<std::mutex> lock(queue_mutex);
+            if (shutdown_flag) return false;
+            safe_queue.push(std::move(item));
+        }
+        cv.notify_one();
+        return true;
+    }
+
+    /**
     * @brief Pop an element from the queue.
     *
     * Blocks until an element is available or the queue is shutdown.
     *
-    * @param out Reference where the popped element will be stored.
-    * @return true if an element was popped, false if queue is empty and shutdown.
+    * @return std::optional<T> containing the element, or std::nullopt if shutdown.
     */
-    bool pop(T& out) {
+    std::optional<T> pop() {
         std::unique_lock<std::mutex> lock(queue_mutex);
 
         cv.wait(lock, [this]() {
@@ -67,11 +86,12 @@ public:
         });
 
         if (safe_queue.empty())
-            return false; 
+            return std::nullopt; 
 
-        out = std::move(safe_queue.front());
+        auto result = std::move(safe_queue.front());
         safe_queue.pop();
-        return true;
+        
+        return result;
     }
 
     /**
@@ -79,22 +99,69 @@ public:
     *
     * @return true if queue is empty, false otherwise.
     */
-    bool isEmpty() {
+    bool isEmpty() const noexcept{
         std::lock_guard<std::mutex> lock(queue_mutex);
         return safe_queue.empty();
     }
 
     /**
+    * @brief Check if the queue is shutdown.
+    *
+    * @return true if queue is shutdown, false otherwise.
+    */
+    bool isShutdown() const noexcept {
+        return shutdown_flag.load(std::memory_order_acquire);
+    }
+
+    /**
+    * @brief Clear all elements from the queue.
+    *
+    * Removes all pending elements from the queue in a thread-safe manner.
+    * Does not affect the shutdown state.
+    *
+    * @return true if queue was cleared (had elements), false if queue was already empty.
+    */
+    bool clear() noexcept { 
+        std::lock_guard<std::mutex> lock(queue_mutex);
+        if (safe_queue.empty()) return false;
+        std::queue<T> tmp;
+        std::swap(safe_queue, tmp);
+        return true;
+    }
+
+    /**
+    * @brief Get the number of elements in the queue.
+    *
+    * Thread-safe operation that returns the current queue size.
+    *
+    * @return Number of elements currently in the queue.
+    */
+    size_t size() const noexcept {
+        std::lock_guard<std::mutex> lock(queue_mutex);
+        return safe_queue.size();
+    }
+    /**
     * @brief Shutdown the queue.
     *
     * Sets the shutdown flag and notifies all waiting threads.
     * After shutdown, no more elements can be pushed.
+    *
+    * @param clear If true, clears all pending items from the queue.
     */
-    void shutDown() {
+    bool shutDown(bool clear = false) noexcept {
         {
             std::lock_guard<std::mutex> lock(queue_mutex);
-            shutdown_flag = true;
+            if (shutdown_flag.exchange(true, std::memory_order_acq_rel)){
+                return false; 
+            }
+
+            if (clear) {
+                std::queue<T> tmp;
+                std::swap(safe_queue, tmp);
+            }
         }
+
         cv.notify_all();
+        return true;
     }
 };
