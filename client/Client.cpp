@@ -13,8 +13,8 @@ constexpr uint8_t RECONNECT_DELAY_TIME = 2;
 Client::Client(const std::string& host, const unsigned short port) :
     server_endpoint(net::ip::make_address(host), port),
     session(std::make_shared<Session>(std::make_shared<net::ip::tcp::socket>(io))),
-    timer(io),
-    sslContext(smtp::ssl::SSLContextFactory::createClientContext())
+    timer(io)
+    //sslContext(smtp::ssl::SSLContextFactory::createClientContext())
 {
 };
 

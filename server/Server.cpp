@@ -15,8 +15,8 @@ constexpr uint8_t THREADS_NUM = 8;
 
 Server::Server() : io(std::make_shared<boost::asio::io_context>()),
                    work(io->get_executor()), acceptor(net::ip::tcp::acceptor(*io)),
-                   threadPool(std::make_unique<ThreadPool>(THREADS_NUM)),
-                   sslContext(smtp::ssl::SSLContextFactory::createServerContext())
+                   threadPool(std::make_unique<ThreadPool>(THREADS_NUM))
+                   //sslContext(smtp::ssl::SSLContextFactory::createServerContext())
 {
 }
 

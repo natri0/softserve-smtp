@@ -1,42 +1,15 @@
-cmake_minimum_required(VERSION 3.14)
-project(THREADPOOL LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.30)
+project(smtp_server)
 
 set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# 🔹 Include paths
-include_directories(
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/BoostCustom/asio/include
-    ${CMAKE_SOURCE_DIR}/includeForTest
-)
+set(BOOST_ROOT "${CMAKE_SOURCE_DIR}/../3rdparty/boost_1_89_0")
+set(BOOST_INCLUDEDIR "${BOOST_ROOT}/include")
+set(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib")
 
-# 🔹 Find Threads (cross-platform)
-find_package(Threads REQUIRED)
+find_package(Boost REQUIRED COMPONENTS system thread)
+find_package(OpenSSL REQUIRED)
 
-# =====================================================================
-# 🔸 Executable: TestServer
-# =====================================================================
-add_executable(TestServer
-    TestConnection/ServerFromTestClient.cpp
-    TestConnection/SMTPSessionForTest.cpp
-    src/ThreadPool.cpp
-)
-
-target_link_libraries(TestServer PRIVATE Threads::Threads)
-
-# =====================================================================
-# 🔸 Executable: TestClient
-# =====================================================================
-add_executable(TestClient
-    TestConnection/TestClientConnection.cpp
-)
-
-target_link_libraries(TestClient PRIVATE Threads::Threads)
-
-# =====================================================================
-# 🔸 GoogleTest + GoogleMock (FetchContent)
-# =====================================================================
 include(FetchContent)
 
 set(BUILD_GMOCK ON CACHE BOOL "Build GoogleMock with GoogleTest" FORCE)
@@ -52,9 +25,10 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-# =====================================================================
-# 🔸 Executable: ThreadPoolIntegrationTest
-# =====================================================================
+include_directories(
+    ${CMAKE_SOURCE_DIR}/include
+)
+
 add_executable(ThreadPoolIntegrationTest
     TestConnection/ThreadPoolIntegrationTest.cpp
     src/ThreadPool.cpp
@@ -69,15 +43,63 @@ target_link_libraries(ThreadPoolIntegrationTest
 include(GoogleTest)
 gtest_discover_tests(ThreadPoolIntegrationTest)
 
-# =====================================================================
-# 🔸 Optimization flags
-# =====================================================================
-if(MSVC)
-    target_compile_options(TestServer PRIVATE /O2)
-    target_compile_options(TestClient PRIVATE /O2)
-    target_compile_options(ThreadPoolIntegrationTest PRIVATE /O2)
+# ====== SERVER ======
+add_executable(smtp_server
+    ../main.cpp
+    ../../networking/Session.cpp
+    ../../networking/SSL/CryptoManager.cpp
+    ../../networking/SSL/SSLContextFactory.cpp
+    ../../networking/SSL/KeyExchanger.cpp
+    ../Server.cpp
+    src/ThreadPool.cpp
+    ../ServerConsoleUI.cpp
+)
+
+# ====== CLIENT ======
+add_executable(smtp_client 
+    ../../client/main.cpp
+    ../../networking/Session.cpp
+    ../../networking/SSL/CryptoManager.cpp
+    ../../networking/SSL/SSLContextFactory.cpp
+    ../../networking/SSL/KeyExchanger.cpp
+    ../../client/Client.cpp
+    ../../client/EmailMessage.cpp
+)
+
+# ====== INCLUDE DIRECTORIES ======
+set(COMMON_INCLUDES
+    ${Boost_INCLUDE_DIRS}
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/..
+    ${CMAKE_SOURCE_DIR}/../../networking
+    ${CMAKE_SOURCE_DIR}/../../networking/SSL
+)
+
+target_include_directories(smtp_server PRIVATE ${COMMON_INCLUDES})
+target_include_directories(smtp_client PRIVATE ${COMMON_INCLUDES})
+
+# ====== LINKING ======
+if(WIN32)
+    target_link_libraries(smtp_server PRIVATE
+        ${Boost_LIBRARIES}
+        ws2_32 mswsock
+        OpenSSL::SSL OpenSSL::Crypto
+    )
+    target_link_libraries(smtp_client PRIVATE
+        ${Boost_LIBRARIES}
+        ws2_32 mswsock
+        OpenSSL::SSL OpenSSL::Crypto
+    )
 else()
-    target_compile_options(TestServer PRIVATE -O3)
-    target_compile_options(TestClient PRIVATE -O3)
-    target_compile_options(ThreadPoolIntegrationTest PRIVATE -O3)
+    target_link_libraries(smtp_server PRIVATE
+        ${Boost_LIBRARIES}
+        pthread
+        OpenSSL::SSL OpenSSL::Crypto
+    )
+    target_link_libraries(smtp_client PRIVATE
+        ${Boost_LIBRARIES}
+        pthread
+        OpenSSL::SSL OpenSSL::Crypto
+    )
 endif()
