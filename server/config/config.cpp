@@ -18,7 +18,7 @@ static void populate(const json::Value &root, std::unordered_map<std::string, st
             int i = 0;
             for (const auto &[key, _] : obj) {
                 std::string path = (prefix.empty() ? "_keys." : prefix + "._keys.") + std::to_string(i);
-                map[path] = root.as_string();
+                map[path] = key;
                 i++;
             }
             break;
@@ -80,5 +80,7 @@ bool Config::has_key(const std::string_view &key) const {
 }
 
 std::any Config::get_any(const std::string_view &key) const {
+    if (!has_key(key)) throw std::invalid_argument("Key not found");
+
     return data.at(std::string(key));
 }
