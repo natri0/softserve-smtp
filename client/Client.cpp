@@ -124,7 +124,6 @@ void Client::reconnect()
     });
 }
 
-
 bool Client::run()
 {
     if (isRunning) return false;

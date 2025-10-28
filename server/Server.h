@@ -50,10 +50,6 @@ private:
 
     // crypto
     std::shared_ptr<smtp::ssl::SSLContextFactory::SSLContext> sslContext;
-
-    // temp
-    std::string print(const std::string& str);
-    //
 };
 
 #endif //SERVER_H

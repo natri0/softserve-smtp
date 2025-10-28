@@ -126,7 +126,7 @@ void Server::runAcceptor()
                 std::cout << "Server private key size: " << serverPriv.size() << std::endl;
                 std::cout << "Server public key size: " << serverPub.size() << std::endl;
 
-                std::vector<unsigned char> clientPub(
+                std::vector clientPub(
                     static_cast<const unsigned char*>(msg.data()),
                     static_cast<const unsigned char*>(msg.data()) + msg.size()
                 );
@@ -205,10 +205,4 @@ bool Server::setUpAcceptor()
 
     acceptor.listen();
     return true;
-}
-
-std::string Server::print(const std::string& str)
-{
-    std::cout << str << std::endl;
-    return str;
 }
