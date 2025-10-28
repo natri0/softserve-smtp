@@ -1,0 +1,7 @@
+# ninja log v6
+69	1060	7833607683371667	server/CMakeFiles/smtp_server.dir/main.cpp.obj.ddi	faf0c5ca68c422b0
+1078	1199	7833607694542951	server/CMakeFiles/smtp_server.dir/CXX.dd	55981d582d458fb4
+1078	1199	7833607694542951	C:/Users/user/source/repos/softserve-smtp/out/build/x64-Debug/server/CMakeFiles/smtp_server.dir/CXXModules.json	55981d582d458fb4
+1078	1199	7833607694542951	server/CMakeFiles/smtp_server.dir/main.cpp.obj.modmap	55981d582d458fb4
+1202	12103	7833607694673071	server/CMakeFiles/smtp_server.dir/main.cpp.obj	515267e1372ce458
+12105	13255	7833607803751173	server/smtp_server.exe	baa8de29f6f5703d
