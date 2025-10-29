@@ -9,10 +9,10 @@
 #include <mutex>
 #include <condition_variable>
 #include <memory>
-#include <vector>
 
 #include "ServerConsoleUI.h"
 #include "../networking/SSL/SSLContextFactory.h"
+#include "config/config.h"
 
 class ThreadPool;
 
@@ -29,31 +29,29 @@ public:
 
 private:
     // SMTP
-    // Parser
     // Logger
 
+    // networking
     std::shared_ptr<boost::asio::io_context> io;
     net::executor_work_guard<boost::asio::io_context::executor_type> work;
     net::ip::tcp::acceptor acceptor;
-    unsigned short port = 12345; // temporary value: waiting for parser
+    unsigned short port = 12345;
 
-    std::vector<std::shared_ptr<Session>> sessions;
+    std::list<std::shared_ptr<Session>> sessions;
     std::mutex sessionMutex;
 
     void runAcceptor();
     bool setUpAcceptor();
 
     std::unique_ptr<ThreadPool> threadPool;
+    unsigned short thread_pool_size = 4;
     bool isStopping = false;
 
+    // UI
     std::shared_ptr<ServerConsoleUI> ui = std::make_shared<ServerConsoleUI>();
 
     // crypto
     std::shared_ptr<smtp::ssl::SSLContextFactory::SSLContext> sslContext;
-
-    // temp
-    std::string print(const std::string& str);
-    //
 };
 
 #endif //SERVER_H

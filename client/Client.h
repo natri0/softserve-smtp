@@ -20,7 +20,7 @@ public:
     bool stop();
     bool start();
 
-    void sendMail(EmailMessage e_msg);
+    bool sendMail(EmailMessage e_msg);
 
 private:
     EmailMessage email_info;
@@ -28,22 +28,17 @@ private:
     bool isRunning = false;
     void reconnect();
 
-    bool init();
+    void init();
     void connect();
     bool run();
 
     // SMTP
     // Logger
-    void onMessage(std::string& msg);
 
     net::io_context io;
     net::ip::tcp::endpoint server_endpoint;
     std::shared_ptr<Session> session;
     net::steady_timer timer;
-
-    bool isStopping = false;
-    std::condition_variable mainThreadCV;
-    std::mutex mainThreadMutex;
 
     std::jthread io_thread;
     std::jthread session_thread;

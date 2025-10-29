@@ -4,6 +4,7 @@
 
 #include "Session.h"
 #include <iostream>
+#include <mutex>
 
 constexpr std::size_t BUFFER_SIZE = 1024;
 constexpr int RECONNECT_DELAY_MS = 2000;
@@ -21,9 +22,9 @@ void Session::connect(const net::ip::tcp::endpoint& endpoint)
     {
         if (!ec)
         {
+            std::cerr << "Connected" << std::endl;
             connected = true;
             if (onConnected) onConnected();
-            std::cerr << "Connected" << std::endl;
         }
         else
         {
@@ -53,23 +54,25 @@ bool Session::disconnect()
 
 bool Session::run()
 {
-    // if (isRunning) return false;
-    // isRunning = true;
+    if (isRunning) return false;
+    isRunning = true;
 
-    try
-    {
-        read();
-    }
+    try { read(); }
     catch (const boost::system::system_error& e)
     {
         connected = false;
-        if (onDisconnect) onDisconnect();
+        if (onDisconnect)
+        {
+            disconnect();
+            onDisconnect();
+        }
     }
     return true;
 }
 
-bool Session::send(const std::vector<unsigned char>& data) {
-    // if (!socket->is_open()) return false;
+bool Session::send(boost::asio::const_buffer data)
+{
+    if (!socket->is_open()) return false;
 
     writeQueue.push_back(data);
     if (!isWriting) write();
@@ -79,8 +82,25 @@ bool Session::send(const std::vector<unsigned char>& data) {
 void Session::write()
 {
     isWriting = true;
-    net::async_write(*socket, net::buffer(writeQueue.front()),
-                     [self = shared_from_this()](const boost::system::error_code& ec, std::size_t /*bytes_transferred*/)
+
+    boost::asio::const_buffer data = writeQueue.front();
+
+    std::shared_ptr<std::vector<unsigned char>> encryptedData;
+
+    if (cryptoManager.get())
+    {
+        std::string plain = std::string(static_cast<const char*>(writeQueue.front().data()),
+                                        writeQueue.front().size());
+        encryptedData = std::make_shared<std::vector<unsigned char>>(cryptoManager->encrypt(plain));
+
+        // std::cout << "write data size:" << encryptedData->size() << std::endl;
+        // std::cout << encryptedData->data() << std::endl;
+        data = net::buffer(*encryptedData);
+    }
+
+    net::async_write(*socket, data,
+                     [self = shared_from_this(), encryptedData](const boost::system::error_code& ec,
+                                                                std::size_t /*bytes_transferred*/)
                      {
                          if (!ec)
                          {
@@ -90,8 +110,10 @@ void Session::write()
                          }
                          else if (self->onDisconnect && ec != net::error::operation_aborted)
                          {
-                             self->onDisconnect();
+                             if (self->onDisconnect) self->onDisconnect();
+                             std::cout << "write failed: " << ec.message() << std::endl;
                              self->connected = false;
+                             self->disconnect();
                          }
                      });
 }
@@ -107,13 +129,32 @@ void Session::read()
                                 if (!ec)
                                 {
                                     if (self->onMessageReceived)
-                                        self->onMessageReceived(net::buffer(self->buffer, bytes_transferred));
+                                    {
+                                        if (self->cryptoManager.get())
+                                        {
+                                            const std::vector<unsigned char> data{
+                                                self->buffer.begin(), self->buffer.begin() + bytes_transferred
+                                            };
+                                            // std::cout << "read data size:" << data.size() << std::endl;
+                                            // std::cout << data.data() << std::endl;
+                                            // std::cout << self->buffer.data() << std::endl;
+
+                                            self->decrypted_data = self->cryptoManager->decrypt(data);
+
+                                            self->onMessageReceived(
+                                                net::buffer(self->decrypted_data, self->decrypted_data.size()));
+                                        }
+                                        else
+                                            self->onMessageReceived(
+                                                net::buffer(self->buffer.data(), bytes_transferred));
+                                    }
                                     self->read();
                                 }
                                 else if (self->onDisconnect && ec != net::error::operation_aborted)
                                 {
-                                    self->onDisconnect();
-                                    self->connected = false;
+                                    if (self->onDisconnect) self->onDisconnect();
+                                    std::cout << "read failed: " << ec.message() << std::endl;
+                                    self->disconnect();
                                 }
                             });
 }

@@ -6,15 +6,14 @@
 #define SESSION_H
 
 #include <boost/asio.hpp>
-#include <boost/beast/core/detail/base64.hpp>
+#include <boost/beast/core.hpp>
 #include <functional>
 #include <memory>
 #include <deque>
 #include <array>
+#include <iostream>
 
-// #include "SSL/CryptoManager.h"
-// #include "SSL/KeyExchanger.h"
-// #include "SSL/SSLContextFactory.h"
+#include "SSL/CryptoManager.h"
 
 namespace net = boost::asio;
 
@@ -35,28 +34,30 @@ public:
 
     // setters
     void setOnMessage(OnMessage cb) noexcept { onMessageReceived = std::move(cb); }
-    void setOnConnected(OnConnected cb) noexcept { onConnected = std::move(cb); };
+    void setOnConnected(OnConnected cb) noexcept { onConnected = std::move(cb); }
     void setOnDisconnect(OnDisconnect cb) noexcept { onDisconnect = std::move(cb); };
 
     // functional
+    bool init();
     bool run();
-    bool send(const std::vector<unsigned char>& data);
+    bool send(boost::asio::const_buffer data);
 
     // getters
     [[nodiscard]] bool isConnected() const noexcept { return connected; }
 
     std::shared_ptr<net::ip::tcp::socket> getSocket() const noexcept { return socket; };
 
-    void setKey(std::vector<unsigned char> key) {Key = key;}
+    void setKey(std::vector<unsigned char> key)
+    {
+        cryptoManager = std::make_unique<smtp::ssl::CryptoManager>(key);
+    }
 
 private:
     void read();
     void write();
 
-    // std::unique_ptr<smtp::ssl::CryptoManager> cryptoManager;
-
     std::array<char, 1024> buffer;
-    std::deque<std::vector<unsigned char>> writeQueue;
+    std::deque<boost::asio::const_buffer> writeQueue;
     bool isWriting = false;
     bool isRunning = false;
     std::atomic<bool> connected = false;
@@ -68,7 +69,8 @@ private:
     OnConnected onConnected;
     OnDisconnect onDisconnect;
 
-    std::vector<unsigned char> Key{};
+    std::unique_ptr<smtp::ssl::CryptoManager> cryptoManager;
+    std::string decrypted_data;
 };
 
 #endif //SESSION_H

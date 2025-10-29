@@ -41,6 +41,7 @@ if(WIN32)
         mswsock
         OpenSSL::SSL
         OpenSSL::Crypto
+<<<<<<< HEAD
     )
 else() # Linux / macOS
     target_link_libraries(smtp_server PRIVATE
@@ -50,3 +51,7 @@ else() # Linux / macOS
         OpenSSL::Crypto
     )
 endif()
+=======
+        config_parser
+)
+>>>>>>> origin/server
