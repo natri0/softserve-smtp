@@ -4,6 +4,7 @@
 #include <format>
 #include <string.h>
 #include <utility>
+#include <chrono>
 
 /// convert unicode codepoint to utf8
 static size_t code_to_utf8(unsigned char *const buffer, const unsigned int code)

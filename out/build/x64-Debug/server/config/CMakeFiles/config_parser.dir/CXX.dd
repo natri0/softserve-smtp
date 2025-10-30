@@ -1,0 +1,5 @@
+ninja_dyndep_version = 1.0
+build server\config\CMakeFiles\config_parser.dir\json.cpp.obj: dyndep
+
+build server\config\CMakeFiles\config_parser.dir\config.cpp.obj: dyndep
+
