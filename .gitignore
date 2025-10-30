@@ -1,6 +1,10 @@
-# CLion build files
 /cmake-build-*/
 /.idea/
 
+
 /build/
 /client/UI/build/
+
+.vs/
+CMakeSettings.json
+.out/
