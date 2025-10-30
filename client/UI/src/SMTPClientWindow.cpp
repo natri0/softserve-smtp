@@ -119,6 +119,22 @@ QWidget* SmtpClientWindow::createLogPanel()
 
 void SmtpClientWindow::onSend()
 {
+    QStringList errors;
+    if (fromLineEdit->text().trimmed().isEmpty()) {
+        errors.append("'From' field cannot be empty.");
+    }
+    if (toLineEdit->text().trimmed().isEmpty()) {
+        errors.append("'To' field cannot be empty.");
+    }
+    if (bodyTextEdit->toPlainText().trimmed().isEmpty()) {
+        errors.append("The email body cannot be empty.");
+    }
+
+    if (!errors.isEmpty()) {
+        QMessageBox::warning(this, "Invalid Input", errors.join("\n"));
+        return;
+    }
+
     Email email;
     email.from = fromLineEdit->text();
     email.to = toLineEdit->text().split(';', Qt::SkipEmptyParts);
@@ -151,7 +167,7 @@ void SmtpClientWindow::onRemoveAttachment()
 void SmtpClientWindow::onConfigureServer()
 {
     QDialog dialog(this);
-    dialog.setWindowTitle( "Server Configuration");
+    dialog.setWindowTitle("Server Configuration");
 
     QFormLayout form(&dialog);
 
@@ -197,10 +213,9 @@ void SmtpClientWindow::updateLog(const QString &message)
 
 void SmtpClientWindow::onSendSuccess()
 {
-    updateLog( "Message sent successfully");
-    statusBar()->showMessage("Message sent successfully!", 5000);
+    updateLog("Message sent successfully");
+    statusBar()->showMessage("Message sent successfully!", 3000);
     sendButton->setEnabled(true);
-    QMessageBox::information(this, "Success",  "The email was sent successfully.");
 }
 
 void SmtpClientWindow::onSendFailed(const QString &error)

@@ -10,9 +10,22 @@ void SmtpWorker::process(){
 
     //ClientClassName ClientName;
 
-    //if(!ClientName.sendEmail(m_Email, m_Settings)){
-    //    emit error("The SMTP library reported an error: " + QString::fromStdString(ClientName.getLastError()));
-    //}
+    emit statusUpdated("Connecting to the server...");
+    /*if(!ClientName.start(m_Settings)){
+        emit error("Failed to connect to the server!");
+        emit finished();
+        return;
+    }*/
+    emit statusUpdated(m_Settings.username);
+
+    emit statusUpdated("Connection successful! Sending email...");
+
+    /*if(!ClientName.sendEmail(m_Email, m_Settings)){
+        emit error("The SMTP library reported an error: " + QString::fromStdString(ClientName.getLastError()));
+        ClientName.end();
+        emit finished();
+        return;
+    }*/
 
     emit finished();
 }
