@@ -1,7 +1,0 @@
-ninja_dyndep_version = 1.0
-build networking\SSL\CMakeFiles\ssl_support.dir\KeyExchanger.cpp.obj: dyndep
-
-build networking\SSL\CMakeFiles\ssl_support.dir\SSLContextFactory.cpp.obj: dyndep
-
-build networking\SSL\CMakeFiles\ssl_support.dir\CryptoManager.cpp.obj: dyndep
-
