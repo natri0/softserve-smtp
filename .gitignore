@@ -7,3 +7,5 @@
 .vs/
 
 CMakeSettings.json
+
+.out/
