@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.30)
 project(smtp_server)
 
 set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build/server/bin")
 
 find_package(Boost REQUIRED COMPONENTS system thread asio)
 find_package(OpenSSL REQUIRED)
@@ -11,6 +12,13 @@ add_executable(smtp_server main.cpp
         Server.cpp
         ThreadPool/src/ThreadPool.cpp
         ServerConsoleUI.cpp
+)
+
+add_custom_command(TARGET smtp_server POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:smtp_server>/networking/SSL/certs
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/networking/SSL/certs
+        $<TARGET_FILE_DIR:smtp_server>/networking/SSL/certs
 )
 
 target_link_libraries(smtp_server PRIVATE
