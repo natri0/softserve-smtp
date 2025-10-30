@@ -5,7 +5,6 @@
 #include "Client.h"
 #include <iostream>
 
-#include "CryptoManager.h"
 #include "../networking/SSL/KeyExchanger.h"
 
 constexpr uint8_t RECONNECT_DELAY_TIME = 2;
