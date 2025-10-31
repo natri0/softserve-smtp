@@ -12,8 +12,11 @@
 						2,
 						3,
 						4,
+						5,
 						6,
-						7
+						7,
+						8,
+						9
 					],
 					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
 					"minimumCMakeVersion" : 
@@ -33,6 +36,21 @@
 					"parentIndex" : 0,
 					"projectIndex" : 1,
 					"source" : "server",
+					"targetIndexes" : 
+					[
+						4
+					]
+				},
+				{
+					"build" : "server/config",
+					"jsonFile" : "directory-server.config-Debug-2445e34e388a3d9eebcb.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.30"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "server/config",
 					"targetIndexes" : 
 					[
 						0
@@ -58,22 +76,26 @@
 					},
 					"parentIndex" : 0,
 					"projectIndex" : 3,
-					"source" : "client"
+					"source" : "client",
+					"targetIndexes" : 
+					[
+						3
+					]
 				},
 				{
 					"build" : "networking",
-					"childIndexes" : 
-					[
-						5
-					],
 					"jsonFile" : "directory-networking-Debug-55ae3935383fb4835272.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.30"
 					},
 					"parentIndex" : 0,
-					"projectIndex" : 4,
-					"source" : "networking"
+					"projectIndex" : 0,
+					"source" : "networking",
+					"targetIndexes" : 
+					[
+						2
+					]
 				},
 				{
 					"build" : "networking/SSL",
@@ -82,9 +104,13 @@
 					{
 						"string" : "3.30"
 					},
-					"parentIndex" : 4,
-					"projectIndex" : 5,
-					"source" : "networking/SSL"
+					"parentIndex" : 0,
+					"projectIndex" : 4,
+					"source" : "networking/SSL",
+					"targetIndexes" : 
+					[
+						5
+					]
 				},
 				{
 					"build" : "db",
@@ -94,7 +120,7 @@
 						"string" : "3.30"
 					},
 					"parentIndex" : 0,
-					"projectIndex" : 6,
+					"projectIndex" : 5,
 					"source" : "db"
 				},
 				{
@@ -105,8 +131,23 @@
 						"string" : "3.30"
 					},
 					"parentIndex" : 0,
-					"projectIndex" : 7,
+					"projectIndex" : 6,
 					"source" : "SMTP"
+				},
+				{
+					"build" : "logger",
+					"jsonFile" : "directory-logger-Debug-540440305f9964810dc4.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.30"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "logger",
+					"targetIndexes" : 
+					[
+						1
+					]
 				}
 			],
 			"name" : "Debug",
@@ -119,14 +160,23 @@
 						2,
 						3,
 						4,
-						6,
-						7
+						5,
+						6
 					],
 					"directoryIndexes" : 
 					[
-						0
+						0,
+						2,
+						5,
+						9
 					],
-					"name" : "softserve_smtp"
+					"name" : "softserve_smtp",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
 				},
 				{
 					"directoryIndexes" : 
@@ -137,13 +187,13 @@
 					"parentIndex" : 0,
 					"targetIndexes" : 
 					[
-						0
+						4
 					]
 				},
 				{
 					"directoryIndexes" : 
 					[
-						2
+						3
 					],
 					"name" : "utils",
 					"parentIndex" : 0
@@ -151,35 +201,31 @@
 				{
 					"directoryIndexes" : 
 					[
-						3
-					],
-					"name" : "client",
-					"parentIndex" : 0
-				},
-				{
-					"childIndexes" : 
-					[
-						5
-					],
-					"directoryIndexes" : 
-					[
 						4
 					],
-					"name" : "networking",
-					"parentIndex" : 0
-				},
-				{
-					"directoryIndexes" : 
+					"name" : "smtp_client",
+					"parentIndex" : 0,
+					"targetIndexes" : 
 					[
-						5
-					],
-					"name" : "SSL",
-					"parentIndex" : 4
+						3
+					]
 				},
 				{
 					"directoryIndexes" : 
 					[
 						6
+					],
+					"name" : "ssl_support",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						5
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						7
 					],
 					"name" : "db",
 					"parentIndex" : 0
@@ -187,7 +233,7 @@
 				{
 					"directoryIndexes" : 
 					[
-						7
+						8
 					],
 					"name" : "SMTP",
 					"parentIndex" : 0
@@ -196,11 +242,46 @@
 			"targets" : 
 			[
 				{
+					"directoryIndex" : 2,
+					"id" : "config_parser::@45d491cfea13a0fb6fea",
+					"jsonFile" : "target-config_parser-Debug-c53ee0b04753a4155989.json",
+					"name" : "config_parser",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 9,
+					"id" : "logger::@d605ba84040dd83ce0d4",
+					"jsonFile" : "target-logger-Debug-424eaec9664a747217c9.json",
+					"name" : "logger",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "networking::@5888a6d7873135925b2f",
+					"jsonFile" : "target-networking-Debug-5279feaa486ccb75dcf6.json",
+					"name" : "networking",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "smtp_client::@b0c487aac068df482bf0",
+					"jsonFile" : "target-smtp_client-Debug-d0ebc58133ebb95b0536.json",
+					"name" : "smtp_client",
+					"projectIndex" : 3
+				},
+				{
 					"directoryIndex" : 1,
 					"id" : "smtp_server::@d19778d2e34a1e3ddfc0",
-					"jsonFile" : "target-smtp_server-Debug-c8822dae04552949bd2b.json",
+					"jsonFile" : "target-smtp_server-Debug-9ae2b861737bcd7ab224.json",
 					"name" : "smtp_server",
 					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "ssl_support::@8969565c252a9ff1bb85",
+					"jsonFile" : "target-ssl_support-Debug-54a9eb854ead12e0f86e.json",
+					"name" : "ssl_support",
+					"projectIndex" : 4
 				}
 			]
 		}

@@ -1,0 +1,14 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "server\\CMakeFiles\\smtp_server.dir\\__\\networking\\Session.cpp.obj",
+            "outputs": [
+                "C:\\Users\\user\\source\\repos\\softserve-smtp\\out\\build\\x64-Debug\\vc140.pdb",
+                "server\\CMakeFiles\\smtp_server.dir\\__\\networking\\Session.cpp.obj.ddi"
+            ],
+            "requires": []
+        }
+    ]
+}

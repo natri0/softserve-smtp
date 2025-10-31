@@ -68,7 +68,7 @@ void Logger::fileInit(const unsigned int amount)
     output_path = buff_name;
 
     if (error)
-        log("invalid output path, default will be used", "[WARNING]", FUNCTION_NAME, local_level, std::this_thread::get_id(), nullptr);
+        log("invalid output path, default will be used", "[WARNING]", FUNCTION_NAME, local_level, std::this_thread::get_id());
 }
 
 void Logger::shutDown() {

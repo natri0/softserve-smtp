@@ -6,7 +6,6 @@
 
 
 struct LogData {
-private:
     std::string msg;
     std::string type;
     std::string location;

@@ -1,4 +1,4 @@
-#include "LoggerReader.h"
+#include "LogReader.h"
 #include <fstream>
 #include <regex>
 #include <iostream>

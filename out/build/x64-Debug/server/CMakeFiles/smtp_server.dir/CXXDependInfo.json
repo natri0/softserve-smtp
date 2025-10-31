@@ -12,12 +12,38 @@
 	"dir-top-src" : "C:/Users/user/source/repos/softserve-smtp",
 	"exports" : [],
 	"forward-modules-from-target-dirs" : [],
-	"include-dirs" : [],
+	"include-dirs" : 
+	[
+		"C:\\Users\\user\\source\\repos\\softserve-smtp\\networking",
+		"C:\\Users\\user\\source\\repos\\softserve-smtp\\networking\\SSL",
+		"C:\\Users\\user\\source\\repos\\softserve-smtp\\logger\\Include",
+		"C:\\vcpkg\\installed\\x64-windows\\include"
+	],
 	"language" : "CXX",
 	"linked-target-dirs" : [],
 	"module-dir" : "C:/Users/user/source/repos/softserve-smtp/out/build/x64-Debug/server/CMakeFiles/smtp_server.dir",
 	"sources" : 
 	{
+		"server/CMakeFiles/smtp_server.dir/Server.cpp.obj" : 
+		{
+			"language" : "CXX",
+			"source" : "C:/Users/user/source/repos/softserve-smtp/server/Server.cpp"
+		},
+		"server/CMakeFiles/smtp_server.dir/ServerConsoleUI.cpp.obj" : 
+		{
+			"language" : "CXX",
+			"source" : "C:/Users/user/source/repos/softserve-smtp/server/ServerConsoleUI.cpp"
+		},
+		"server/CMakeFiles/smtp_server.dir/ThreadPool/src/ThreadPool.cpp.obj" : 
+		{
+			"language" : "CXX",
+			"source" : "C:/Users/user/source/repos/softserve-smtp/server/ThreadPool/src/ThreadPool.cpp"
+		},
+		"server/CMakeFiles/smtp_server.dir/__/networking/Session.cpp.obj" : 
+		{
+			"language" : "CXX",
+			"source" : "C:/Users/user/source/repos/softserve-smtp/networking/Session.cpp"
+		},
 		"server/CMakeFiles/smtp_server.dir/main.cpp.obj" : 
 		{
 			"language" : "CXX",

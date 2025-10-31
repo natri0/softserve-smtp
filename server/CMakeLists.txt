@@ -30,4 +30,5 @@ target_link_libraries(smtp_server PRIVATE
         OpenSSL::SSL
         OpenSSL::Crypto
         config_parser
+        logger
 )
