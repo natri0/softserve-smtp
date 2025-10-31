@@ -60,40 +60,43 @@ void Client::init()
             std::cout << "Session key established" << std::endl;
             std::cout << sessionKey.size() << std::endl;
 
-            session->setOnMessage([this](boost::asio::const_buffer msg)
+            boost::asio::post(session->getSocket()->get_executor(), [this]()
             {
-                std::string cmd(static_cast<const char*>(msg.data()), msg.size());
+                session->setOnMessage([this](boost::asio::const_buffer msg)
+                {
+                    std::string cmd(static_cast<const char*>(msg.data()), msg.size());
 
-                std::cout << "Received message: " << cmd << std::endl;
+                    std::cout << "Received message: " << cmd << std::endl;
 
-                if (cmd.starts_with("220"))
-                {
-                    session->send(net::buffer("HELO example.com\r\n"));
-                }
-                else if (cmd.starts_with("250") && cmd.find("Hello") != std::string::npos)
-                {
-                    session->send(net::buffer("MAIL FROM:<test@example.com>\r\n"));
-                }
-                else if (cmd.starts_with("250 OK"))
-                {
-                    session->send(net::buffer("RCPT TO:<admin@example.com>\r\n"));
-                }
-                else if (cmd.starts_with("250 Accepted"))
-                {
-                    session->send(net::buffer("DATA\r\n"));
-                }
-                else if (cmd.starts_with("354"))
-                {
-                    session->send(net::buffer(email_info.body + "\r\n.\r\n"));
-                }
-                else if (cmd.starts_with("250 Message"))
-                {
-                    session->send(net::buffer("QUIT\r\n"));
-                }
-                else
-                {
-                    std::cout << "Want to proceed? Yes: 1\tNo: 0" << std::endl;
-                }
+                    if (cmd.starts_with("220"))
+                    {
+                        session->send(net::buffer("HELO example.com\r\n"));
+                    }
+                    else if (cmd.starts_with("250") && cmd.find("Hello") != std::string::npos)
+                    {
+                        session->send(net::buffer("MAIL FROM:<test@example.com>\r\n"));
+                    }
+                    else if (cmd.starts_with("250 OK"))
+                    {
+                        session->send(net::buffer("RCPT TO:<admin@example.com>\r\n"));
+                    }
+                    else if (cmd.starts_with("250 Accepted"))
+                    {
+                        session->send(net::buffer("DATA\r\n"));
+                    }
+                    else if (cmd.starts_with("354"))
+                    {
+                        session->send(net::buffer(email_info.body + "\r\n.\r\n"));
+                    }
+                    else if (cmd.starts_with("250 Message"))
+                    {
+                        session->send(net::buffer("QUIT\r\n"));
+                    }
+                    else
+                    {
+                        std::cout << "Want to proceed? Yes: 1\tNo: 0" << std::endl;
+                    }
+                });
             });
         });
         session->run();
