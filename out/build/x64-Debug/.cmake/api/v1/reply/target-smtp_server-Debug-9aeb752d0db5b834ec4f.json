@@ -2,10 +2,10 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "C:/Users/user/source/repos/softserve-smtp/build/client/bin/smtp_client.exe"
+			"path" : "C:/Users/user/source/repos/softserve-smtp/build/server/bin/smtp_server.exe"
 		},
 		{
-			"path" : "C:/Users/user/source/repos/softserve-smtp/build/client/bin/smtp_client.pdb"
+			"path" : "C:/Users/user/source/repos/softserve-smtp/build/server/bin/smtp_server.pdb"
 		}
 	],
 	"backtrace" : 2,
@@ -21,13 +21,12 @@
 			"_find_package",
 			"find_package",
 			"boostcfg_find_component",
-			"find_dependency",
-			"target_include_directories"
+			"find_dependency"
 		],
 		"files" : 
 		[
 			"C:/vcpkg/scripts/buildsystems/vcpkg.cmake",
-			"client/CMakeLists.txt",
+			"server/CMakeLists.txt",
 			"C:/vcpkg/installed/x64-windows/share/boost_thread/boost_thread-targets.cmake",
 			"C:/vcpkg/installed/x64-windows/share/boost_thread/boost_thread-config.cmake",
 			"C:/vcpkg/installed/x64-windows/share/boost/BoostConfig.cmake",
@@ -60,7 +59,7 @@
 			{
 				"command" : 2,
 				"file" : 1,
-				"line" : 26,
+				"line" : 29,
 				"parent" : 0
 			},
 			{
@@ -357,12 +356,6 @@
 				"file" : 6,
 				"line" : 60,
 				"parent" : 57
-			},
-			{
-				"command" : 9,
-				"file" : 1,
-				"line" : 23,
-				"parent" : 0
 			}
 		]
 	},
@@ -445,7 +438,11 @@
 					"path" : "C:/Users/user/source/repos/softserve-smtp/networking/SSL"
 				},
 				{
-					"backtrace" : 59,
+					"backtrace" : 3,
+					"path" : "C:/Users/user/source/repos/softserve-smtp/logger/Include"
+				},
+				{
+					"backtrace" : 3,
 					"isSystem" : true,
 					"path" : "C:/vcpkg/installed/x64-windows/include"
 				}
@@ -467,7 +464,8 @@
 				0,
 				1,
 				2,
-				3
+				3,
+				4
 			]
 		}
 	],
@@ -475,14 +473,22 @@
 	[
 		{
 			"backtrace" : 3,
+			"id" : "ssl_support::@8969565c252a9ff1bb85"
+		},
+		{
+			"backtrace" : 3,
+			"id" : "config_parser::@45d491cfea13a0fb6fea"
+		},
+		{
+			"backtrace" : 3,
 			"id" : "networking::@5888a6d7873135925b2f"
 		},
 		{
 			"backtrace" : 3,
-			"id" : "ssl_support::@8969565c252a9ff1bb85"
+			"id" : "logger::@d605ba84040dd83ce0d4"
 		}
 	],
-	"id" : "smtp_client::@b0c487aac068df482bf0",
+	"id" : "smtp_server::@d19778d2e34a1e3ddfc0",
 	"link" : 
 	{
 		"commandFragments" : 
@@ -497,12 +503,12 @@
 			},
 			{
 				"backtrace" : 3,
-				"fragment" : "ws2_32.lib",
+				"fragment" : "C:\\vcpkg\\installed\\x64-windows\\debug\\lib\\boost_thread-vc143-mt-gd-x64-1_89.lib",
 				"role" : "libraries"
 			},
 			{
 				"backtrace" : 3,
-				"fragment" : "C:\\vcpkg\\installed\\x64-windows\\debug\\lib\\boost_thread-vc143-mt-gd-x64-1_89.lib",
+				"fragment" : "ws2_32.lib",
 				"role" : "libraries"
 			},
 			{
@@ -528,6 +534,16 @@
 			{
 				"backtrace" : 3,
 				"fragment" : "C:\\vcpkg\\installed\\x64-windows\\debug\\lib\\libcrypto.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "server\\config\\config_parser.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "logger\\logger.lib",
 				"role" : "libraries"
 			},
 			{
@@ -607,12 +623,12 @@
 		],
 		"language" : "CXX"
 	},
-	"name" : "smtp_client",
-	"nameOnDisk" : "smtp_client.exe",
+	"name" : "smtp_server",
+	"nameOnDisk" : "smtp_server.exe",
 	"paths" : 
 	{
-		"build" : "client",
-		"source" : "client"
+		"build" : "server",
+		"source" : "server"
 	},
 	"sourceGroups" : 
 	[
@@ -623,7 +639,8 @@
 				0,
 				1,
 				2,
-				3
+				3,
+				4
 			]
 		}
 	],
@@ -632,7 +649,7 @@
 		{
 			"backtrace" : 2,
 			"compileGroupIndex" : 0,
-			"path" : "client/main.cpp",
+			"path" : "server/main.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
@@ -644,13 +661,19 @@
 		{
 			"backtrace" : 2,
 			"compileGroupIndex" : 0,
-			"path" : "client/Client.cpp",
+			"path" : "server/Server.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 2,
 			"compileGroupIndex" : 0,
-			"path" : "client/EmailMessage.cpp",
+			"path" : "server/ThreadPool/src/ThreadPool.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "server/ServerConsoleUI.cpp",
 			"sourceGroupIndex" : 0
 		}
 	],

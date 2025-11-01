@@ -17,11 +17,6 @@
 
 
 
-
-struct LogData;
-enum class LogLevel : int;
-
-
 const std::unordered_map<std::string, std::string> colored{
     {"[ERROR]", ERROR_COLOR},
     {"[WARNING]", WARNING_COLOR},

@@ -3,6 +3,7 @@
 //
 #include <iostream>
 #include "Server.h"
+#include "Logger.h"
 
 #include <cmath>
 
@@ -26,7 +27,8 @@ bool Server::init()
 {
     // initialization from config
     if (Config config; !config.load_from_file("server/config/config.json"))
-        std::cout << "Couldn't load config.json" << std::endl;
+        LOG_ERROR(TRACE_LOG_LEVEL) << "Couldn't load config.json";
+        //std::cout << "Couldn't load config.json" << std::endl;
     else
     {
         if (config.has_key("port")) port = config.get<unsigned short>("port");
@@ -51,7 +53,7 @@ bool Server::stop()
 
     if (acceptor.is_open()) acceptor.close(ec);
 
-    if (ec) std::cerr << "Error closing acceptor: " << ec.message() << std::endl;
+    if (ec) LOG_ERROR(TRACE_LOG_LEVEL) << "Error closing acceptor: " << ec.message();//std::cerr << "Error closing acceptor: " << ec.message() << std::endl;
 
     for (auto& session : sessions)
         session->disconnect();
@@ -114,7 +116,8 @@ void Server::runAcceptor()
     {
         if (!ec)
         {
-            std::cout << "New connection from " << socket->remote_endpoint() << std::endl;
+            LOG_INFO(TRACE_LOG_LEVEL) << "New connection from " << socket->remote_endpoint();// << std::endl;
+            //std::cout << "New connection from " << socket->remote_endpoint() << std::endl;
             const auto session = std::make_shared<Session>(socket);
             auto [serverPriv, serverPub] = smtp::ssl::KeyExchange::generateKeyPair();
 
@@ -124,15 +127,20 @@ void Server::runAcceptor()
                     std::lock_guard lock(sessionMutex);
                     sessions.remove(session);
                 }
-                std::cout << "Client disconnected" << std::endl;
-                std::cout << "Number of active clients: " << sessions.size() << std::endl;
+                LOG_INFO(TRACE_LOG_LEVEL) << "Client disconnected";
+                LOG_INFO(TRACE_LOG_LEVEL) << "Number of active clients: " << sessions.size();
+                //std::cout << "Client disconnected" << std::endl;
+                //std::cout << "Number of active clients: " << sessions.size() << std::endl;
             });
 
             session->setOnMessage([this, session, serverPriv, serverPub](boost::asio::const_buffer msg)
             {
-                std::cout << "Get msg: [Received " << msg.size() << " bytes of client public key]" << std::endl;
-                std::cout << "Server private key size: " << serverPriv.size() << std::endl;
-                std::cout << "Server public key size: " << serverPub.size() << std::endl;
+                LOG_INFO(TRACE_LOG_LEVEL) << "Get msg: [Received " << msg.size() << " bytes of client public key]";
+                //std::cout << "Get msg: [Received " << msg.size() << " bytes of client public key]" << std::endl;
+                LOG_INFO(TRACE_LOG_LEVEL) << "Server private key size: " << serverPriv.size();
+                //std::cout << "Server private key size: " << serverPriv.size() << std::endl;
+                LOG_INFO(TRACE_LOG_LEVEL) << "Server public key size: " << serverPub.size();
+                //std::cout << "Server public key size: " << serverPub.size() << std::endl;
 
                 std::vector clientPub(
                     static_cast<const unsigned char*>(msg.data()),
@@ -143,14 +151,18 @@ void Server::runAcceptor()
                 const auto sessionKey = smtp::ssl::KeyExchange::deriveSessionKey(sharedSecret);
 
                 session->setKey(sessionKey);
-                std::cout << "Session key established" << std::endl;
+
+                LOG_INFO(TRACE_LOG_LEVEL) << "Session key established";
+                //std::cout << "Session key established" << std::endl;
 
                 session->setOnMessage([this, session](boost::asio::const_buffer msg)
                 {
                     const std::string cmd(std::string(static_cast<const char*>(msg.data()), msg.size()));
 
-                    std::cout << "Received message from: " << session->getSocket()->remote_endpoint() << std::endl;
-                    std::cout << "Received message: " << cmd << std::endl;
+                    LOG_INFO(TRACE_LOG_LEVEL) << "Received message from: " << session->getSocket()->remote_endpoint();
+                    //std::cout << "Received message from: " << session->getSocket()->remote_endpoint() << std::endl;
+                    LOG_INFO(TRACE_LOG_LEVEL) << "Received message: " << cmd;
+                    //std::cout << "Received message: " << cmd << std::endl;
 
                     if (cmd.starts_with("HELO"))
                         session->send(net::buffer("250 Hello, pleased to meet you\r\n"));
@@ -175,21 +187,24 @@ void Server::runAcceptor()
                     std::lock_guard lock(sessionMutex);
                     sessions.remove(session);
                 }
-                std::cout << "Client disconnected" << std::endl;
-                std::cout << "Number of active clients: " << sessions.size() << std::endl;
+                LOG_INFO(TRACE_LOG_LEVEL) << "Client disconnected";
+                //std::cout << "Client disconnected" << std::endl;
+                LOG_INFO(TRACE_LOG_LEVEL) << "Number of active clients: " << sessions.size();
+                //std::cout << "Number of active clients: " << sessions.size() << std::endl;
             });
 
             session->send(net::buffer(serverPub));
 
             session->run();
-            std::cout << "Sent server public key" << std::endl;
+            LOG_INFO(TRACE_LOG_LEVEL) << "Sent server public key";
+            //std::cout << "Sent server public key" << std::endl;
 
             {
                 std::lock_guard lock(sessionMutex);
                 sessions.push_back(session);
             }
         }
-        else { std::cerr << "Accept failed: " << ec.message() << std::endl; }
+        else { LOG_ERROR(TRACE_LOG_LEVEL) << "Accept failed: " << ec.message(); }
 
         runAcceptor();
     });
@@ -207,7 +222,7 @@ bool Server::setUpAcceptor()
 
     if (ec)
     {
-        std::cerr << "Bind failed: " << ec.message() << std::endl;
+        LOG_ERROR(TRACE_LOG_LEVEL) << "Bind failed: " << ec.message();
         return false;
     }
 

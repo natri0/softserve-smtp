@@ -1,6 +1,4 @@
 #include "Macros.h"
-#include "LogLevel.h"
-#include "LogData.h"
 #include "Logger.h"
 
 //std::unique_ptr<Logger> Logger::instance = nullptr;
