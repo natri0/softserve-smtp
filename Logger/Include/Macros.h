@@ -2,6 +2,8 @@
 #include "LogLevel.h"
 #include "LogData.h"
 
+#define TRACE_COLOR "\033[45m"
+#define DEBUG_COLOR "\033[44m"
 #define ERROR_COLOR "\033[41m"
 #define WARNING_COLOR "\033[43m"
 #define INFORMATION_COLOR "\033[42m"
@@ -21,6 +23,8 @@
 #define INFO_TYPE "[INFO]"
 #define ERROR_TYPE "[ERROR]"
 #define WARNING_TYPE "[WARNING]"
+#define DEBUG_TYPE "[DEBUG]"
+#define TRACE_TYPE "[TRACE]"
 
 #define FUNCTION_NAME __FUNCTION__
 
@@ -41,6 +45,8 @@
 #define LOG(level,type) IF_LOG_(level) (Logger::getInstance()) += \
     LogData("", type, LOG_GET_FUNC(), level, std::this_thread::get_id()).ref()
 
-#define LOG_INFO(level)           LOG(level, INFO_TYPE)
-#define LOG_WARNING(level)        LOG(level, WARNING_TYPE)
-#define LOG_ERROR(level)          LOG(level, ERROR_TYPE)
+#define LOG_INFO(level)           LOG(level, INFO_TYPE )
+#define LOG_WARNING(level)        LOG(level, WARNING_TYPE )
+#define LOG_ERROR(level)          LOG(level, ERROR_TYPE )
+#define LOG_DEBUG(level)          LOG(level, DEBUG_TYPE )
+#define LOG_TRACE(level)          LOG(level, TRACE_TYPE )
