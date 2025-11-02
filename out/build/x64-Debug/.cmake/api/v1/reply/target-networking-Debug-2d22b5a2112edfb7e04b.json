@@ -137,6 +137,10 @@
 				},
 				{
 					"backtrace" : 3,
+					"path" : "C:/Users/user/source/repos/softserve-smtp/logger/Include"
+				},
+				{
+					"backtrace" : 3,
 					"isSystem" : true,
 					"path" : "C:/vcpkg/installed/x64-windows/include"
 				}
@@ -157,6 +161,13 @@
 			[
 				0
 			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 3,
+			"id" : "logger::@d605ba84040dd83ce0d4"
 		}
 	],
 	"id" : "networking::@5888a6d7873135925b2f",

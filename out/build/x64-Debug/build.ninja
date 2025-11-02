@@ -82,7 +82,7 @@ build server\CMakeFiles\smtp_server.dir\main.cpp.obj.ddi: CXX_SCAN__smtp_server_
   DEP_FILE = server\CMakeFiles\smtp_server.dir\main.cpp.obj.ddi.d
   DYNDEP_INTERMEDIATE_FILE = server\CMakeFiles\smtp_server.dir\main.cpp.obj.ddi
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++latest -MDd -Zi
-  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -IC:\Users\user\source\repos\softserve-smtp\logger\Include -external:IC:\vcpkg\installed\x64-windows\include -external:W0
+  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\logger\Include -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
   OBJ_FILE = server\CMakeFiles\smtp_server.dir\main.cpp.obj
   PREPROCESSED_OUTPUT_FILE = server\CMakeFiles\smtp_server.dir\main.cpp.obj.ddi.i
 
@@ -90,7 +90,7 @@ build server\CMakeFiles\smtp_server.dir\main.cpp.obj: CXX_COMPILER__smtp_server_
   DEFINES = -DBOOST_ATOMIC_DYN_LINK -DBOOST_ATOMIC_NO_LIB -DBOOST_CHRONO_DYN_LINK -DBOOST_CHRONO_NO_LIB -DBOOST_CONTAINER_DYN_LINK -DBOOST_CONTAINER_NO_LIB -DBOOST_CONTEXT_DYN_LINK="" -DBOOST_CONTEXT_EXPORT=EXPORT -DBOOST_CONTEXT_NO_LIB="" -DBOOST_DATE_TIME_DYN_LINK -DBOOST_DATE_TIME_NO_LIB -DBOOST_THREAD_DYN_LINK -DBOOST_THREAD_NO_LIB -DBOOST_THREAD_USE_DLL
   DYNDEP_MODULE_MAP_FILE = server\CMakeFiles\smtp_server.dir\main.cpp.obj.modmap
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++latest -MDd -Zi
-  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -IC:\Users\user\source\repos\softserve-smtp\logger\Include -external:IC:\vcpkg\installed\x64-windows\include -external:W0
+  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\logger\Include -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
   OBJECT_DIR = server\CMakeFiles\smtp_server.dir
   OBJECT_FILE_DIR = server\CMakeFiles\smtp_server.dir
   TARGET_COMPILE_PDB = server\CMakeFiles\smtp_server.dir\
@@ -102,7 +102,7 @@ build server\CMakeFiles\smtp_server.dir\__\networking\Session.cpp.obj.ddi: CXX_S
   DEP_FILE = server\CMakeFiles\smtp_server.dir\__\networking\Session.cpp.obj.ddi.d
   DYNDEP_INTERMEDIATE_FILE = server\CMakeFiles\smtp_server.dir\__\networking\Session.cpp.obj.ddi
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++latest -MDd -Zi
-  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -IC:\Users\user\source\repos\softserve-smtp\logger\Include -external:IC:\vcpkg\installed\x64-windows\include -external:W0
+  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\logger\Include -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
   OBJ_FILE = server\CMakeFiles\smtp_server.dir\__\networking\Session.cpp.obj
   PREPROCESSED_OUTPUT_FILE = server\CMakeFiles\smtp_server.dir\__\networking\Session.cpp.obj.ddi.i
 
@@ -110,7 +110,7 @@ build server\CMakeFiles\smtp_server.dir\__\networking\Session.cpp.obj: CXX_COMPI
   DEFINES = -DBOOST_ATOMIC_DYN_LINK -DBOOST_ATOMIC_NO_LIB -DBOOST_CHRONO_DYN_LINK -DBOOST_CHRONO_NO_LIB -DBOOST_CONTAINER_DYN_LINK -DBOOST_CONTAINER_NO_LIB -DBOOST_CONTEXT_DYN_LINK="" -DBOOST_CONTEXT_EXPORT=EXPORT -DBOOST_CONTEXT_NO_LIB="" -DBOOST_DATE_TIME_DYN_LINK -DBOOST_DATE_TIME_NO_LIB -DBOOST_THREAD_DYN_LINK -DBOOST_THREAD_NO_LIB -DBOOST_THREAD_USE_DLL
   DYNDEP_MODULE_MAP_FILE = server\CMakeFiles\smtp_server.dir\__\networking\Session.cpp.obj.modmap
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++latest -MDd -Zi
-  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -IC:\Users\user\source\repos\softserve-smtp\logger\Include -external:IC:\vcpkg\installed\x64-windows\include -external:W0
+  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\logger\Include -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
   OBJECT_DIR = server\CMakeFiles\smtp_server.dir
   OBJECT_FILE_DIR = server\CMakeFiles\smtp_server.dir\__\networking
   TARGET_COMPILE_PDB = server\CMakeFiles\smtp_server.dir\
@@ -122,7 +122,7 @@ build server\CMakeFiles\smtp_server.dir\Server.cpp.obj.ddi: CXX_SCAN__smtp_serve
   DEP_FILE = server\CMakeFiles\smtp_server.dir\Server.cpp.obj.ddi.d
   DYNDEP_INTERMEDIATE_FILE = server\CMakeFiles\smtp_server.dir\Server.cpp.obj.ddi
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++latest -MDd -Zi
-  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -IC:\Users\user\source\repos\softserve-smtp\logger\Include -external:IC:\vcpkg\installed\x64-windows\include -external:W0
+  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\logger\Include -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
   OBJ_FILE = server\CMakeFiles\smtp_server.dir\Server.cpp.obj
   PREPROCESSED_OUTPUT_FILE = server\CMakeFiles\smtp_server.dir\Server.cpp.obj.ddi.i
 
@@ -130,7 +130,7 @@ build server\CMakeFiles\smtp_server.dir\Server.cpp.obj: CXX_COMPILER__smtp_serve
   DEFINES = -DBOOST_ATOMIC_DYN_LINK -DBOOST_ATOMIC_NO_LIB -DBOOST_CHRONO_DYN_LINK -DBOOST_CHRONO_NO_LIB -DBOOST_CONTAINER_DYN_LINK -DBOOST_CONTAINER_NO_LIB -DBOOST_CONTEXT_DYN_LINK="" -DBOOST_CONTEXT_EXPORT=EXPORT -DBOOST_CONTEXT_NO_LIB="" -DBOOST_DATE_TIME_DYN_LINK -DBOOST_DATE_TIME_NO_LIB -DBOOST_THREAD_DYN_LINK -DBOOST_THREAD_NO_LIB -DBOOST_THREAD_USE_DLL
   DYNDEP_MODULE_MAP_FILE = server\CMakeFiles\smtp_server.dir\Server.cpp.obj.modmap
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++latest -MDd -Zi
-  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -IC:\Users\user\source\repos\softserve-smtp\logger\Include -external:IC:\vcpkg\installed\x64-windows\include -external:W0
+  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\logger\Include -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
   OBJECT_DIR = server\CMakeFiles\smtp_server.dir
   OBJECT_FILE_DIR = server\CMakeFiles\smtp_server.dir
   TARGET_COMPILE_PDB = server\CMakeFiles\smtp_server.dir\
@@ -142,7 +142,7 @@ build server\CMakeFiles\smtp_server.dir\ThreadPool\src\ThreadPool.cpp.obj.ddi: C
   DEP_FILE = server\CMakeFiles\smtp_server.dir\ThreadPool\src\ThreadPool.cpp.obj.ddi.d
   DYNDEP_INTERMEDIATE_FILE = server\CMakeFiles\smtp_server.dir\ThreadPool\src\ThreadPool.cpp.obj.ddi
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++latest -MDd -Zi
-  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -IC:\Users\user\source\repos\softserve-smtp\logger\Include -external:IC:\vcpkg\installed\x64-windows\include -external:W0
+  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\logger\Include -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
   OBJ_FILE = server\CMakeFiles\smtp_server.dir\ThreadPool\src\ThreadPool.cpp.obj
   PREPROCESSED_OUTPUT_FILE = server\CMakeFiles\smtp_server.dir\ThreadPool\src\ThreadPool.cpp.obj.ddi.i
 
@@ -150,7 +150,7 @@ build server\CMakeFiles\smtp_server.dir\ThreadPool\src\ThreadPool.cpp.obj: CXX_C
   DEFINES = -DBOOST_ATOMIC_DYN_LINK -DBOOST_ATOMIC_NO_LIB -DBOOST_CHRONO_DYN_LINK -DBOOST_CHRONO_NO_LIB -DBOOST_CONTAINER_DYN_LINK -DBOOST_CONTAINER_NO_LIB -DBOOST_CONTEXT_DYN_LINK="" -DBOOST_CONTEXT_EXPORT=EXPORT -DBOOST_CONTEXT_NO_LIB="" -DBOOST_DATE_TIME_DYN_LINK -DBOOST_DATE_TIME_NO_LIB -DBOOST_THREAD_DYN_LINK -DBOOST_THREAD_NO_LIB -DBOOST_THREAD_USE_DLL
   DYNDEP_MODULE_MAP_FILE = server\CMakeFiles\smtp_server.dir\ThreadPool\src\ThreadPool.cpp.obj.modmap
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++latest -MDd -Zi
-  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -IC:\Users\user\source\repos\softserve-smtp\logger\Include -external:IC:\vcpkg\installed\x64-windows\include -external:W0
+  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\logger\Include -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
   OBJECT_DIR = server\CMakeFiles\smtp_server.dir
   OBJECT_FILE_DIR = server\CMakeFiles\smtp_server.dir\ThreadPool\src
   TARGET_COMPILE_PDB = server\CMakeFiles\smtp_server.dir\
@@ -162,7 +162,7 @@ build server\CMakeFiles\smtp_server.dir\ServerConsoleUI.cpp.obj.ddi: CXX_SCAN__s
   DEP_FILE = server\CMakeFiles\smtp_server.dir\ServerConsoleUI.cpp.obj.ddi.d
   DYNDEP_INTERMEDIATE_FILE = server\CMakeFiles\smtp_server.dir\ServerConsoleUI.cpp.obj.ddi
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++latest -MDd -Zi
-  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -IC:\Users\user\source\repos\softserve-smtp\logger\Include -external:IC:\vcpkg\installed\x64-windows\include -external:W0
+  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\logger\Include -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
   OBJ_FILE = server\CMakeFiles\smtp_server.dir\ServerConsoleUI.cpp.obj
   PREPROCESSED_OUTPUT_FILE = server\CMakeFiles\smtp_server.dir\ServerConsoleUI.cpp.obj.ddi.i
 
@@ -170,7 +170,7 @@ build server\CMakeFiles\smtp_server.dir\ServerConsoleUI.cpp.obj: CXX_COMPILER__s
   DEFINES = -DBOOST_ATOMIC_DYN_LINK -DBOOST_ATOMIC_NO_LIB -DBOOST_CHRONO_DYN_LINK -DBOOST_CHRONO_NO_LIB -DBOOST_CONTAINER_DYN_LINK -DBOOST_CONTAINER_NO_LIB -DBOOST_CONTEXT_DYN_LINK="" -DBOOST_CONTEXT_EXPORT=EXPORT -DBOOST_CONTEXT_NO_LIB="" -DBOOST_DATE_TIME_DYN_LINK -DBOOST_DATE_TIME_NO_LIB -DBOOST_THREAD_DYN_LINK -DBOOST_THREAD_NO_LIB -DBOOST_THREAD_USE_DLL
   DYNDEP_MODULE_MAP_FILE = server\CMakeFiles\smtp_server.dir\ServerConsoleUI.cpp.obj.modmap
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++latest -MDd -Zi
-  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -IC:\Users\user\source\repos\softserve-smtp\logger\Include -external:IC:\vcpkg\installed\x64-windows\include -external:W0
+  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\logger\Include -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
   OBJECT_DIR = server\CMakeFiles\smtp_server.dir
   OBJECT_FILE_DIR = server\CMakeFiles\smtp_server.dir
   TARGET_COMPILE_PDB = server\CMakeFiles\smtp_server.dir\
@@ -351,14 +351,14 @@ build utils\rebuild_cache: phony utils\CMakeFiles\rebuild_cache.util
 #############################################
 # Order-only phony target for smtp_client
 
-build cmake_object_order_depends_target_smtp_client: phony || cmake_object_order_depends_target_networking cmake_object_order_depends_target_ssl_support
+build cmake_object_order_depends_target_smtp_client: phony || cmake_object_order_depends_target_logger cmake_object_order_depends_target_networking cmake_object_order_depends_target_ssl_support
 
 build client\CMakeFiles\smtp_client.dir\main.cpp.obj.ddi: CXX_SCAN__smtp_client_Debug C$:\Users\user\source\repos\softserve-smtp\client\main.cpp || cmake_object_order_depends_target_smtp_client
   DEFINES = -DBOOST_ATOMIC_DYN_LINK -DBOOST_ATOMIC_NO_LIB -DBOOST_CHRONO_DYN_LINK -DBOOST_CHRONO_NO_LIB -DBOOST_CONTAINER_DYN_LINK -DBOOST_CONTAINER_NO_LIB -DBOOST_CONTEXT_DYN_LINK="" -DBOOST_CONTEXT_EXPORT=EXPORT -DBOOST_CONTEXT_NO_LIB="" -DBOOST_DATE_TIME_DYN_LINK -DBOOST_DATE_TIME_NO_LIB -DBOOST_THREAD_DYN_LINK -DBOOST_THREAD_NO_LIB -DBOOST_THREAD_USE_DLL
   DEP_FILE = client\CMakeFiles\smtp_client.dir\main.cpp.obj.ddi.d
   DYNDEP_INTERMEDIATE_FILE = client\CMakeFiles\smtp_client.dir\main.cpp.obj.ddi
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++latest -MDd -Zi
-  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
+  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\logger\Include -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
   OBJ_FILE = client\CMakeFiles\smtp_client.dir\main.cpp.obj
   PREPROCESSED_OUTPUT_FILE = client\CMakeFiles\smtp_client.dir\main.cpp.obj.ddi.i
 
@@ -366,7 +366,7 @@ build client\CMakeFiles\smtp_client.dir\main.cpp.obj: CXX_COMPILER__smtp_client_
   DEFINES = -DBOOST_ATOMIC_DYN_LINK -DBOOST_ATOMIC_NO_LIB -DBOOST_CHRONO_DYN_LINK -DBOOST_CHRONO_NO_LIB -DBOOST_CONTAINER_DYN_LINK -DBOOST_CONTAINER_NO_LIB -DBOOST_CONTEXT_DYN_LINK="" -DBOOST_CONTEXT_EXPORT=EXPORT -DBOOST_CONTEXT_NO_LIB="" -DBOOST_DATE_TIME_DYN_LINK -DBOOST_DATE_TIME_NO_LIB -DBOOST_THREAD_DYN_LINK -DBOOST_THREAD_NO_LIB -DBOOST_THREAD_USE_DLL
   DYNDEP_MODULE_MAP_FILE = client\CMakeFiles\smtp_client.dir\main.cpp.obj.modmap
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++latest -MDd -Zi
-  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
+  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\logger\Include -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
   OBJECT_DIR = client\CMakeFiles\smtp_client.dir
   OBJECT_FILE_DIR = client\CMakeFiles\smtp_client.dir
   TARGET_COMPILE_PDB = client\CMakeFiles\smtp_client.dir\
@@ -378,7 +378,7 @@ build client\CMakeFiles\smtp_client.dir\__\networking\Session.cpp.obj.ddi: CXX_S
   DEP_FILE = client\CMakeFiles\smtp_client.dir\__\networking\Session.cpp.obj.ddi.d
   DYNDEP_INTERMEDIATE_FILE = client\CMakeFiles\smtp_client.dir\__\networking\Session.cpp.obj.ddi
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++latest -MDd -Zi
-  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
+  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\logger\Include -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
   OBJ_FILE = client\CMakeFiles\smtp_client.dir\__\networking\Session.cpp.obj
   PREPROCESSED_OUTPUT_FILE = client\CMakeFiles\smtp_client.dir\__\networking\Session.cpp.obj.ddi.i
 
@@ -386,7 +386,7 @@ build client\CMakeFiles\smtp_client.dir\__\networking\Session.cpp.obj: CXX_COMPI
   DEFINES = -DBOOST_ATOMIC_DYN_LINK -DBOOST_ATOMIC_NO_LIB -DBOOST_CHRONO_DYN_LINK -DBOOST_CHRONO_NO_LIB -DBOOST_CONTAINER_DYN_LINK -DBOOST_CONTAINER_NO_LIB -DBOOST_CONTEXT_DYN_LINK="" -DBOOST_CONTEXT_EXPORT=EXPORT -DBOOST_CONTEXT_NO_LIB="" -DBOOST_DATE_TIME_DYN_LINK -DBOOST_DATE_TIME_NO_LIB -DBOOST_THREAD_DYN_LINK -DBOOST_THREAD_NO_LIB -DBOOST_THREAD_USE_DLL
   DYNDEP_MODULE_MAP_FILE = client\CMakeFiles\smtp_client.dir\__\networking\Session.cpp.obj.modmap
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++latest -MDd -Zi
-  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
+  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\logger\Include -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
   OBJECT_DIR = client\CMakeFiles\smtp_client.dir
   OBJECT_FILE_DIR = client\CMakeFiles\smtp_client.dir\__\networking
   TARGET_COMPILE_PDB = client\CMakeFiles\smtp_client.dir\
@@ -398,7 +398,7 @@ build client\CMakeFiles\smtp_client.dir\Client.cpp.obj.ddi: CXX_SCAN__smtp_clien
   DEP_FILE = client\CMakeFiles\smtp_client.dir\Client.cpp.obj.ddi.d
   DYNDEP_INTERMEDIATE_FILE = client\CMakeFiles\smtp_client.dir\Client.cpp.obj.ddi
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++latest -MDd -Zi
-  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
+  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\logger\Include -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
   OBJ_FILE = client\CMakeFiles\smtp_client.dir\Client.cpp.obj
   PREPROCESSED_OUTPUT_FILE = client\CMakeFiles\smtp_client.dir\Client.cpp.obj.ddi.i
 
@@ -406,7 +406,7 @@ build client\CMakeFiles\smtp_client.dir\Client.cpp.obj: CXX_COMPILER__smtp_clien
   DEFINES = -DBOOST_ATOMIC_DYN_LINK -DBOOST_ATOMIC_NO_LIB -DBOOST_CHRONO_DYN_LINK -DBOOST_CHRONO_NO_LIB -DBOOST_CONTAINER_DYN_LINK -DBOOST_CONTAINER_NO_LIB -DBOOST_CONTEXT_DYN_LINK="" -DBOOST_CONTEXT_EXPORT=EXPORT -DBOOST_CONTEXT_NO_LIB="" -DBOOST_DATE_TIME_DYN_LINK -DBOOST_DATE_TIME_NO_LIB -DBOOST_THREAD_DYN_LINK -DBOOST_THREAD_NO_LIB -DBOOST_THREAD_USE_DLL
   DYNDEP_MODULE_MAP_FILE = client\CMakeFiles\smtp_client.dir\Client.cpp.obj.modmap
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++latest -MDd -Zi
-  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
+  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\logger\Include -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
   OBJECT_DIR = client\CMakeFiles\smtp_client.dir
   OBJECT_FILE_DIR = client\CMakeFiles\smtp_client.dir
   TARGET_COMPILE_PDB = client\CMakeFiles\smtp_client.dir\
@@ -418,7 +418,7 @@ build client\CMakeFiles\smtp_client.dir\EmailMessage.cpp.obj.ddi: CXX_SCAN__smtp
   DEP_FILE = client\CMakeFiles\smtp_client.dir\EmailMessage.cpp.obj.ddi.d
   DYNDEP_INTERMEDIATE_FILE = client\CMakeFiles\smtp_client.dir\EmailMessage.cpp.obj.ddi
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++latest -MDd -Zi
-  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
+  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\logger\Include -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
   OBJ_FILE = client\CMakeFiles\smtp_client.dir\EmailMessage.cpp.obj
   PREPROCESSED_OUTPUT_FILE = client\CMakeFiles\smtp_client.dir\EmailMessage.cpp.obj.ddi.i
 
@@ -426,7 +426,7 @@ build client\CMakeFiles\smtp_client.dir\EmailMessage.cpp.obj: CXX_COMPILER__smtp
   DEFINES = -DBOOST_ATOMIC_DYN_LINK -DBOOST_ATOMIC_NO_LIB -DBOOST_CHRONO_DYN_LINK -DBOOST_CHRONO_NO_LIB -DBOOST_CONTAINER_DYN_LINK -DBOOST_CONTAINER_NO_LIB -DBOOST_CONTEXT_DYN_LINK="" -DBOOST_CONTEXT_EXPORT=EXPORT -DBOOST_CONTEXT_NO_LIB="" -DBOOST_DATE_TIME_DYN_LINK -DBOOST_DATE_TIME_NO_LIB -DBOOST_THREAD_DYN_LINK -DBOOST_THREAD_NO_LIB -DBOOST_THREAD_USE_DLL
   DYNDEP_MODULE_MAP_FILE = client\CMakeFiles\smtp_client.dir\EmailMessage.cpp.obj.modmap
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++latest -MDd -Zi
-  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
+  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\logger\Include -IC:\Users\user\source\repos\softserve-smtp\networking\SSL -external:IC:\vcpkg\installed\x64-windows\include -external:W0
   OBJECT_DIR = client\CMakeFiles\smtp_client.dir
   OBJECT_FILE_DIR = client\CMakeFiles\smtp_client.dir
   TARGET_COMPILE_PDB = client\CMakeFiles\smtp_client.dir\
@@ -443,10 +443,10 @@ build client\CMakeFiles\smtp_client.dir\CXX.dd | C$:\Users\user\source\repos\sof
 #############################################
 # Link the executable C:\Users\user\source\repos\softserve-smtp\build\client\bin\smtp_client.exe
 
-build C$:\Users\user\source\repos\softserve-smtp\build\client\bin\smtp_client.exe: CXX_EXECUTABLE_LINKER__smtp_client_Debug client\CMakeFiles\smtp_client.dir\main.cpp.obj client\CMakeFiles\smtp_client.dir\__\networking\Session.cpp.obj client\CMakeFiles\smtp_client.dir\Client.cpp.obj client\CMakeFiles\smtp_client.dir\EmailMessage.cpp.obj | C$:\vcpkg\installed\x64-windows\debug\lib\boost_thread-vc143-mt-gd-x64-1_89.lib networking\networking.lib networking\SSL\ssl_support.lib C$:\vcpkg\installed\x64-windows\debug\lib\libssl.lib C$:\vcpkg\installed\x64-windows\debug\lib\libcrypto.lib C$:\vcpkg\installed\x64-windows\debug\lib\boost_atomic-vc143-mt-gd-x64-1_89.lib C$:\vcpkg\installed\x64-windows\debug\lib\boost_chrono-vc143-mt-gd-x64-1_89.lib C$:\vcpkg\installed\x64-windows\debug\lib\boost_date_time-vc143-mt-gd-x64-1_89.lib C$:\vcpkg\installed\x64-windows\debug\lib\boost_container-vc143-mt-gd-x64-1_89.lib C$:\vcpkg\installed\x64-windows\debug\lib\boost_context-vc143-mt-gd-x64-1_89.lib C$:\vcpkg\installed\x64-windows\debug\lib\boost_thread-vc143-mt-gd-x64-1_89.lib C$:\vcpkg\installed\x64-windows\debug\lib\boost_atomic-vc143-mt-gd-x64-1_89.lib C$:\vcpkg\installed\x64-windows\debug\lib\boost_chrono-vc143-mt-gd-x64-1_89.lib C$:\vcpkg\installed\x64-windows\debug\lib\boost_date_time-vc143-mt-gd-x64-1_89.lib C$:\vcpkg\installed\x64-windows\debug\lib\boost_container-vc143-mt-gd-x64-1_89.lib C$:\vcpkg\installed\x64-windows\debug\lib\boost_context-vc143-mt-gd-x64-1_89.lib || networking\SSL\ssl_support.lib networking\networking.lib
+build C$:\Users\user\source\repos\softserve-smtp\build\client\bin\smtp_client.exe: CXX_EXECUTABLE_LINKER__smtp_client_Debug client\CMakeFiles\smtp_client.dir\main.cpp.obj client\CMakeFiles\smtp_client.dir\__\networking\Session.cpp.obj client\CMakeFiles\smtp_client.dir\Client.cpp.obj client\CMakeFiles\smtp_client.dir\EmailMessage.cpp.obj | C$:\vcpkg\installed\x64-windows\debug\lib\boost_thread-vc143-mt-gd-x64-1_89.lib networking\networking.lib networking\SSL\ssl_support.lib C$:\vcpkg\installed\x64-windows\debug\lib\libssl.lib C$:\vcpkg\installed\x64-windows\debug\lib\libcrypto.lib C$:\vcpkg\installed\x64-windows\debug\lib\boost_atomic-vc143-mt-gd-x64-1_89.lib C$:\vcpkg\installed\x64-windows\debug\lib\boost_chrono-vc143-mt-gd-x64-1_89.lib C$:\vcpkg\installed\x64-windows\debug\lib\boost_date_time-vc143-mt-gd-x64-1_89.lib C$:\vcpkg\installed\x64-windows\debug\lib\boost_container-vc143-mt-gd-x64-1_89.lib C$:\vcpkg\installed\x64-windows\debug\lib\boost_context-vc143-mt-gd-x64-1_89.lib C$:\vcpkg\installed\x64-windows\debug\lib\boost_thread-vc143-mt-gd-x64-1_89.lib C$:\vcpkg\installed\x64-windows\debug\lib\boost_atomic-vc143-mt-gd-x64-1_89.lib C$:\vcpkg\installed\x64-windows\debug\lib\boost_chrono-vc143-mt-gd-x64-1_89.lib C$:\vcpkg\installed\x64-windows\debug\lib\boost_date_time-vc143-mt-gd-x64-1_89.lib C$:\vcpkg\installed\x64-windows\debug\lib\boost_container-vc143-mt-gd-x64-1_89.lib C$:\vcpkg\installed\x64-windows\debug\lib\boost_context-vc143-mt-gd-x64-1_89.lib logger\logger.lib || logger\logger.lib networking\SSL\ssl_support.lib networking\networking.lib
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -MDd -Zi
   LINK_FLAGS = /machine:x64 /debug /INCREMENTAL /subsystem:console
-  LINK_LIBRARIES = ws2_32.lib  C:\vcpkg\installed\x64-windows\debug\lib\boost_thread-vc143-mt-gd-x64-1_89.lib  mswsock.lib  networking\networking.lib  networking\SSL\ssl_support.lib  C:\vcpkg\installed\x64-windows\debug\lib\libssl.lib  C:\vcpkg\installed\x64-windows\debug\lib\libcrypto.lib  C:\vcpkg\installed\x64-windows\debug\lib\boost_atomic-vc143-mt-gd-x64-1_89.lib  C:\vcpkg\installed\x64-windows\debug\lib\boost_chrono-vc143-mt-gd-x64-1_89.lib  C:\vcpkg\installed\x64-windows\debug\lib\boost_date_time-vc143-mt-gd-x64-1_89.lib  C:\vcpkg\installed\x64-windows\debug\lib\boost_container-vc143-mt-gd-x64-1_89.lib  C:\vcpkg\installed\x64-windows\debug\lib\boost_context-vc143-mt-gd-x64-1_89.lib  ws2_32.lib  mswsock.lib  C:\vcpkg\installed\x64-windows\debug\lib\boost_thread-vc143-mt-gd-x64-1_89.lib  C:\vcpkg\installed\x64-windows\debug\lib\boost_atomic-vc143-mt-gd-x64-1_89.lib  synchronization.lib  C:\vcpkg\installed\x64-windows\debug\lib\boost_chrono-vc143-mt-gd-x64-1_89.lib  C:\vcpkg\installed\x64-windows\debug\lib\boost_date_time-vc143-mt-gd-x64-1_89.lib  C:\vcpkg\installed\x64-windows\debug\lib\boost_container-vc143-mt-gd-x64-1_89.lib  C:\vcpkg\installed\x64-windows\debug\lib\boost_context-vc143-mt-gd-x64-1_89.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+  LINK_LIBRARIES = ws2_32.lib  C:\vcpkg\installed\x64-windows\debug\lib\boost_thread-vc143-mt-gd-x64-1_89.lib  mswsock.lib  networking\networking.lib  networking\SSL\ssl_support.lib  C:\vcpkg\installed\x64-windows\debug\lib\libssl.lib  C:\vcpkg\installed\x64-windows\debug\lib\libcrypto.lib  C:\vcpkg\installed\x64-windows\debug\lib\boost_atomic-vc143-mt-gd-x64-1_89.lib  C:\vcpkg\installed\x64-windows\debug\lib\boost_chrono-vc143-mt-gd-x64-1_89.lib  C:\vcpkg\installed\x64-windows\debug\lib\boost_date_time-vc143-mt-gd-x64-1_89.lib  C:\vcpkg\installed\x64-windows\debug\lib\boost_container-vc143-mt-gd-x64-1_89.lib  C:\vcpkg\installed\x64-windows\debug\lib\boost_context-vc143-mt-gd-x64-1_89.lib  ws2_32.lib  mswsock.lib  C:\vcpkg\installed\x64-windows\debug\lib\boost_thread-vc143-mt-gd-x64-1_89.lib  C:\vcpkg\installed\x64-windows\debug\lib\boost_atomic-vc143-mt-gd-x64-1_89.lib  synchronization.lib  C:\vcpkg\installed\x64-windows\debug\lib\boost_chrono-vc143-mt-gd-x64-1_89.lib  C:\vcpkg\installed\x64-windows\debug\lib\boost_date_time-vc143-mt-gd-x64-1_89.lib  C:\vcpkg\installed\x64-windows\debug\lib\boost_container-vc143-mt-gd-x64-1_89.lib  C:\vcpkg\installed\x64-windows\debug\lib\boost_context-vc143-mt-gd-x64-1_89.lib  logger\logger.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
   OBJECT_DIR = client\CMakeFiles\smtp_client.dir
   POST_BUILD = C:\Windows\system32\cmd.exe /C "cd /D C:\Users\user\source\repos\softserve-smtp\out\build\x64-Debug\client && C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -noprofile -executionpolicy Bypass -file C:/vcpkg/scripts/buildsystems/msbuild/applocal.ps1 -targetBinary C:/Users/user/source/repos/softserve-smtp/build/client/bin/smtp_client.exe -installedDir C:/vcpkg/installed/x64-windows/debug/bin -OutVariable out && cd /D C:\Users\user\source\repos\softserve-smtp\out\build\x64-Debug\client && "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E make_directory C:/Users/user/source/repos/softserve-smtp/build/client/bin/networking/SSL/certs && "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E copy_directory C:/Users/user/source/repos/softserve-smtp/networking/SSL/certs C:/Users/user/source/repos/softserve-smtp/build/client/bin/networking/SSL/certs"
   PRE_LINK = cd .
@@ -490,14 +490,14 @@ build client\rebuild_cache: phony client\CMakeFiles\rebuild_cache.util
 #############################################
 # Order-only phony target for networking
 
-build cmake_object_order_depends_target_networking: phony || .
+build cmake_object_order_depends_target_networking: phony || cmake_object_order_depends_target_logger
 
 build networking\CMakeFiles\networking.dir\Session.cpp.obj.ddi: CXX_SCAN__networking_Debug C$:\Users\user\source\repos\softserve-smtp\networking\Session.cpp || cmake_object_order_depends_target_networking
   DEFINES = -DBOOST_ATOMIC_DYN_LINK -DBOOST_ATOMIC_NO_LIB -DBOOST_CHRONO_DYN_LINK -DBOOST_CHRONO_NO_LIB -DBOOST_CONTAINER_DYN_LINK -DBOOST_CONTAINER_NO_LIB -DBOOST_CONTEXT_DYN_LINK="" -DBOOST_CONTEXT_EXPORT=EXPORT -DBOOST_CONTEXT_NO_LIB="" -DBOOST_DATE_TIME_DYN_LINK -DBOOST_DATE_TIME_NO_LIB -DBOOST_THREAD_DYN_LINK -DBOOST_THREAD_NO_LIB -DBOOST_THREAD_USE_DLL
   DEP_FILE = networking\CMakeFiles\networking.dir\Session.cpp.obj.ddi.d
   DYNDEP_INTERMEDIATE_FILE = networking\CMakeFiles\networking.dir\Session.cpp.obj.ddi
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++latest -MDd -Zi
-  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -external:IC:\vcpkg\installed\x64-windows\include -external:W0
+  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\logger\Include -external:IC:\vcpkg\installed\x64-windows\include -external:W0
   OBJ_FILE = networking\CMakeFiles\networking.dir\Session.cpp.obj
   PREPROCESSED_OUTPUT_FILE = networking\CMakeFiles\networking.dir\Session.cpp.obj.ddi.i
 
@@ -505,7 +505,7 @@ build networking\CMakeFiles\networking.dir\Session.cpp.obj: CXX_COMPILER__networ
   DEFINES = -DBOOST_ATOMIC_DYN_LINK -DBOOST_ATOMIC_NO_LIB -DBOOST_CHRONO_DYN_LINK -DBOOST_CHRONO_NO_LIB -DBOOST_CONTAINER_DYN_LINK -DBOOST_CONTAINER_NO_LIB -DBOOST_CONTEXT_DYN_LINK="" -DBOOST_CONTEXT_EXPORT=EXPORT -DBOOST_CONTEXT_NO_LIB="" -DBOOST_DATE_TIME_DYN_LINK -DBOOST_DATE_TIME_NO_LIB -DBOOST_THREAD_DYN_LINK -DBOOST_THREAD_NO_LIB -DBOOST_THREAD_USE_DLL
   DYNDEP_MODULE_MAP_FILE = networking\CMakeFiles\networking.dir\Session.cpp.obj.modmap
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++latest -MDd -Zi
-  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -external:IC:\vcpkg\installed\x64-windows\include -external:W0
+  INCLUDES = -IC:\Users\user\source\repos\softserve-smtp\networking -IC:\Users\user\source\repos\softserve-smtp\logger\Include -external:IC:\vcpkg\installed\x64-windows\include -external:W0
   OBJECT_DIR = networking\CMakeFiles\networking.dir
   OBJECT_FILE_DIR = networking\CMakeFiles\networking.dir
   TARGET_COMPILE_PDB = networking\CMakeFiles\networking.dir\networking.pdb
@@ -522,7 +522,7 @@ build networking\CMakeFiles\networking.dir\CXX.dd | C$:\Users\user\source\repos\
 #############################################
 # Link the static library networking\networking.lib
 
-build networking\networking.lib: CXX_STATIC_LIBRARY_LINKER__networking_Debug networking\CMakeFiles\networking.dir\Session.cpp.obj
+build networking\networking.lib: CXX_STATIC_LIBRARY_LINKER__networking_Debug networking\CMakeFiles\networking.dir\Session.cpp.obj || logger\logger.lib
   LANGUAGE_COMPILE_FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -MDd -Zi
   LINK_FLAGS = /machine:x64
   OBJECT_DIR = networking\CMakeFiles\networking.dir

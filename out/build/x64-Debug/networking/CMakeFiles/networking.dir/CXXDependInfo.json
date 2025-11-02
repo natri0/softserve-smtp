@@ -15,6 +15,7 @@
 	"include-dirs" : 
 	[
 		"C:\\Users\\user\\source\\repos\\softserve-smtp\\networking",
+		"C:\\Users\\user\\source\\repos\\softserve-smtp\\logger\\Include",
 		"C:\\vcpkg\\installed\\x64-windows\\include"
 	],
 	"language" : "CXX",

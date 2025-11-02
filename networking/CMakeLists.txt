@@ -18,4 +18,5 @@ target_link_libraries(networking
         mswsock
         OpenSSL::SSL
         OpenSSL::Crypto
+        logger
 )
