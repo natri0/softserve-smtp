@@ -70,9 +70,9 @@ void Client::init()
 
                     if (cmd.starts_with("220"))
                     {
-                        session->send(net::buffer("HELO example.com\r\n"));
+                        session->send(net::buffer("EHLO example.com\r\n"));
                     }
-                    else if (cmd.starts_with("250") && cmd.find("Hello") != std::string::npos)
+                    else if (cmd.starts_with("250") != std::string::npos)
                     {
                         session->send(net::buffer("MAIL FROM:<test@example.com>\r\n"));
                     }
@@ -86,7 +86,7 @@ void Client::init()
                     }
                     else if (cmd.starts_with("354"))
                     {
-                        session->send(net::buffer(email_info.body + "\r\n.\r\n"));
+                        session->send(net::buffer("test body\r\n.\r\n"));
                     }
                     else if (cmd.starts_with("250 Message"))
                     {
@@ -146,7 +146,7 @@ bool Client::sendMail(EmailMessage e_msg)
     }
 
     email_info = e_msg;
-    session->send(net::buffer("HELO example.com\r\n"));
+    // session->send(net::buffer("EHLO example.com\r\n"));
     std::cout << "Sending..." << std::endl;
     return true;
 }
