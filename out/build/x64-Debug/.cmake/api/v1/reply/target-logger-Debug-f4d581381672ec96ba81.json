@@ -27,7 +27,7 @@
 		"files" : 
 		[
 			"C:/vcpkg/scripts/buildsystems/vcpkg.cmake",
-			"logger/CMakeLists.txt"
+			"Logger/CMakeLists.txt"
 		],
 		"nodes" : 
 		[
@@ -67,7 +67,7 @@
 			[
 				{
 					"backtrace" : 3,
-					"path" : "C:/Users/user/source/repos/softserve-smtp/logger/Include"
+					"path" : "C:/Users/user/source/repos/softserve-smtp/Logger/Include"
 				},
 				{
 					"backtrace" : 3,
@@ -96,7 +96,7 @@
 	"paths" : 
 	{
 		"build" : "logger",
-		"source" : "logger"
+		"source" : "Logger"
 	},
 	"sourceGroups" : 
 	[
@@ -114,13 +114,13 @@
 		{
 			"backtrace" : 2,
 			"compileGroupIndex" : 0,
-			"path" : "logger/Include/Logger.cpp",
+			"path" : "Logger/Include/Logger.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 2,
 			"compileGroupIndex" : 0,
-			"path" : "logger/Include/LogReader.cpp",
+			"path" : "Logger/Include/LogReader.cpp",
 			"sourceGroupIndex" : 0
 		}
 	],

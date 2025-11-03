@@ -435,7 +435,7 @@
 				},
 				{
 					"backtrace" : 3,
-					"path" : "C:/Users/user/source/repos/softserve-smtp/logger/Include"
+					"path" : "C:/Users/user/source/repos/softserve-smtp/Logger/Include"
 				},
 				{
 					"backtrace" : 3,
@@ -477,11 +477,11 @@
 		},
 		{
 			"backtrace" : 3,
-			"id" : "config_parser::@45d491cfea13a0fb6fea"
+			"id" : "ssl_support::@8969565c252a9ff1bb85"
 		},
 		{
 			"backtrace" : 3,
-			"id" : "ssl_support::@8969565c252a9ff1bb85"
+			"id" : "config_parser::@45d491cfea13a0fb6fea"
 		},
 		{
 			"backtrace" : 3,

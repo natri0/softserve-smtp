@@ -136,14 +136,14 @@
 				},
 				{
 					"build" : "logger",
-					"jsonFile" : "directory-logger-Debug-540440305f9964810dc4.json",
+					"jsonFile" : "directory-logger-Debug-1a71eca6bf29b10ef86f.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.30"
 					},
 					"parentIndex" : 0,
 					"projectIndex" : 0,
-					"source" : "logger",
+					"source" : "Logger",
 					"targetIndexes" : 
 					[
 						1
@@ -251,28 +251,28 @@
 				{
 					"directoryIndex" : 9,
 					"id" : "logger::@d605ba84040dd83ce0d4",
-					"jsonFile" : "target-logger-Debug-424eaec9664a747217c9.json",
+					"jsonFile" : "target-logger-Debug-f4d581381672ec96ba81.json",
 					"name" : "logger",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 5,
 					"id" : "networking::@5888a6d7873135925b2f",
-					"jsonFile" : "target-networking-Debug-2d22b5a2112edfb7e04b.json",
+					"jsonFile" : "target-networking-Debug-cd76fd2d0894f5dfc413.json",
 					"name" : "networking",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 4,
 					"id" : "smtp_client::@b0c487aac068df482bf0",
-					"jsonFile" : "target-smtp_client-Debug-d71eaee38a52d60e43bb.json",
+					"jsonFile" : "target-smtp_client-Debug-1da1bd290c232ac375d0.json",
 					"name" : "smtp_client",
 					"projectIndex" : 3
 				},
 				{
 					"directoryIndex" : 1,
 					"id" : "smtp_server::@d19778d2e34a1e3ddfc0",
-					"jsonFile" : "target-smtp_server-Debug-6af94993adcdcc783512.json",
+					"jsonFile" : "target-smtp_server-Debug-7c10aaae514e64ff99e2.json",
 					"name" : "smtp_server",
 					"projectIndex" : 1
 				},

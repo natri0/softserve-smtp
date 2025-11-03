@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/user/source/repos/softserve-smtp/logger
+# Install script for directory: C:/Users/user/source/repos/softserve-smtp/Logger
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

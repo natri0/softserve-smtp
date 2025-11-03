@@ -7,14 +7,14 @@
 	"cxx-modules" : {},
 	"database-info" : null,
 	"dir-cur-bld" : "C:/Users/user/source/repos/softserve-smtp/out/build/x64-Debug/logger",
-	"dir-cur-src" : "C:/Users/user/source/repos/softserve-smtp/logger",
+	"dir-cur-src" : "C:/Users/user/source/repos/softserve-smtp/Logger",
 	"dir-top-bld" : "C:/Users/user/source/repos/softserve-smtp/out/build/x64-Debug",
 	"dir-top-src" : "C:/Users/user/source/repos/softserve-smtp",
 	"exports" : [],
 	"forward-modules-from-target-dirs" : [],
 	"include-dirs" : 
 	[
-		"C:\\Users\\user\\source\\repos\\softserve-smtp\\logger\\Include",
+		"C:\\Users\\user\\source\\repos\\softserve-smtp\\Logger\\Include",
 		"C:\\vcpkg\\installed\\x64-windows\\include"
 	],
 	"language" : "CXX",
@@ -25,12 +25,12 @@
 		"logger/CMakeFiles/logger.dir/Include/LogReader.cpp.obj" : 
 		{
 			"language" : "CXX",
-			"source" : "C:/Users/user/source/repos/softserve-smtp/logger/Include/LogReader.cpp"
+			"source" : "C:/Users/user/source/repos/softserve-smtp/Logger/Include/LogReader.cpp"
 		},
 		"logger/CMakeFiles/logger.dir/Include/Logger.cpp.obj" : 
 		{
 			"language" : "CXX",
-			"source" : "C:/Users/user/source/repos/softserve-smtp/logger/Include/Logger.cpp"
+			"source" : "C:/Users/user/source/repos/softserve-smtp/Logger/Include/Logger.cpp"
 		}
 	}
 }

@@ -9,6 +9,6 @@
 	"paths" : 
 	{
 		"build" : "logger",
-		"source" : "logger"
+		"source" : "Logger"
 	}
 }
