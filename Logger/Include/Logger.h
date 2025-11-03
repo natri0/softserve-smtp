@@ -30,7 +30,6 @@ private:
     mutable std::mutex mutex;
     std::ofstream file;
     boost::lockfree::queue<LogData*> queue;
-    std::string location;
     std::thread thrd;
     std::string output_path;
     std::atomic<unsigned int> amount;
@@ -39,7 +38,7 @@ private:
 
     LogLevel local_level;
 
-    Logger(const LogLevel&, const std::string&, const unsigned int);
+    Logger(const LogLevel&, const std::string&, const unsigned int, const bool);
 
     void fileInit(const unsigned int);
 
@@ -50,7 +49,7 @@ private:
 
 public:
 
-    static Logger& getInstance(const LogLevel& level = DEFAULT_LOG_LEVEL, const std::string& path = DEFAULT_PATH, const unsigned int amount = DEFAULT_AMOUNT);
+    static Logger& getInstance(const LogLevel& level = DEFAULT_LOG_LEVEL, const std::string& path = DEFAULT_PATH, const unsigned int amount = DEFAULT_AMOUNT, const bool do_flush = DEFAULT_FLUSH);
 
     void operator+=(const LogData& data);
 

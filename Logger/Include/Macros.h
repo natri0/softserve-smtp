@@ -10,8 +10,11 @@
 #define DEFAULT_AMOUNT 30
 #define DEFAULT_PATH ""
 //#define DEFAULT_CONFIG false
-//#define DEFAULT_FLUSH true
+#define DEFAULT_FLUSH true
+#define DEFAULT_SIZE 8192
+#define DEFAULT_END 8192
 #define DEFAULT_LOG_LEVEL TRACE_LOG_LEVEL
+
 
 #define NO_LOG_LEVEL LogLevel::NONE
 #define PROD_LOG_LEVEL LogLevel::PROD
