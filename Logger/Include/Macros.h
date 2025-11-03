@@ -41,7 +41,9 @@
 
 #define IF_LOG_(level)   if (Logger::getInstance().blockLog(level)) { ; } else
 
-#define LOG(level,type) IF_LOG_(level) (Logger::getInstance()) += \
+//IF_LOG_(level)
+
+#define LOG(level,type)  (Logger::getInstance()) += \
     LogData("", type, LOG_GET_FUNC(), level, std::this_thread::get_id()).ref()
 
 #define LOG_INFO(level)           LOG(level, INFO_TYPE )

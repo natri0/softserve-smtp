@@ -46,6 +46,10 @@ private:
 
     void log(const LogData&);
 
+    void write_log_to_file(const LogData& data);
+
+    void write_log_to_console(const LogData& data);
+
 
 public:
 

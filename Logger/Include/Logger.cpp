@@ -125,13 +125,7 @@ std::string Logger::toString(LogLevel level) {
     }
 }
 
-void Logger::flushMessage(const LogData& data, bool if_flush)
-{
-    if (blockLog(data.level))
-        return;
-
-    if (static_cast<int>(local_level) == 0) return;
-
+void  Logger::write_log_to_file(const LogData& data) {
     std::string file_output;
 
     file_output += std::format("{:%H:%M:%S-%d.%m.%y}", std::chrono::system_clock::now());
@@ -149,7 +143,11 @@ void Logger::flushMessage(const LogData& data, bool if_flush)
     file_output += data.msg;
     file_output += '\n';
 
+    file << file_output;
+    file.flush();
+}
 
+void write_log_to_console(const LogData& data) {
     std::string console_output;
 
     console_output += std::format("{:%H:%M:%S-%d.%m.%y}", std::chrono::system_clock::now());
@@ -171,9 +169,23 @@ void Logger::flushMessage(const LogData& data, bool if_flush)
     console_output += data.msg;
     console_output += '\n';
 
-    if (do_flush) std::cout << console_output;
-    file << file_output;
-    file.flush();
+    std::cout<< console_output;
+
+}
+
+void Logger::flushMessage(const LogData& data, bool if_flush)
+{
+    if (blockLog(data.level))
+        return;
+
+    if (static_cast<int>(local_level) == 0) return;
+
+
+    
+
+    if (do_flush)  write_log_to_console(data);
+    write_log_to_file(data);
+   
 }
 
 void Logger::operator+=(const LogData& data) {
