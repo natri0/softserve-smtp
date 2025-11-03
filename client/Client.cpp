@@ -33,6 +33,11 @@ bool Client::start()
 
 void Client::init()
 {
+    addresses.emplace("MAIL FROM:<reverse@smtp.test>\r\n");
+    addresses.emplace("RCPT TO:<forward1@smtp.test>\r\n");
+    addresses.emplace("DATA\r\n");
+    addresses.emplace("QUIT\r\n");
+
     // crypto key exchange section
     session->setOnConnected([this]()
     {
@@ -72,25 +77,26 @@ void Client::init()
                     {
                         session->send(net::buffer("EHLO example.com\r\n"));
                     }
-                    else if (cmd.starts_with("250") != std::string::npos)
+                    else if (cmd.find("250 HELP") != std::string::npos)
                     {
-                        session->send(net::buffer("MAIL FROM:<test@example.com>\r\n"));
+                        session->send(net::buffer(addresses.front()));
+                        addresses.pop();
                     }
-                    else if (cmd.starts_with("250 OK"))
+                    else if (cmd.starts_with("250 Action completed"))
                     {
-                        session->send(net::buffer("RCPT TO:<admin@example.com>\r\n"));
+                        if (!addresses.empty())
+                        {
+                            session->send(net::buffer(addresses.front()));
+                            addresses.pop();
+                        }
                     }
-                    else if (cmd.starts_with("250 Accepted"))
+                    else if (cmd.find("503") != std::string::npos)
                     {
-                        session->send(net::buffer("DATA\r\n"));
+                        std::cout << "problem" << std::endl;
                     }
                     else if (cmd.starts_with("354"))
                     {
                         session->send(net::buffer("test body\r\n.\r\n"));
-                    }
-                    else if (cmd.starts_with("250 Message"))
-                    {
-                        session->send(net::buffer("QUIT\r\n"));
                     }
                     else
                     {

@@ -5,6 +5,8 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
+#include <queue>
+
 #include "../networking/Session.h"
 #include <thread>
 
@@ -44,6 +46,8 @@ private:
     std::jthread session_thread;
 
     std::shared_ptr<smtp::ssl::SSLContextFactory::SSLContext> sslContext;
+
+    std::queue<std::string> addresses;
 };
 
 
