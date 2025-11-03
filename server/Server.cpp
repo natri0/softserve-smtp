@@ -119,7 +119,7 @@ void Server::runAcceptor()
             LOG_INFO(PROD_LOG_LEVEL) << "New connection from " << socket->remote_endpoint();// << std::endl;
             //std::cout << "New connection from " << socket->remote_endpoint() << std::endl;
             const auto session = std::make_shared<Session>(socket);
-            //auto [serverPriv, serverPub] = smtp::ssl::KeyExchange::generateKeyPair();
+            auto [serverPriv, serverPub] = smtp::ssl::KeyExchange::generateKeyPair();
 
             session->setOnDisconnect([this, session]()
             {
@@ -128,29 +128,33 @@ void Server::runAcceptor()
                     sessions.remove(session);
                 }
                 LOG_INFO(PROD_LOG_LEVEL) << "Client disconnected";
-                LOG_DEBUG(DEBUG_LOG_LEVEL) << "Number of active clients: " << sessions.size();
+                LOG_INFO(DEBUG_LOG_LEVEL) << "Number of active clients: " << sessions.size();
                 //std::cout << "Client disconnected" << std::endl;
                 //std::cout << "Number of active clients: " << sessions.size() << std::endl;
             });
 
             session->setOnMessage([this, session, serverPriv, serverPub](boost::asio::const_buffer msg)
             {
-                std::cout << "Get msg: [Received " << msg.size() << " bytes of client public key]" << std::endl;
-                std::cout << "Server private key size: " << serverPriv.size() << std::endl;
-                std::cout << "Server public key size: " << serverPub.size() << std::endl;
+                LOG_INFO(TRACE_LOG_LEVEL) << "Get msg: [Received " << msg.size() << " bytes of client public key]";
+                //std::cout << "Get msg: [Received " << msg.size() << " bytes of client public key]" << std::endl;
+                LOG_INFO(TRACE_LOG_LEVEL) << "Server private key size: " << serverPriv.size();
+                //std::cout << "Server private key size: " << serverPriv.size() << std::endl;
+                LOG_INFO(TRACE_LOG_LEVEL) << "Server public key size: " << serverPub.size();
+                //std::cout << "Server public key size: " << serverPub.size() << std::endl;
 
-                    LOG_TRACE(TRACE_LOG_LEVEL) << "Get msg: [Received " << msg.size() << " bytes of client public key]";
-                    std::vector clientPub(
-                        static_cast<const unsigned char*>(msg.data()),
-                        static_cast<const unsigned char*>(msg.data()) + msg.size()
-                    );
+                    
+                std::vector clientPub(
+                    static_cast<const unsigned char*>(msg.data()),
+                    static_cast<const unsigned char*>(msg.data()) + msg.size()
+                );
 
                 const auto sharedSecret = smtp::ssl::KeyExchange::performDHExchange(
                     clientPub, serverPriv);
                 const auto sessionKey = smtp::ssl::KeyExchange::deriveSessionKey(sharedSecret);
 
                 session->setKey(sessionKey);
-                std::cout << "Session key established" << std::endl;
+                //std::cout << "Session key established" << std::endl;
+                LOG_INFO(TRACE_LOG_LEVEL) << "Session key established";
 
                 boost::asio::post(session->getSocket()->get_executor(), [this, session]()
                 {
@@ -159,9 +163,12 @@ void Server::runAcceptor()
                         const std::string cmd(
                             std::string(static_cast<const char*>(msg.data()), msg.size()));
 
-                        std::cout << "Received message from: " << session->getSocket()->
-                                                                           remote_endpoint() << std::endl;
-                        std::cout << "Received message: " << cmd << std::endl;
+                        LOG_INFO(TRACE_LOG_LEVEL) << "Received message from: " << session->getSocket()->
+                            remote_endpoint();
+                        //std::cout << "Received message from: " << session->getSocket()->
+                                                                           //remote_endpoint() << std::endl;
+                        LOG_INFO(TRACE_LOG_LEVEL) << "Received message: " << cmd;
+                        //std::cout << "Received message: " << cmd << std::endl;
 
                         if (cmd.starts_with("HELO"))
                             session->send(net::buffer("250 Hello, pleased to meet you\r\n"));
@@ -189,15 +196,15 @@ void Server::runAcceptor()
                 }
                 LOG_INFO(PROD_LOG_LEVEL) << "Client disconnected";
                 //std::cout << "Client disconnected" << std::endl;
-                LOG_DEBUG(DEBUG_LOG_LEVEL) << "Number of active clients: " << sessions.size();
+                LOG_INFO(DEBUG_LOG_LEVEL) << "Number of active clients: " << sessions.size();
                 //std::cout << "Number of active clients: " << sessions.size() << std::endl;
             });
 
-            session->send(net::buffer(serverKeys->second));
-            //session->send(net::buffer(serverPub));
+            //session->send(net::buffer(serverKeys->second));
+            session->send(net::buffer(serverPub));
 
             session->run();
-            LOG_DEBUG(DEBUG_LOG_LEVEL) << "Sent server public key";
+            LOG_INFO(DEBUG_LOG_LEVEL) << "Sent server public key";
             //std::cout << "Sent server public key" << std::endl;
 
             {
@@ -205,7 +212,7 @@ void Server::runAcceptor()
                 sessions.push_back(session);
             }
         }
-        else { LOG_ERROR(PROD_LOG_LEVEL); }//std::cerr << "Accept failed: " << ec.message();
+        else { LOG_ERROR(PROD_LOG_LEVEL) << "Accept failed: " << ec.message(); }//std::cerr << "Accept failed: " << ec.message();
 
         runAcceptor();
     });

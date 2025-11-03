@@ -18,8 +18,6 @@
 
 
 const std::unordered_map<std::string, std::string> colored{
-    {"[TRACE]", TRACE_COLOR},
-    {"[DEBUG]", DEBUG_COLOR},
     {"[ERROR]", ERROR_COLOR},
     {"[WARNING]", WARNING_COLOR},
     {"[INFO]", INFORMATION_COLOR},

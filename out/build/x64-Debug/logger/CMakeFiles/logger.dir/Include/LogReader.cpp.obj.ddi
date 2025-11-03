@@ -3,10 +3,10 @@
     "revision": 0,
     "rules": [
         {
-            "primary-output": "logger\\CMakeFiles\\logger.dir\\Include\\LogReader.cpp.obj",
+            "primary-output": "Logger\\CMakeFiles\\logger.dir\\Include\\LogReader.cpp.obj",
             "outputs": [
                 "C:\\Users\\user\\source\\repos\\softserve-smtp\\out\\build\\x64-Debug\\vc140.pdb",
-                "logger\\CMakeFiles\\logger.dir\\Include\\LogReader.cpp.obj.ddi"
+                "Logger\\CMakeFiles\\logger.dir\\Include\\LogReader.cpp.obj.ddi"
             ],
             "requires": []
         }

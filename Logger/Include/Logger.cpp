@@ -162,8 +162,6 @@ void Logger::flushMessage(const LogData& data, bool if_flush)
         console_output += data.type;
 
     console_output += '\t';
-    console_output += toString(data.level);
-    console_output += '\t';
     console_output += data.location;
     console_output += '\t';
     console_output += "(thread ";

@@ -273,7 +273,7 @@ rule CXX_SCAN__logger_Debug
 # Rule to generate ninja dyndep files for CXX.
 
 rule CXX_DYNDEP__logger_Debug
-  command = "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E cmake_ninja_dyndep --tdi=logger\CMakeFiles\logger.dir\CXXDependInfo.json --lang=CXX --modmapfmt=msvc --dd=$out @$out.rsp
+  command = "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E cmake_ninja_dyndep --tdi=Logger\CMakeFiles\logger.dir\CXXDependInfo.json --lang=CXX --modmapfmt=msvc --dd=$out @$out.rsp
   description = Generating CXX dyndep file $out
   rspfile = $out.rsp
   rspfile_content = $in

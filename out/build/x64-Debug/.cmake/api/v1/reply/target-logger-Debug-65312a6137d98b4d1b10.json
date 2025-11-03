@@ -12,7 +12,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "logger/logger.lib"
+			"path" : "Logger/logger.lib"
 		}
 	],
 	"backtrace" : 2,
@@ -90,12 +90,12 @@
 			]
 		}
 	],
-	"id" : "logger::@d605ba84040dd83ce0d4",
+	"id" : "logger::@8307d85a046eb72c8a29",
 	"name" : "logger",
 	"nameOnDisk" : "logger.lib",
 	"paths" : 
 	{
-		"build" : "logger",
+		"build" : "Logger",
 		"source" : "Logger"
 	},
 	"sourceGroups" : 
