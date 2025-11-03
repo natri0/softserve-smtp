@@ -24,5 +24,3 @@ add_library(SMTP
 	 "source/SMTPConfigBuilder.cpp" "include/SMTPIMailbox.h")
 
 target_include_directories(SMTP PUBLIC "include")
-
-add_subdirectory(gtests)

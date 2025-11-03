@@ -8,6 +8,7 @@
 
 #include "ThreadPool/include/ThreadPool.hpp"
 #include "../networking/SSL/KeyExchanger.h"
+#include "SMTPSession.h"
 
 // temp till we don't have parser
 
@@ -154,24 +155,29 @@ void Server::runAcceptor()
                         const std::string cmd(
                             std::string(static_cast<const char*>(msg.data()), msg.size()));
 
-                        std::cout << "Received message from: " << session->getSocket()->
-                                                                           remote_endpoint() << std::endl;
-                        std::cout << "Received message: " << cmd << std::endl;
+                        ISXSMTP::SMTPSession smtp_session;
+                        auto rpl = smtp_session.OnMessage(cmd);
+                        session->send(net::buffer(rpl));
 
-                        if (cmd.starts_with("HELO"))
-                            session->send(net::buffer("250 Hello, pleased to meet you\r\n"));
-                        else if (cmd.starts_with("MAIL FROM"))
-                            session->send(net::buffer("250 OK\r\n"));
-                        else if (cmd.starts_with("RCPT TO"))
-                            session->send(net::buffer("250 Accepted\r\n"));
-                        else if (cmd.starts_with("DATA"))
-                            session->send(net::buffer("354 End data with <CR><LF>.<CR><LF>\r\n"));
-                        else if (cmd.find("\r\n.\r\n") != std::string::npos)
-                            session->send(net::buffer("250 Message accepted for delivery\r\n"));
-                        else if (cmd.starts_with("QUIT"))
-                            session->send(net::buffer("221 Bye\r\n"));
-                        else
-                            session->send(net::buffer("500 Unknown command\r\n"));
+                         std::cout << "Received message from: " << session->getSocket()->
+                                                                            remote_endpoint() << std::endl;
+                         std::cout << "Received message: " << cmd << std::endl;
+                         std::cout << "Reply: " << rpl << std::endl;
+
+                         // if (cmd.starts_with("HELO"))
+                         //     session->send(net::buffer("250 Hello, pleased to meet you\r\n"));
+                         // else if (cmd.starts_with("MAIL FROM"))
+                         //     session->send(net::buffer("250 OK\r\n"));
+                         // else if (cmd.starts_with("RCPT TO"))
+                         //     session->send(net::buffer("250 Accepted\r\n"));
+                         // else if (cmd.starts_with("DATA"))
+                         //     session->send(net::buffer("354 End data with <CR><LF>.<CR><LF>\r\n"));
+                         // else if (cmd.find("\r\n.\r\n") != std::string::npos)
+                         //     session->send(net::buffer("250 Message accepted for delivery\r\n"));
+                         // else if (cmd.starts_with("QUIT"))
+                         //     session->send(net::buffer("221 Bye\r\n"));
+                         // else
+                         //     session->send(net::buffer("500 Unknown command\r\n"));
                     });
                 });
             });

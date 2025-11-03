@@ -5,6 +5,7 @@
 #include "SMTPCommandArguments.h"
 
 #include <string>
+#include <vector>
 #include <memory>
 
 namespace ISXSMTP

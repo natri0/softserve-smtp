@@ -14,7 +14,7 @@ namespace ISXSMTP
 {
 
 /**
- * @brief This class represents a SMTP session starting from the connection init to the QUIT command 
+ * @brief This class represents an SMTP session starting from the connection init to the QUIT command
  */
 class SMTPSession
 {
