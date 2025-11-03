@@ -83,26 +83,26 @@ Logger::~Logger() {
 void Logger::setOutputPath(const std::string& path)
 {
 
-    std::lock_guard guard{ mutex };
+    std::unique_lock lock{ mutex };
     output_path = path;
 }
 
 const std::string& Logger::getOutputPath() const
 {
 
-    std::lock_guard<std::mutex> guard{ mutex };
+    std::shared_lock lock{ mutex };
     return output_path;
 }
 
 void Logger::setLevel(LogLevel level)
 {
-    std::lock_guard guard{ mutex };
+    std::unique_lock loc{ mutex };
     local_level = level;
 }
 
 const LogLevel& Logger::getLevel() const
 {
-    std::lock_guard guard{ mutex };
+    std::shared_lock lock{ mutex };
     return local_level;
 }
 
