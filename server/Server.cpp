@@ -119,7 +119,13 @@ void Server::runAcceptor()
             LOG_INFO(PROD_LOG_LEVEL) << "New connection from " << socket->remote_endpoint();// << std::endl;
             //std::cout << "New connection from " << socket->remote_endpoint() << std::endl;
             const auto session = std::make_shared<Session>(socket);
-            auto [serverPriv, serverPub] = smtp::ssl::KeyExchange::generateKeyPair();
+            //auto [serverPriv, serverPub] = smtp::ssl::KeyExchange::generateKeyPair();
+            const auto keys = std::make_shared<std::pair<std::vector<unsigned char>, std::vector<unsigned char>>>(
+                smtp::ssl::KeyExchange::generateKeyPair()
+            );
+
+            auto& serverPriv = keys->first;
+            auto& serverPub = keys->second;
 
             session->setOnDisconnect([this, session]()
             {
