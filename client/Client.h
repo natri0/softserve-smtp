@@ -33,6 +33,7 @@ private:
     EmailMessage email_info;
 
     bool isRunning = false;
+    bool canSend = false;
     void reconnect();
 
     void init();

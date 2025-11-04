@@ -125,7 +125,9 @@ void Client::SMTPHandling(boost::asio::const_buffer msg)
 
     if (cmd.starts_with("220"))
     {
-        session->send(net::buffer("EHLO example.com\r\n"));
+        canSend = true;
+        std::cout << "Ready to send" << std::endl;
+        // session->send(net::buffer("EHLO example.com\r\n"));
     }
     else if (cmd.find("250 HELP") != std::string::npos)
     {
@@ -139,10 +141,6 @@ void Client::SMTPHandling(boost::asio::const_buffer msg)
             session->send(net::buffer(sendInfo.front()));
             sendInfo.pop();
         }
-    }
-    else if (cmd.find("503") != std::string::npos)
-    {
-        std::cout << "problem" << std::endl;
     }
     else if (cmd.starts_with("354"))
     {
@@ -163,7 +161,8 @@ bool Client::sendMail(EmailMessage e_msg)
     }
 
     email_info = e_msg;
-    // session->send(net::buffer("EHLO example.com\r\n"));
+    if (canSend)
+        session->send(net::buffer("EHLO example.com\r\n"));
     std::cout << "Sending..." << std::endl;
     return true;
 }
@@ -174,6 +173,7 @@ bool Client::stop()
     isRunning = false;
 
     session->disconnect();
+
     io.stop();
 
     return true;

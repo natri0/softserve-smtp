@@ -38,7 +38,6 @@ public:
     void setOnDisconnect(OnDisconnect cb) noexcept { onDisconnect = std::move(cb); };
 
     // functional
-    bool init();
     bool run();
     bool send(boost::asio::const_buffer data);
 
