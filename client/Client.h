@@ -47,7 +47,7 @@ private:
 
     std::shared_ptr<smtp::ssl::SSLContextFactory::SSLContext> sslContext;
 
-    std::queue<std::string> addresses;
+    std::queue<std::string> sendInfo;
 };
 
 

@@ -33,10 +33,10 @@ bool Client::start()
 
 void Client::init()
 {
-    addresses.emplace("MAIL FROM:<reverse@smtp.test>\r\n");
-    addresses.emplace("RCPT TO:<forward1@smtp.test>\r\n");
-    addresses.emplace("DATA\r\n");
-    addresses.emplace("QUIT\r\n");
+    sendInfo.emplace("MAIL FROM:<reverse@smtp.test>\r\n");
+    sendInfo.emplace("RCPT TO:<forward1@smtp.test>\r\n");
+    sendInfo.emplace("DATA\r\n");
+    sendInfo.emplace("QUIT\r\n");
 
     // crypto key exchange section
     session->setOnConnected([this]()
@@ -79,15 +79,15 @@ void Client::init()
                     }
                     else if (cmd.find("250 HELP") != std::string::npos)
                     {
-                        session->send(net::buffer(addresses.front()));
-                        addresses.pop();
+                        session->send(net::buffer(sendInfo.front()));
+                        sendInfo.pop();
                     }
                     else if (cmd.starts_with("250 Action completed"))
                     {
-                        if (!addresses.empty())
+                        if (!sendInfo.empty())
                         {
-                            session->send(net::buffer(addresses.front()));
-                            addresses.pop();
+                            session->send(net::buffer(sendInfo.front()));
+                            sendInfo.pop();
                         }
                     }
                     else if (cmd.find("503") != std::string::npos)

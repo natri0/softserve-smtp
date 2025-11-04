@@ -11,7 +11,9 @@
 #include <memory>
 
 #include "ServerConsoleUI.h"
+#include "SMTPSession.h"
 #include "../networking/SSL/SSLContextFactory.h"
+#include "Commands/SMTPCommandArguments.h"
 #include "config/config.h"
 
 class ThreadPool;
@@ -52,6 +54,9 @@ private:
 
     // crypto
     std::shared_ptr<smtp::ssl::SSLContextFactory::SSLContext> sslContext;
+
+    void SSLHandling(boost::asio::const_buffer msg, std::shared_ptr<Session> session, std::shared_ptr<std::pair<std::vector<unsigned char>, std::vector<unsigned char>>> keys);
+    void SMTPHandling(boost::asio::const_buffer msg, std::shared_ptr<Session> session, std::shared_ptr<ISXSMTP::SMTPSession> smtp_session);
 };
 
 #endif //SERVER_H

@@ -118,7 +118,10 @@ void Server::runAcceptor()
             std::cout << "New connection from " << socket->remote_endpoint() << std::endl;
             const auto session = std::make_shared<Session>(socket);
             auto smtp_session = std::make_shared<ISXSMTP::SMTPSession>();
-            auto [serverPriv, serverPub] = smtp::ssl::KeyExchange::generateKeyPair();
+
+            auto keys = std::make_shared<std::pair<std::vector<unsigned char>, std::vector<unsigned char>>>(
+                smtp::ssl::KeyExchange::generateKeyPair()
+            );
 
             session->setOnDisconnect([this, session]()
             {
@@ -130,55 +133,21 @@ void Server::runAcceptor()
                 std::cout << "Number of active clients: " << sessions.size() << std::endl;
             });
 
-            session->setOnMessage([this, session, serverPriv, serverPub, smtp_session](boost::asio::const_buffer msg)
+            session->setOnMessage([this, session, keys, smtp_session](boost::asio::const_buffer msg)
             {
-                std::cout << "Get msg: [Received " << msg.size() << " bytes of client public key]"
-                    << std::endl;
-                std::cout << "Server private key size: " << serverPriv.size() << std::endl;
-                std::cout << "Server public key size: " << serverPub.size() << std::endl;
-
-                std::vector clientPub(
-                    static_cast<const unsigned char*>(msg.data()),
-                    static_cast<const unsigned char*>(msg.data()) + msg.size()
-                );
-
-                const auto sharedSecret = smtp::ssl::KeyExchange::performDHExchange(
-                    clientPub, serverPriv);
-                const auto sessionKey = smtp::ssl::KeyExchange::deriveSessionKey(sharedSecret);
-
-                session->setKey(sessionKey);
-                std::cout << "Session key established" << std::endl;
+                SSLHandling(msg, session, keys);
 
                 boost::asio::post(session->getSocket()->get_executor(), [this, session, smtp_session]()
                 {
                     session->setOnMessage([this, session, smtp_session](boost::asio::const_buffer msg)
                     {
-                        const std::string cmd(
-                            std::string(static_cast<const char*>(msg.data()), msg.size()));
-
-                        auto rpl = smtp_session->OnMessage(cmd.c_str());
-                        session->send(net::buffer(rpl));
-
-                        std::cout << "Received message from: " << session->getSocket()->
-                                                                           remote_endpoint() << std::endl;
-                        std::cout << "Received message: " << cmd << std::endl;
-                        std::cout << "Reply: " << rpl << std::endl;
+                        SMTPHandling(msg, session, smtp_session);
                     });
                     session->send(net::buffer(ISXSMTP::SMTPSession().OnConnect()));
                 });
             });
 
-            session->setOnDisconnect([this, session]()
-            {
-                {
-                    std::lock_guard lock(sessionMutex);
-                    sessions.remove(session);
-                }
-                std::cout << "Client disconnected" << std::endl;
-                std::cout << "Number of active clients: " << sessions.size() << std::endl;
-            });
-
-            session->send(net::buffer(serverPub));
+            session->send(net::buffer(keys->second));
 
             session->run();
             std::cout << "Sent server public key" << std::endl;
@@ -212,4 +181,43 @@ bool Server::setUpAcceptor()
 
     acceptor.listen();
     return true;
+}
+
+void Server::SSLHandling(boost::asio::const_buffer msg, std::shared_ptr<Session> session,
+                         std::shared_ptr<std::pair<std::vector<unsigned char>, std::vector<unsigned char>>> keys)
+{
+    auto& serverPriv = keys->first;
+    auto& serverPub = keys->second;
+
+    std::cout << "Get msg: [Received " << msg.size() << " bytes of client public key]"
+        << std::endl;
+    std::cout << "Server private key size: " << serverPriv.size() << std::endl;
+    std::cout << "Server public key size: " << serverPub.size() << std::endl;
+
+    std::vector clientPub(
+        static_cast<const unsigned char*>(msg.data()),
+        static_cast<const unsigned char*>(msg.data()) + msg.size()
+    );
+
+    const auto sharedSecret = smtp::ssl::KeyExchange::performDHExchange(
+        clientPub, serverPriv);
+    const auto sessionKey = smtp::ssl::KeyExchange::deriveSessionKey(sharedSecret);
+
+    session->setKey(sessionKey);
+    std::cout << "Session key established" << std::endl;
+}
+
+void Server::SMTPHandling(boost::asio::const_buffer msg, std::shared_ptr<Session> session,
+                          std::shared_ptr<ISXSMTP::SMTPSession> smtp_session)
+{
+    const std::string cmd(
+        std::string(static_cast<const char*>(msg.data()), msg.size()));
+
+    auto rpl = smtp_session->OnMessage(cmd.c_str());
+    session->send(net::buffer(rpl));
+
+    std::cout << "Received message from: " << session->getSocket()->
+                                                       remote_endpoint() << std::endl;
+    std::cout << "Received message: " << cmd << std::endl;
+    std::cout << "Reply: " << rpl << std::endl;
 }
