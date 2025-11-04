@@ -36,7 +36,6 @@ bool Server::init()
 
     threadPool = std::make_unique<ThreadPool>(thread_pool_size);
 
-    //
     ui->showBanner(port);
 
     if (!setUpAcceptor()) return false;
@@ -49,18 +48,14 @@ bool Server::stop()
 {
     boost::system::error_code ec;
     acceptor.cancel(ec);
-
     if (acceptor.is_open()) acceptor.close(ec);
 
     if (ec) std::cerr << "Error closing acceptor: " << ec.message() << std::endl;
 
-    for (auto& session : sessions)
-        session->disconnect();
     sessions.clear();
-
     io->stop();
-
     threadPool->stop();
+
     return true;
 }
 
@@ -113,50 +108,7 @@ void Server::runAcceptor()
 
     acceptor.async_accept(*socket, [this, socket](const boost::system::error_code& ec)
     {
-        if (!ec)
-        {
-            std::cout << "New connection from " << socket->remote_endpoint() << std::endl;
-            const auto session = std::make_shared<Session>(socket);
-            auto smtp_session = std::make_shared<ISXSMTP::SMTPSession>();
-
-            auto keys = std::make_shared<std::pair<std::vector<unsigned char>, std::vector<unsigned char>>>(
-                smtp::ssl::KeyExchange::generateKeyPair()
-            );
-
-            session->setOnDisconnect([this, session]()
-            {
-                {
-                    std::lock_guard lock(sessionMutex);
-                    sessions.remove(session);
-                }
-                std::cout << "Client disconnected" << std::endl;
-                std::cout << "Number of active clients: " << sessions.size() << std::endl;
-            });
-
-            session->setOnMessage([this, session, keys, smtp_session](boost::asio::const_buffer msg)
-            {
-                SSLHandling(msg, session, keys);
-
-                boost::asio::post(session->getSocket()->get_executor(), [this, session, smtp_session]()
-                {
-                    session->setOnMessage([this, session, smtp_session](boost::asio::const_buffer msg)
-                    {
-                        SMTPHandling(msg, session, smtp_session);
-                    });
-                    session->send(net::buffer(ISXSMTP::SMTPSession().OnConnect()));
-                });
-            });
-
-            session->send(net::buffer(keys->second));
-
-            session->run();
-            std::cout << "Sent server public key" << std::endl;
-
-            {
-                std::lock_guard lock(sessionMutex);
-                sessions.push_back(session);
-            }
-        }
+        if (!ec) setConnection(socket);
         else { std::cerr << "Accept failed: " << ec.message() << std::endl; }
 
         runAcceptor();
@@ -181,6 +133,51 @@ bool Server::setUpAcceptor()
 
     acceptor.listen();
     return true;
+}
+
+void Server::setConnection(std::shared_ptr<net::ip::tcp::socket> socket)
+{
+    std::cout << "New connection from " << socket->remote_endpoint() << std::endl;
+    const auto session = std::make_shared<Session>(socket);
+    auto smtp_session = std::make_shared<ISXSMTP::SMTPSession>();
+
+    auto keys = std::make_shared<std::pair<std::vector<unsigned char>, std::vector<unsigned char>>>(
+        smtp::ssl::KeyExchange::generateKeyPair()
+    );
+
+    session->setOnDisconnect([this, session]()
+    {
+        {
+            std::lock_guard lock(sessionMutex);
+            sessions.remove(session);
+        }
+        std::cout << "Client disconnected" << std::endl;
+        std::cout << "Number of active clients: " << sessions.size() << std::endl;
+    });
+
+    session->setOnMessage([this, session, keys, smtp_session](boost::asio::const_buffer msg)
+    {
+        SSLHandling(msg, session, keys);
+
+        boost::asio::post(session->getSocket()->get_executor(), [this, session, smtp_session]()
+        {
+            session->setOnMessage([this, session, smtp_session](boost::asio::const_buffer msg)
+            {
+                SMTPHandling(msg, session, smtp_session);
+            });
+            session->send(net::buffer(ISXSMTP::SMTPSession().OnConnect()));
+        });
+    });
+
+    session->send(net::buffer(keys->second));
+    std::cout << "Sent server public key" << std::endl;
+
+    session->run();
+
+    {
+        std::lock_guard lock(sessionMutex);
+        sessions.push_back(session);
+    }
 }
 
 void Server::SSLHandling(boost::asio::const_buffer msg, std::shared_ptr<Session> session,

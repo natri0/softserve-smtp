@@ -13,6 +13,11 @@
 #include "EmailMessage.h"
 #include "../networking/SSL/SSLContextFactory.h"
 
+namespace ISXSMTP
+{
+    class SMTPSession;
+}
+
 class Client
 {
 public:
@@ -34,8 +39,7 @@ private:
     void connect();
     bool run();
 
-    // SMTP
-    // Logger
+    void setConnection(std::shared_ptr<net::ip::tcp::socket> socket);
 
     net::io_context io;
     net::ip::tcp::endpoint server_endpoint;
@@ -48,6 +52,10 @@ private:
     std::shared_ptr<smtp::ssl::SSLContextFactory::SSLContext> sslContext;
 
     std::queue<std::string> sendInfo;
+
+    // networking callbacks
+    void SSLHandling(boost::asio::const_buffer msg, std::shared_ptr<std::pair<std::vector<unsigned char>, std::vector<unsigned char>>> keys);
+    void SMTPHandling(boost::asio::const_buffer msg);
 };
 
 
