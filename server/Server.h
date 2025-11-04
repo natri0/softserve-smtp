@@ -11,10 +11,10 @@
 #include <memory>
 
 #include "ServerConsoleUI.h"
-#include "SMTPSession.h"
 #include "../networking/SSL/SSLContextFactory.h"
-#include "Commands/SMTPCommandArguments.h"
 #include "config/config.h"
+
+#include "../networking/SmartSession.h"
 
 class ThreadPool;
 
@@ -39,7 +39,7 @@ private:
     net::ip::tcp::acceptor acceptor;
     unsigned short port = 12345;
 
-    std::list<std::shared_ptr<Session>> sessions;
+    std::list<std::shared_ptr<SmartSession>> sessions;
     std::mutex sessionMutex;
 
     void runAcceptor();
@@ -57,8 +57,8 @@ private:
     std::shared_ptr<smtp::ssl::SSLContextFactory::SSLContext> sslContext;
 
     // networking callbacks
-    void SSLHandling(boost::asio::const_buffer msg, std::shared_ptr<Session> session, std::shared_ptr<std::pair<std::vector<unsigned char>, std::vector<unsigned char>>> keys);
-    void SMTPHandling(boost::asio::const_buffer msg, std::shared_ptr<Session> session, std::shared_ptr<ISXSMTP::SMTPSession> smtp_session);
+    void SSLHandling(boost::asio::const_buffer msg, std::shared_ptr<SmartSession> session, std::shared_ptr<std::pair<std::vector<unsigned char>, std::vector<unsigned char>>> keys);
+    void SMTPHandling(boost::asio::const_buffer msg, std::shared_ptr<SmartSession> session);
 };
 
 #endif //SERVER_H
