@@ -11,7 +11,9 @@
 #include <memory>
 
 #include "ServerConsoleUI.h"
+#include "SMTPSession.h"
 #include "../networking/SSL/SSLContextFactory.h"
+#include "Commands/SMTPCommandArguments.h"
 #include "config/config.h"
 
 class ThreadPool;
@@ -42,6 +44,7 @@ private:
 
     void runAcceptor();
     bool setUpAcceptor();
+    void setConnection(std::shared_ptr<net::ip::tcp::socket> socket);
 
     std::unique_ptr<ThreadPool> threadPool;
     unsigned short thread_pool_size = 4;
@@ -52,6 +55,10 @@ private:
 
     // crypto
     std::shared_ptr<smtp::ssl::SSLContextFactory::SSLContext> sslContext;
+
+    // networking callbacks
+    void SSLHandling(boost::asio::const_buffer msg, std::shared_ptr<Session> session, std::shared_ptr<std::pair<std::vector<unsigned char>, std::vector<unsigned char>>> keys);
+    void SMTPHandling(boost::asio::const_buffer msg, std::shared_ptr<Session> session, std::shared_ptr<ISXSMTP::SMTPSession> smtp_session);
 };
 
 #endif //SERVER_H
