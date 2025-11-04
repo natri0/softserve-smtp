@@ -1,7 +1,6 @@
 #include "EmailMessage.h"
 #include <stdexcept>
 
-// Тільки конструктор Attachment (бо має логіку копіювання)
 Attachment::Attachment(const std::string& name,
                        const std::string& type,
                        const std::string& disposition,
