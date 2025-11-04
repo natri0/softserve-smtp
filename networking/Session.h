@@ -20,7 +20,7 @@ namespace net = boost::asio;
 class Session : public std::enable_shared_from_this<Session>
 {
 public:
-    using OnMessage = std::function<void(boost::asio::const_buffer)>;
+    using OnMessage = std::function<void(net::const_buffer)>;
     using OnConnected = std::function<void()>;
     using OnDisconnect = std::function<void()>;
 
@@ -56,7 +56,7 @@ private:
     void write();
 
     std::array<char, 1024> buffer;
-    std::deque<boost::asio::const_buffer> writeQueue;
+    std::deque<net::const_buffer> writeQueue;
     bool isWriting = false;
     bool isRunning = false;
     std::atomic<bool> connected = false;

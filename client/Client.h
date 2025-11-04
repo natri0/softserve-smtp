@@ -6,17 +6,11 @@
 #define CLIENT_H
 
 #include <queue>
-
-#include "../networking/Session.h"
 #include <thread>
 
 #include "EmailMessage.h"
+#include "SmartSession.h"
 #include "../networking/SSL/SSLContextFactory.h"
-
-namespace ISXSMTP
-{
-    class SMTPSession;
-}
 
 class Client
 {
@@ -44,7 +38,7 @@ private:
 
     net::io_context io;
     net::ip::tcp::endpoint server_endpoint;
-    std::shared_ptr<Session> session;
+    std::shared_ptr<SmartSession> session;
     net::steady_timer timer;
 
     std::jthread io_thread;
@@ -54,8 +48,7 @@ private:
 
     std::queue<std::string> sendInfo;
 
-    // networking callbacks
-    void SSLHandling(boost::asio::const_buffer msg, std::shared_ptr<std::pair<std::vector<unsigned char>, std::vector<unsigned char>>> keys);
+    // networking callback
     void SMTPHandling(boost::asio::const_buffer msg);
 };
 
