@@ -83,26 +83,26 @@ Logger::~Logger() {
 void Logger::setOutputPath(const std::string& path)
 {
 
-    std::lock_guard guard{ mutex };
+    std::unique_lock lock{ mutex };
     output_path = path;
 }
 
 const std::string& Logger::getOutputPath() const
 {
 
-    std::lock_guard<std::mutex> guard{ mutex };
+    std::shared_lock lock{ mutex };
     return output_path;
 }
 
 void Logger::setLevel(LogLevel level)
 {
-    std::lock_guard guard{ mutex };
+    std::unique_lock loc{ mutex };
     local_level = level;
 }
 
 const LogLevel& Logger::getLevel() const
 {
-    std::lock_guard guard{ mutex };
+    std::shared_lock lock{ mutex };
     return local_level;
 }
 
@@ -181,11 +181,12 @@ void Logger::flushMessage(const LogData& data, bool if_flush)
     if (static_cast<int>(local_level) == 0) return;
 
 
+
+
     if (do_flush)  write_log_to_console(data);
     write_log_to_file(data);
 
 }
-
 
 void Logger::operator+=(const LogData& data) {
     log(data);
@@ -226,11 +227,11 @@ void Logger::logInfo(const std::string& msg)
 void Logger::logFuncStart() {
 
     if (static_cast<int>(local_level) >= 2)
-        log("Function is started", "[INFO]", location, local_level);
+        log("Function is started", "[INFO]", LOG_GET_FUNC(), local_level);
 }
 
 void Logger::logFuncEnd()
 {
     if (static_cast<int>(local_level) >= 2)
-        log("Function is successfully executed", "[INFO]", location, local_level);
+        log("Function is successfully executed", "[INFO]", LOG_GET_FUNC(), local_level);
 }
