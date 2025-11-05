@@ -5,7 +5,7 @@ find_package(Threads REQUIRED)
 add_library(logger
     Include/Logger.cpp
     Include/LogReader.cpp
- "Example/Example.cpp")
+ )
 
 target_include_directories(logger
     PUBLIC
@@ -17,10 +17,19 @@ target_link_libraries(logger PUBLIC Threads::Threads)
 
 
 add_executable(logger_main
-    Tests/StressTest/Main.cpp
+    Tests/StressTest/Main.cpp)
+
+add_executable(logger_example
     Example/Example.cpp)
 
 target_link_libraries(logger_main PRIVATE logger)
+
+
+target_link_libraries(logger_example PRIVATE
+    logger 
+    Threads::Threads 
+    Boost::boost)
+
 
 # ----------- Benchmark Tests -----------
 find_package(benchmark QUIET)
@@ -42,7 +51,6 @@ endif()
 
 
 
-# ---- Benchmark executable ----
 add_executable(logger_benchmark
     Tests/Benchmarks/Benchmarks.cpp)
 
@@ -59,3 +67,41 @@ target_link_libraries(logger_benchmark
     Threads::Threads
     Boost::boost
 )
+
+# ----------- Unit Tests -----------
+find_package(GTest QUIET)
+if (NOT GTest_FOUND)
+    message(STATUS "GoogleTest not found — downloading...")
+    include(FetchContent)
+    FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG v1.15.2
+    )
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
+endif()
+
+enable_testing()
+
+add_executable(logger_tests
+    Tests/UnitTests/test.cpp
+)
+
+target_include_directories(logger_tests
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include
+)
+
+target_link_libraries(logger_tests
+    PRIVATE
+    logger
+    GTest::gtest
+    GTest::gtest_main
+    Threads::Threads
+    Boost::boost
+)
+
+include(GoogleTest)
+gtest_discover_tests(logger_tests)
+

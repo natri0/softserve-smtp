@@ -14,13 +14,18 @@ void exampleFunction() {
 }
 
 int main() {
+
     
     Logger& logger = Logger::getInstance(LogLevel::TRACE, "MyLogs", 5, true);
 
+    logger.setFlush(true);
 
+    std::cout << "Current log level: " << logger.toString(logger.getLevel()) << "\n\n";
 
     exampleFunction();
 
+    logger.setLevel(LogLevel::DEBUG);
+    std::cout << "Log level changed to: " << logger.toString(logger.getLevel()) << "\n";
 
     std::thread t1([] { LOG_INFO(LogLevel::DEBUG) << "Thread 1 running"; });
     std::thread t2([] { LOG_ERROR(LogLevel::PROD) << "Thread 2 error"; });
@@ -28,6 +33,10 @@ int main() {
     t2.join();
 
 
+    
+
+    logger.setFlush(false);
+    std::cout << "Auto-flush disabled.\n\n";
 
 
     LogReader reader(logger.getOutputPath());
@@ -39,6 +48,9 @@ int main() {
 
     std::cout << "\n--- Only [ERROR] entries ---\n";
     for (auto& e : errors) std::cout << e << '\n';
+
+    logger.setOutputPath("MyLogs_Updated");
+    std::cout << "Output path changed to: " << logger.getOutputPath() << "\n";
 
     return 0;
 }

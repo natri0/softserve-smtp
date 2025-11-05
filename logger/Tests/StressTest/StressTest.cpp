@@ -17,7 +17,7 @@ int main1() {
     for (int i = 0; i < THREADS; ++i) {
         threads.emplace_back([&, i]() {
             for (int j = 0; j < MESSAGES_PER_THREAD; ++j) {
-                logger.logInfo("Thread " + std::to_string(i) + " msg " + std::to_string(j));
+                LOG_INFO(LogLevel::DEBUG) << "Thread " << std::to_string(t) << " message " << std::to_string(i));
                 ++counter;
             }
             });
