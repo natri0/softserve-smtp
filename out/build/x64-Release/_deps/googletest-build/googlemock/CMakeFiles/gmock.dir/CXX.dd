@@ -1,0 +1,5 @@
+ninja_dyndep_version = 1.0
+build _deps\googletest-build\googlemock\CMakeFiles\gmock.dir\__\googletest\src\gtest-all.cc.obj: dyndep
+
+build _deps\googletest-build\googlemock\CMakeFiles\gmock.dir\src\gmock-all.cc.obj: dyndep
+

@@ -12,7 +12,7 @@ Logger::Logger(const LogLevel& level, const std::string& path, const unsigned in
         while (!end || !queue.empty()) {
             while (queue.pop(msg)) {
                 if (msg) {
-                    flushMessage(*msg, false);
+                    flushMessage(*msg);
                     delete msg;
                 }
             }

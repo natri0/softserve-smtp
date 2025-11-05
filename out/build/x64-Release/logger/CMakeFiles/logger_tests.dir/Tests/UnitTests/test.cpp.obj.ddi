@@ -1,0 +1,13 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "logger\\CMakeFiles\\logger_tests.dir\\Tests\\UnitTests\\test.cpp.obj",
+            "outputs": [
+                "logger\\CMakeFiles\\logger_tests.dir\\Tests\\UnitTests\\test.cpp.obj.ddi"
+            ],
+            "requires": []
+        }
+    ]
+}

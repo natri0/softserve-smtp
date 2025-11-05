@@ -1,0 +1,8 @@
+19:30:40.6717979-05.11.25	[WARNING]	TRACE	Logger::fileInit	(thread 17609237140673817680)	invalid output path, default will be used
+19:30:40.6720857-05.11.25	[INFO]	DEBUG	exampleFunction	(thread 17609237140673817680)	Function is started
+19:30:40.6722233-05.11.25	[INFO]	TRACE	exampleFunction	(thread 17609237140673817680)	Example function started
+19:30:40.7466690-05.11.25	[WARNING]	DEBUG	exampleFunction	(thread 17609237140673817680)	This is a warning from exampleFunction
+19:30:40.8142373-05.11.25	[ERROR]	PROD	exampleFunction	(thread 17609237140673817680)	Error occurred in exampleFunction
+19:30:40.8143152-05.11.25	[INFO]	DEBUG	exampleFunction	(thread 17609237140673817680)	Function is started
+19:30:40.8157282-05.11.25	[INFO]	DEBUG	main::<lambda_1>::operator ()	(thread 13319815489442865074)	Thread 1 running
+19:30:40.8157817-05.11.25	[ERROR]	PROD	main::<lambda_2>::operator ()	(thread 17861186413777038632)	Thread 2 error

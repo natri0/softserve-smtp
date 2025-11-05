@@ -1,0 +1,13 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "logger\\CMakeFiles\\logger_example.dir\\Example\\Example.cpp.obj",
+            "outputs": [
+                "logger\\CMakeFiles\\logger_example.dir\\Example\\Example.cpp.obj.ddi"
+            ],
+            "requires": []
+        }
+    ]
+}
