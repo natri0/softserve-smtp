@@ -13,13 +13,9 @@
 #include <unordered_map>
 #include <filesystem>
 #include <boost/lockfree/queue.hpp>
+#include <shared_mutex>
 #include "Macros.h"
 
-
-
-
-struct LogData;
-enum class LogLevel : int;
 
 
 const std::unordered_map<std::string, std::string> colored{
@@ -32,7 +28,7 @@ const std::unordered_map<std::string, std::string> colored{
 
 class Logger {
 private:
-    mutable std::mutex mutex;
+    mutable std::shared_mutex mutex;
     std::ofstream file;
     boost::lockfree::queue<LogData*> queue;
     std::thread thrd;
