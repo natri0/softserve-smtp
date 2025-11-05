@@ -4,6 +4,8 @@ project(softserve_smtp)
 set(CMAKE_CXX_STANDARD 23)
 set(BOOST_ENABLE_CMAKE_TARGETS ON)
 
+find_package(Qt6 REQUIRED COMPONENTS Widgets Core)
+find_package(Boost REQUIRED COMPONENTS system thread asio)
 find_package(OpenSSL REQUIRED)
 
 add_subdirectory(server)
