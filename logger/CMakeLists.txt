@@ -1,9 +1,10 @@
 find_package(Boost REQUIRED)
 
 
-add_library(logger STATIC
-    Include/Logger.cpp
-    Include/LogReader.cpp
+add_executable(logger
+    #Include/Logger.cpp
+    #Include/LogReader.cpp
+    Tests/StressTest/Main.cpp
 )
 
 target_include_directories(logger

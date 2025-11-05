@@ -1,6 +1,4 @@
 #include "Macros.h"
-#include "LogLevel.h"
-#include "LogData.h"
 #include "Logger.h"
 
 //std::unique_ptr<Logger> Logger::instance = nullptr;
@@ -68,7 +66,7 @@ void Logger::fileInit(const unsigned int amount)
     output_path = buff_name;
 
     if (error)
-        log("invalid output path, default will be used", "[WARNING]", FUNCTION_NAME, local_level, std::this_thread::get_id(), nullptr);
+        log("invalid output path, default will be used", "[WARNING]", FUNCTION_NAME, local_level, std::this_thread::get_id());
 }
 
 void Logger::shutDown() {
@@ -127,13 +125,7 @@ std::string Logger::toString(LogLevel level) {
     }
 }
 
-void Logger::flushMessage(const LogData& data, bool if_flush)
-{
-    if (blockLog(data.level))
-        return;
-
-    if (static_cast<int>(local_level) == 0) return;
-
+void  Logger::write_log_to_file(const LogData& data) {
     std::string file_output;
 
     file_output += std::format("{:%H:%M:%S-%d.%m.%y}", std::chrono::system_clock::now());
@@ -151,7 +143,11 @@ void Logger::flushMessage(const LogData& data, bool if_flush)
     file_output += data.msg;
     file_output += '\n';
 
+    file << file_output;
+    file.flush();
+}
 
+void write_log_to_console(const LogData& data) {
     std::string console_output;
 
     console_output += std::format("{:%H:%M:%S-%d.%m.%y}", std::chrono::system_clock::now());
@@ -164,8 +160,6 @@ void Logger::flushMessage(const LogData& data, bool if_flush)
         console_output += data.type;
 
     console_output += '\t';
-    console_output += toString(data.level);
-    console_output += '\t';
     console_output += data.location;
     console_output += '\t';
     console_output += "(thread ";
@@ -175,10 +169,23 @@ void Logger::flushMessage(const LogData& data, bool if_flush)
     console_output += data.msg;
     console_output += '\n';
 
-    if (do_flush) std::cout << console_output;
-    file << file_output;
-    file.flush();
+    std::cout << console_output;
+
 }
+
+void Logger::flushMessage(const LogData& data, bool if_flush)
+{
+    if (blockLog(data.level))
+        return;
+
+    if (static_cast<int>(local_level) == 0) return;
+
+
+    if (do_flush)  write_log_to_console(data);
+    write_log_to_file(data);
+
+}
+
 
 void Logger::operator+=(const LogData& data) {
     log(data);
