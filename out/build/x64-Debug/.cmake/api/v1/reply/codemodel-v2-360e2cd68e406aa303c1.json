@@ -13,7 +13,8 @@
 						3,
 						4,
 						6,
-						7
+						7,
+						8
 					],
 					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
 					"minimumCMakeVersion" : 
@@ -107,6 +108,17 @@
 					"parentIndex" : 0,
 					"projectIndex" : 7,
 					"source" : "SMTP"
+				},
+				{
+					"build" : "Logger",
+					"jsonFile" : "directory-Logger-Debug-960a158749c1796fbe81.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.30"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "Logger"
 				}
 			],
 			"name" : "Debug",
@@ -124,7 +136,8 @@
 					],
 					"directoryIndexes" : 
 					[
-						0
+						0,
+						8
 					],
 					"name" : "softserve_smtp"
 				},

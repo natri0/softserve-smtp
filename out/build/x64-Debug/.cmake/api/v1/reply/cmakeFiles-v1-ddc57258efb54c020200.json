@@ -215,6 +215,9 @@
 		},
 		{
 			"path" : "SMTP/CMakeLists.txt"
+		},
+		{
+			"path" : "Logger/CMakeLists.txt"
 		}
 	],
 	"kind" : "cmakeFiles",
