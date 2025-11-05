@@ -19,7 +19,7 @@ static void BM_2Threads(benchmark::State& state) {
         for (int t = 0; t < num_threads; ++t) {
             threads.emplace_back([&logger, t, messages_per_thread]() {
                 for (int i = 0; i < messages_per_thread; ++i) {
-                    logger.logInfo("Thread " + std::to_string(t) + " message " + std::to_string(i));
+                    LOG_INFO(LogLevel::DEBUG)<<"Thread "<< std::to_string(t)<< " message " <<std::to_string(i));
                 }
                 });
         }
@@ -44,7 +44,8 @@ static void BM_4Threads(benchmark::State& state) {
         for (int t = 0; t < num_threads; ++t) {
             threads.emplace_back([&logger, t, messages_per_thread]() {
                 for (int i = 0; i < messages_per_thread; ++i) {
-                    logger.logInfo("Thread " + std::to_string(t) + " message " + std::to_string(i));
+                    LOG_INFO(LogLevel::DEBUG) << "Thread " << std::to_string(t) << " message " << std::to_string(i));
+                    //logger.logInfo("Thread " + std::to_string(t) + " message " + std::to_string(i));
                 }
                 });
         }
@@ -68,7 +69,8 @@ static void BM_6Threads(benchmark::State& state) {
         for (int t = 0; t < num_threads; ++t) {
             threads.emplace_back([&logger, t, messages_per_thread]() {
                 for (int i = 0; i < messages_per_thread; ++i) {
-                    logger.logInfo("Thread " + std::to_string(t) + " message " + std::to_string(i));
+                    LOG_INFO(LogLevel::DEBUG) << "Thread " << std::to_string(t) << " message " << std::to_string(i));
+                    //logger.logInfo("Thread " + std::to_string(t) + " message " + std::to_string(i));
                 }
                 });
         }
