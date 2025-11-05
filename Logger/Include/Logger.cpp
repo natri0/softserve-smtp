@@ -125,7 +125,7 @@ std::string Logger::toString(LogLevel level) {
     }
 }
 
-void  Logger::write_log_to_file(const LogData& data) {
+void Logger::write_log_to_file(const LogData& data){
     std::string file_output;
 
     file_output += std::format("{:%H:%M:%S-%d.%m.%y}", std::chrono::system_clock::now());
@@ -147,7 +147,7 @@ void  Logger::write_log_to_file(const LogData& data) {
     file.flush();
 }
 
-void write_log_to_console(const LogData& data) {
+void Logger::write_log_to_console(const LogData& data) {
     std::string console_output;
 
     console_output += std::format("{:%H:%M:%S-%d.%m.%y}", std::chrono::system_clock::now());

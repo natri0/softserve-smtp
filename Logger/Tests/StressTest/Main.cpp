@@ -25,6 +25,7 @@ int main(void) {
 
 
     Logger& log = Logger::getInstance(TRACE_LOG_LEVEL, "", DEFAULT_AMOUNT);
+    log.setFlush(true);
 
     std::vector<std::thread> threads(std::thread::hardware_concurrency());
     for (auto& t : threads) {
