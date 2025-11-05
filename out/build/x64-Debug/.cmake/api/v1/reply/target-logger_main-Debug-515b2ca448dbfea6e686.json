@@ -2,10 +2,10 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "logger/logger.exe"
+			"path" : "logger/logger_main.exe"
 		},
 		{
-			"path" : "logger/logger.pdb"
+			"path" : "logger/logger_main.pdb"
 		}
 	],
 	"backtrace" : 2,
@@ -15,7 +15,7 @@
 		[
 			"_add_executable",
 			"add_executable",
-			"target_include_directories"
+			"target_link_libraries"
 		],
 		"files" : 
 		[
@@ -30,7 +30,7 @@
 			{
 				"command" : 1,
 				"file" : 1,
-				"line" : 4,
+				"line" : 19,
 				"parent" : 0
 			},
 			{
@@ -42,7 +42,7 @@
 			{
 				"command" : 2,
 				"file" : 1,
-				"line" : 10,
+				"line" : 23,
 				"parent" : 0
 			}
 		]
@@ -82,7 +82,14 @@
 			]
 		}
 	],
-	"id" : "logger::@d605ba84040dd83ce0d4",
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 3,
+			"id" : "logger::@d605ba84040dd83ce0d4"
+		}
+	],
+	"id" : "logger_main::@d605ba84040dd83ce0d4",
 	"link" : 
 	{
 		"commandFragments" : 
@@ -96,14 +103,19 @@
 				"role" : "flags"
 			},
 			{
+				"backtrace" : 3,
+				"fragment" : "logger\\logger.lib",
+				"role" : "libraries"
+			},
+			{
 				"fragment" : "kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib",
 				"role" : "libraries"
 			}
 		],
 		"language" : "CXX"
 	},
-	"name" : "logger",
-	"nameOnDisk" : "logger.exe",
+	"name" : "logger_main",
+	"nameOnDisk" : "logger_main.exe",
 	"paths" : 
 	{
 		"build" : "logger",

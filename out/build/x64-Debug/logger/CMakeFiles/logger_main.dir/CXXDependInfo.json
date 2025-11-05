@@ -19,18 +19,13 @@
 	],
 	"language" : "CXX",
 	"linked-target-dirs" : [],
-	"module-dir" : "C:/Users/user/source/repos/softserve-smtp/out/build/x64-Debug/logger/CMakeFiles/logger.dir",
+	"module-dir" : "C:/Users/user/source/repos/softserve-smtp/out/build/x64-Debug/logger/CMakeFiles/logger_main.dir",
 	"sources" : 
 	{
-		"logger/CMakeFiles/logger.dir/Include/LogReader.cpp.obj" : 
+		"logger/CMakeFiles/logger_main.dir/Tests/StressTest/Main.cpp.obj" : 
 		{
 			"language" : "CXX",
-			"source" : "C:/Users/user/source/repos/softserve-smtp/logger/Include/LogReader.cpp"
-		},
-		"logger/CMakeFiles/logger.dir/Include/Logger.cpp.obj" : 
-		{
-			"language" : "CXX",
-			"source" : "C:/Users/user/source/repos/softserve-smtp/logger/Include/Logger.cpp"
+			"source" : "C:/Users/user/source/repos/softserve-smtp/logger/Tests/StressTest/Main.cpp"
 		}
 	}
 }

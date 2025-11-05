@@ -1,7 +1,6 @@
 #include <benchmark/benchmark.h>
-#include "../Logger/Logger.h"
-#include "../Logger/LogQueue.h"
-#include "../Logger/LogLevel.h"
+#include "../../Include/Logger.h"
+#include "../../Include/LogQueue.h"
 
 constexpr int NUM_THREADS = 6;
 constexpr int NUM_MESSAGES = 1000;

@@ -16,6 +16,7 @@
 						7,
 						8
 					],
+					"hasInstallRule" : true,
 					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
 					"minimumCMakeVersion" : 
 					{
@@ -36,7 +37,7 @@
 					"source" : "server",
 					"targetIndexes" : 
 					[
-						1
+						5
 					]
 				},
 				{
@@ -111,6 +112,11 @@
 				},
 				{
 					"build" : "logger",
+					"childIndexes" : 
+					[
+						9
+					],
+					"hasInstallRule" : true,
 					"jsonFile" : "directory-logger-Debug-540440305f9964810dc4.json",
 					"minimumCMakeVersion" : 
 					{
@@ -121,7 +127,42 @@
 					"source" : "logger",
 					"targetIndexes" : 
 					[
-						0
+						2,
+						3,
+						4
+					]
+				},
+				{
+					"build" : "_deps/benchmark-build",
+					"childIndexes" : 
+					[
+						10
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-_deps.benchmark-build-Debug-af096f0ee5e2260f76e7.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 8,
+					"projectIndex" : 8,
+					"source" : "out/build/x64-Debug/_deps/benchmark-src"
+				},
+				{
+					"build" : "_deps/benchmark-build/src",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-_deps.benchmark-build.src-Debug-bf76261772ba078977cf.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 9,
+					"projectIndex" : 8,
+					"source" : "out/build/x64-Debug/_deps/benchmark-src/src",
+					"targetIndexes" : 
+					[
+						0,
+						1
 					]
 				}
 			],
@@ -136,7 +177,8 @@
 						3,
 						4,
 						6,
-						7
+						7,
+						8
 					],
 					"directoryIndexes" : 
 					[
@@ -146,7 +188,9 @@
 					"name" : "softserve_smtp",
 					"targetIndexes" : 
 					[
-						0
+						2,
+						3,
+						4
 					]
 				},
 				{
@@ -158,7 +202,7 @@
 					"parentIndex" : 0,
 					"targetIndexes" : 
 					[
-						1
+						5
 					]
 				},
 				{
@@ -212,15 +256,57 @@
 					],
 					"name" : "SMTP",
 					"parentIndex" : 0
+				},
+				{
+					"directoryIndexes" : 
+					[
+						9,
+						10
+					],
+					"name" : "benchmark",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
 				}
 			],
 			"targets" : 
 			[
 				{
+					"directoryIndex" : 10,
+					"id" : "benchmark::@2fa91c1ea4e05cbc4511",
+					"jsonFile" : "target-benchmark-Debug-4ead6bafd6318a6ac2f4.json",
+					"name" : "benchmark",
+					"projectIndex" : 8
+				},
+				{
+					"directoryIndex" : 10,
+					"id" : "benchmark_main::@2fa91c1ea4e05cbc4511",
+					"jsonFile" : "target-benchmark_main-Debug-6abb28480d4edfebb07f.json",
+					"name" : "benchmark_main",
+					"projectIndex" : 8
+				},
+				{
 					"directoryIndex" : 8,
 					"id" : "logger::@d605ba84040dd83ce0d4",
-					"jsonFile" : "target-logger-Debug-836ffb74b0fd61de9499.json",
+					"jsonFile" : "target-logger-Debug-d2001970b74c2350852b.json",
 					"name" : "logger",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "logger_benchmark::@d605ba84040dd83ce0d4",
+					"jsonFile" : "target-logger_benchmark-Debug-2f861aa9b5bcd0ea1e04.json",
+					"name" : "logger_benchmark",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "logger_main::@d605ba84040dd83ce0d4",
+					"jsonFile" : "target-logger_main-Debug-515b2ca448dbfea6e686.json",
+					"name" : "logger_main",
 					"projectIndex" : 0
 				},
 				{
