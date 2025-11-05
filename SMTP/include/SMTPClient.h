@@ -11,55 +11,52 @@
 namespace ISXSMTP
 {
 
-enum struct SMTPReplyResult // naming is hard
+enum struct SMTPTransactionStatus 
 {
-	ABORT, // SMTPClient::Abort() should be called to get next command for the server 
-	RETRY_LATER, 
-	OK // call SMTPClient::GetNextCommand()
+	SEND_NEXT_COMMAND,
+	ABORTED,
+	RETRY_LATER,
+	REPLY_PARSE_ERROR,
+	WAIT_FOR_REPLY,
+	SEND_DATA
 };
 
 class SMTPClient
 {
 private:
 	std::string m_from; 
-	// TODO: add support for multiple rcpt
-	std::string m_to;
-	std::shared_ptr<std::string> m_data;
-	SMTPState m_state;
-	bool m_quitAfterData;
+	std::vector<std::string> m_to;
+	std::string m_domain;
+	bool m_quitOnFinish;
 
 public:
 	SMTPClient();
 
 	SMTPClient(
+		const std::string& domain,
 		const std::string& from, 
-		const std::string& to,
-		std::shared_ptr<std::string> data,
-		bool quit_after_data); 
+		const std::vector<std::string>& to,
+		bool quit_on_finish = true);
 
-	void SetTo(const std::string& to);
+	void SetTo(const std::vector<std::string>& to);
 	void SetFrom(const std::string& from);
-	void SetData(std::shared_ptr<std::string> data);
-	void SetQuitAfterData(bool val);
+	void SetDomain(const std::string& domain);
+	void SetQuitOnFinish(bool val);
 
-	std::string GetNextCommand();
-	std::string Abort();
-
-	SMTPReplyResult OnReply(const std::string& reply);
+	std::vector<std::string> GenCommands();
+	SMTPTransactionStatus OnReply(const std::string& reply);
+	std::string OnAbort();
 
 	std::optional<SMTPReply> ParseReply(const std::string& reply);
 
-	// returns true if client should close connection
-	bool IsFinished();
-
 private:
 	inline std::string GenMAILCommand();
-	inline std::string GenRCPTCommand();
+	inline std::string GenRCPTCommand(const std::string& to);
 	inline std::string GenDATACommand();
 	inline std::string GenEHLOCommand();
 	inline std::string GenQUITCommand();
 	inline std::string GenRSETCommand();
+	
 };
-
 
 }

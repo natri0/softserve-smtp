@@ -1,27 +1,28 @@
 #include "SMTPClient.h"
 
+#include <format>
+
 ISXSMTP::SMTPClient::SMTPClient(
+		const std::string& domain,
 		const std::string& from,
-		const std::string& to,
-		std::shared_ptr<std::string> data,
+		const std::vector<std::string>& to,
 		bool quit_after_data)
 	: m_from(from)
 	, m_to(to)
-	, m_data(data)
-	, m_quitAfterData(quit_after_data)
+	, m_quitOnFinish(quit_after_data)
+	, m_domain(domain)
 {
 }
 
 ISXSMTP::SMTPClient::SMTPClient()
 	: m_from("")
-	, m_to("")
-	, m_data(nullptr)
-	, m_quitAfterData(true)
+	, m_to({})
+	, m_domain("smtp.test")
+	, m_quitOnFinish(true)
 {
-
 }
 
-void ISXSMTP::SMTPClient::SetTo(const std::string& to)
+void ISXSMTP::SMTPClient::SetTo(const std::vector<std::string>& to)
 {
 	m_to = to;
 }
@@ -31,34 +32,55 @@ void ISXSMTP::SMTPClient::SetFrom(const std::string& from)
 	m_from = from;
 }
 
-void ISXSMTP::SMTPClient::SetData(std::shared_ptr<std::string> data)
+void ISXSMTP::SMTPClient::SetDomain(const std::string& domain)
 {
-	m_data = data;
+	m_domain = domain;
 }
 
-void ISXSMTP::SMTPClient::SetQuitAfterData(bool val)
+void ISXSMTP::SMTPClient::SetQuitOnFinish(bool val)
 {
-	m_quitAfterData = val;
+	m_quitOnFinish = val;
 }
 
-std::string ISXSMTP::SMTPClient::GetNextCommand()
+std::vector<std::string> ISXSMTP::SMTPClient::GenCommands()
 {
-	return "";	
+	std::vector<std::string> commands;
+	commands.push_back(GenEHLOCommand());
+	commands.push_back(GenMAILCommand());
+	for (const auto& i : m_to)
+		commands.push_back(GenRCPTCommand(i));
+	commands.push_back(GenDATACommand());
+	
+	if (m_quitOnFinish)
+		commands.push_back(GenQUITCommand());
+	else
+		commands.push_back(GenRSETCommand());
+	
+	return commands;
 }
 
-std::string ISXSMTP::SMTPClient::Abort()
+ISXSMTP::SMTPTransactionStatus ISXSMTP::SMTPClient::OnReply(const std::string& reply)
 {
-//	if (m_quitAfterData)
-//		return GenQUITCommand();
-
-//	return GenRSETCommand();
-
-	return  "";
+	auto parsed_reply = ParseReply(reply);
+	if (!parsed_reply.has_value())
+		return SMTPTransactionStatus::REPLY_PARSE_ERROR;
+	if (parsed_reply->IsMultiLine())
+		return SMTPTransactionStatus::WAIT_FOR_REPLY;
+	if (parsed_reply->GetCode() >= 500)
+		return SMTPTransactionStatus::ABORTED;
+	if (parsed_reply->GetCode() >= 400)
+		return SMTPTransactionStatus::RETRY_LATER;
+	if (parsed_reply->GetCode() >= 300)
+		return SMTPTransactionStatus::SEND_DATA;
+	
+	return SMTPTransactionStatus::SEND_NEXT_COMMAND;
 }
 
-ISXSMTP::SMTPReplyResult OnReply(const std::string& reply)
+std::string ISXSMTP::SMTPClient::OnAbort()
 {
-	return ISXSMTP::SMTPReplyResult::OK;
+	if (m_quitOnFinish)
+		return GenQUITCommand();
+	return GenRSETCommand();
 }
 
 std::optional<ISXSMTP::SMTPReply> ISXSMTP::SMTPClient::ParseReply(const std::string& reply)
@@ -94,38 +116,33 @@ std::optional<ISXSMTP::SMTPReply> ISXSMTP::SMTPClient::ParseReply(const std::str
 	return SMTPReply(code, comment, multi_line);
 }
 
-bool ISXSMTP::SMTPClient::IsFinished()
-{
-	return m_state == ISXSMTP::SMTPStates::FINISH;
-}
-
 std::string ISXSMTP::SMTPClient::GenMAILCommand()
 {
-	return "";
+	return std::format("MAIL FROM:<{}>\r\n", m_from);
 }
 
-std::string ISXSMTP::SMTPClient::GenRCPTCommand()
+std::string ISXSMTP::SMTPClient::GenRCPTCommand(const std::string& to)
 {
-	return "";
+	return std::format("RCPT TO:<{}>\r\n", to);
 }
 
 std::string ISXSMTP::SMTPClient::GenDATACommand()
 {
-	return "";
+	return "DATA\r\n";
 }
 
 std::string ISXSMTP::SMTPClient::GenEHLOCommand()
 {
-	return "";
+	return "EHLO " + m_domain + "\r\n";
 }
 
 std::string ISXSMTP::SMTPClient::GenQUITCommand()
 {
-	return "";
+	return "QUIT\r\n";
 }
 
 std::string ISXSMTP::SMTPClient::GenRSETCommand()
 {
-	return "";
+	return "RSET\r\n";
 }
 
