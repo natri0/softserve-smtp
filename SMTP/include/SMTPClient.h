@@ -1,10 +1,12 @@
 #pragma once
 
 #include "SMTPState.h"
+#include "SMTPReply.h"
 
 #include <vector>
 #include <string>
 #include <memory>
+#include <optional>
 
 namespace ISXSMTP
 {
@@ -27,27 +29,36 @@ private:
 	bool m_quitAfterData;
 
 public:
+	SMTPClient();
+
 	SMTPClient(
 		const std::string& from, 
 		const std::string& to,
 		std::shared_ptr<std::string> data,
 		bool quit_after_data); 
 
+	void SetTo(const std::string& to);
+	void SetFrom(const std::string& from);
+	void SetData(std::shared_ptr<std::string> data);
+	void SetQuitAfterData(bool val);
+
 	std::string GetNextCommand();
 	std::string Abort();
 
 	SMTPReplyResult OnReply(const std::string& reply);
 
-	// retuns true if client should close connection
+	std::optional<SMTPReply> ParseReply(const std::string& reply);
+
+	// returns true if client should close connection
 	bool IsFinished();
 
 private:
-	std::string GenMAILCommand();
-	std::string GenRCPTCommand();
-	std::string GenDATACommand();
-	std::string GenEHLOCommand();
-	std::string GenQUITCommand();
-	std::string GenRSETCommand();
+	inline std::string GenMAILCommand();
+	inline std::string GenRCPTCommand();
+	inline std::string GenDATACommand();
+	inline std::string GenEHLOCommand();
+	inline std::string GenQUITCommand();
+	inline std::string GenRSETCommand();
 };
 
 
