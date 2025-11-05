@@ -173,7 +173,7 @@ void Logger::write_log_to_console(const LogData& data) {
 
 }
 
-void Logger::flushMessage(const LogData& data, bool if_flush)
+void Logger::flushMessage(const LogData& data)
 {
     if (blockLog(data.level))
         return;
