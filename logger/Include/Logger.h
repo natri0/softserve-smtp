@@ -137,47 +137,9 @@ public:
 
     // Common message shortcuts
 
-    void logError(const std::string&);
-
-    void logWarning(const std::string&);
-
-    void logInfo(const std::string&);
-
     void logFuncStart();
 
     void logFuncEnd();
 
-
-    /*void logArguments()
-    {
-        m_real->save_to_queue({ "arguments: " + m_buff.get() }, "[INFO]", location, local_level);
-        m_buff.clear();
-    }
-
-    template<typename T, typename... Args>
-    void logArguments(const T& first, Args&... args)
-    {
-        if (static_cast<int>(local_level) == 3)
-        {
-            logArgument(first);
-            logArguments(std::forward<Args>(args)...);
-        }
-        else
-            this->logFuncStart();
-    }
-
-    template<typename T>
-    void logReturn(const T& value)
-    {
-        if (static_cast<int>(local_level) == 3)
-        {
-            m_buff << value;
-            temp_wrap::wrap_return(m_buff.get(), m_location, m_local_level, m_local_format);
-            m_buff.clear();
-        }
-        else
-            this->log_return_nothing();
-    }*/
-
-
+  
 };

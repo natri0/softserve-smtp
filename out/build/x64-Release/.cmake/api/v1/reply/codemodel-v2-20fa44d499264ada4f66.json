@@ -291,21 +291,21 @@
 				{
 					"directoryIndex" : 8,
 					"id" : "logger::@d605ba84040dd83ce0d4",
-					"jsonFile" : "target-logger-Release-b114fe696708561d70cf.json",
+					"jsonFile" : "target-logger-Release-fd7695e6053218217129.json",
 					"name" : "logger",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 8,
 					"id" : "logger_benchmark::@d605ba84040dd83ce0d4",
-					"jsonFile" : "target-logger_benchmark-Release-6ecec4cd4c2b9478262e.json",
+					"jsonFile" : "target-logger_benchmark-Release-4257777921359ef28fdc.json",
 					"name" : "logger_benchmark",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 8,
 					"id" : "logger_main::@d605ba84040dd83ce0d4",
-					"jsonFile" : "target-logger_main-Release-9a05eb3e12413df417af.json",
+					"jsonFile" : "target-logger_main-Release-6fba49f6903382863f64.json",
 					"name" : "logger_main",
 					"projectIndex" : 0
 				},

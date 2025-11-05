@@ -209,21 +209,6 @@ void Logger::log(const std::string& str, const std::string& type, const std::str
 }
 
 
-void Logger::logError(const std::string& msg)
-{
-    log(msg, "[ERROR]", LOG_GET_FUNC(), local_level);
-}
-
-void Logger::logWarning(const std::string& msg)
-{
-    log(msg, "[WARNING]", LOG_GET_FUNC(), local_level);
-}
-
-void Logger::logInfo(const std::string& msg)
-{
-    log(msg, "[INFO]", LOG_GET_FUNC(), local_level);
-}
-
 void Logger::logFuncStart() {
 
     if (static_cast<int>(local_level) >= 2)

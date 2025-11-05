@@ -2,10 +2,10 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "logger/logger_main.exe"
+			"path" : "logger/logger_benchmark.exe"
 		},
 		{
-			"path" : "logger/logger_main.pdb"
+			"path" : "logger/logger_benchmark.pdb"
 		}
 	],
 	"backtrace" : 2,
@@ -15,12 +15,14 @@
 		[
 			"_add_executable",
 			"add_executable",
-			"target_link_libraries"
+			"target_link_libraries",
+			"target_include_directories"
 		],
 		"files" : 
 		[
 			"C:/vcpkg/scripts/buildsystems/vcpkg.cmake",
-			"logger/CMakeLists.txt"
+			"logger/CMakeLists.txt",
+			"out/build/x64-Release/_deps/benchmark-src/src/CMakeLists.txt"
 		],
 		"nodes" : 
 		[
@@ -30,7 +32,7 @@
 			{
 				"command" : 1,
 				"file" : 1,
-				"line" : 19,
+				"line" : 46,
 				"parent" : 0
 			},
 			{
@@ -42,7 +44,22 @@
 			{
 				"command" : 2,
 				"file" : 1,
-				"line" : 23,
+				"line" : 55,
+				"parent" : 0
+			},
+			{
+				"file" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 54,
+				"parent" : 4
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 50,
 				"parent" : 0
 			}
 		]
@@ -56,14 +73,26 @@
 					"fragment" : "/DWIN32 /D_WINDOWS /EHsc /O2 /Ob2 /DNDEBUG -std:c++latest -MD"
 				}
 			],
-			"includes" : 
+			"defines" : 
 			[
 				{
 					"backtrace" : 3,
+					"define" : "BENCHMARK_STATIC_DEFINE"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 6,
 					"path" : "C:/Users/user/source/repos/softserve-smtp/logger/Include"
 				},
 				{
 					"backtrace" : 3,
+					"path" : "C:/Users/user/source/repos/softserve-smtp/out/build/x64-Release/_deps/benchmark-src/include"
+				},
+				{
+					"backtrace" : 3,
+					"isSystem" : true,
 					"path" : "C:/vcpkg/installed/x64-windows/include"
 				}
 			],
@@ -87,9 +116,13 @@
 		{
 			"backtrace" : 3,
 			"id" : "logger::@d605ba84040dd83ce0d4"
+		},
+		{
+			"backtrace" : 3,
+			"id" : "benchmark::@2fa91c1ea4e05cbc4511"
 		}
 	],
-	"id" : "logger_main::@d605ba84040dd83ce0d4",
+	"id" : "logger_benchmark::@d605ba84040dd83ce0d4",
 	"link" : 
 	{
 		"commandFragments" : 
@@ -108,14 +141,24 @@
 				"role" : "libraries"
 			},
 			{
+				"backtrace" : 3,
+				"fragment" : "_deps\\benchmark-build\\src\\benchmark.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "shlwapi.lib",
+				"role" : "libraries"
+			},
+			{
 				"fragment" : "kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib",
 				"role" : "libraries"
 			}
 		],
 		"language" : "CXX"
 	},
-	"name" : "logger_main",
-	"nameOnDisk" : "logger_main.exe",
+	"name" : "logger_benchmark",
+	"nameOnDisk" : "logger_benchmark.exe",
 	"paths" : 
 	{
 		"build" : "logger",
@@ -136,7 +179,7 @@
 		{
 			"backtrace" : 2,
 			"compileGroupIndex" : 0,
-			"path" : "logger/Tests/StressTest/Main.cpp",
+			"path" : "logger/Tests/Benchmarks/Benchmarks.cpp",
 			"sourceGroupIndex" : 0
 		}
 	],

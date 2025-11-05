@@ -5,7 +5,7 @@ find_package(Threads REQUIRED)
 add_library(logger
     Include/Logger.cpp
     Include/LogReader.cpp
-)
+ "Example/Example.cpp")
 
 target_include_directories(logger
     PUBLIC
@@ -18,7 +18,7 @@ target_link_libraries(logger PUBLIC Threads::Threads)
 
 add_executable(logger_main
     Tests/StressTest/Main.cpp
-)
+    Example/Example.cpp)
 
 target_link_libraries(logger_main PRIVATE logger)
 
@@ -44,8 +44,7 @@ endif()
 
 # ---- Benchmark executable ----
 add_executable(logger_benchmark
-    Tests/Benchmarks/Benchmarks.cpp
-)
+    Tests/Benchmarks/Benchmarks.cpp)
 
 
 target_include_directories(logger_benchmark

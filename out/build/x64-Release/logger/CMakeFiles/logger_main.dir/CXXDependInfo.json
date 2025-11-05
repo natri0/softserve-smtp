@@ -22,6 +22,11 @@
 	"module-dir" : "C:/Users/user/source/repos/softserve-smtp/out/build/x64-Release/logger/CMakeFiles/logger_main.dir",
 	"sources" : 
 	{
+		"logger/CMakeFiles/logger_main.dir/Example/Example.cpp.obj" : 
+		{
+			"language" : "CXX",
+			"source" : "C:/Users/user/source/repos/softserve-smtp/logger/Example/Example.cpp"
+		},
 		"logger/CMakeFiles/logger_main.dir/Tests/StressTest/Main.cpp.obj" : 
 		{
 			"language" : "CXX",
