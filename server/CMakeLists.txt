@@ -36,7 +36,5 @@ target_link_libraries(smtp_server PRIVATE
         OpenSSL::Crypto
         config_parser
         SMTP
+        db
 )
-file(GLOB_RECURSE SERVER_SOURCES CONFIGURE_DEPENDS *.cpp)
-add_executable(smtp_server ${SERVER_SOURCES})
-target_link_libraries(smtp_server SMTP db)

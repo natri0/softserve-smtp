@@ -12,8 +12,6 @@
 
 #include "ServerConsoleUI.h"
 #include "../networking/SSL/SSLContextFactory.h"
-#include "config/config.h"
-
 #include "../networking/SmartSession.h"
 
 class ThreadPool;
@@ -30,9 +28,6 @@ public:
     void run();
 
 private:
-    // SMTP
-    // Logger
-
     // networking
     std::shared_ptr<boost::asio::io_context> io;
     net::executor_work_guard<boost::asio::io_context::executor_type> work;
@@ -57,7 +52,6 @@ private:
     std::shared_ptr<smtp::ssl::SSLContextFactory::SSLContext> sslContext;
 
     // networking callbacks
-    void SSLHandling(boost::asio::const_buffer msg, std::shared_ptr<SmartSession> session, std::shared_ptr<std::pair<std::vector<unsigned char>, std::vector<unsigned char>>> keys);
     void SMTPHandling(boost::asio::const_buffer msg, std::shared_ptr<SmartSession> session);
 };
 

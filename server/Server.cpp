@@ -9,6 +9,7 @@
 #include "ThreadPool/include/ThreadPool.hpp"
 #include "../networking/SSL/KeyExchanger.h"
 #include "SMTPSession.h"
+#include "config/config.h"
 
 // temp till we don't have parser
 

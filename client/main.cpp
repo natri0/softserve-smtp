@@ -21,7 +21,6 @@ int main()
         std::cout << "\nContent: ";
         std::cin >> e_msg.body;
         client.sendMail(e_msg);
-        std::cin >> escape;
     }
     while (escape == 1);
 }
