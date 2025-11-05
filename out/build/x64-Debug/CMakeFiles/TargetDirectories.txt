@@ -15,5 +15,6 @@ C:/Users/user/source/repos/softserve-smtp/out/build/x64-Debug/db/CMakeFiles/edit
 C:/Users/user/source/repos/softserve-smtp/out/build/x64-Debug/db/CMakeFiles/rebuild_cache.dir
 C:/Users/user/source/repos/softserve-smtp/out/build/x64-Debug/SMTP/CMakeFiles/edit_cache.dir
 C:/Users/user/source/repos/softserve-smtp/out/build/x64-Debug/SMTP/CMakeFiles/rebuild_cache.dir
-C:/Users/user/source/repos/softserve-smtp/out/build/x64-Debug/Logger/CMakeFiles/edit_cache.dir
-C:/Users/user/source/repos/softserve-smtp/out/build/x64-Debug/Logger/CMakeFiles/rebuild_cache.dir
+C:/Users/user/source/repos/softserve-smtp/out/build/x64-Debug/logger/CMakeFiles/logger.dir
+C:/Users/user/source/repos/softserve-smtp/out/build/x64-Debug/logger/CMakeFiles/edit_cache.dir
+C:/Users/user/source/repos/softserve-smtp/out/build/x64-Debug/logger/CMakeFiles/rebuild_cache.dir

@@ -1,5 +1,6 @@
 #pragma once
 #include "LogLevel.h"
+#include "LogData.h"
 
 #define ERROR_COLOR "\033[41m"
 #define WARNING_COLOR "\033[43m"
@@ -9,8 +10,11 @@
 #define DEFAULT_AMOUNT 30
 #define DEFAULT_PATH ""
 //#define DEFAULT_CONFIG false
-//#define DEFAULT_FLUSH true
-#define DEFAULT_LOG_LEVEL NO_LOG_LEVEL
+#define DEFAULT_FLUSH true
+#define DEFAULT_SIZE 8192
+#define DEFAULT_END 8192
+#define DEFAULT_LOG_LEVEL TRACE_LOG_LEVEL
+
 
 #define NO_LOG_LEVEL LogLevel::NONE
 #define PROD_LOG_LEVEL LogLevel::PROD
@@ -37,9 +41,11 @@
 
 #define IF_LOG_(level)   if (Logger::getInstance().blockLog(level)) { ; } else
 
-#define LOG(level,type) IF_LOG_(level) (Logger::getInstance()) += \
+//IF_LOG_(level)
+
+#define LOG(level,type)  (Logger::getInstance()) += \
     LogData("", type, LOG_GET_FUNC(), level, std::this_thread::get_id()).ref()
 
-#define LOG_INFO(level)           LOG(level, INFO_TYPE)
-#define LOG_WARNING(level)        LOG(level, WARNING_TYPE)
-#define LOG_ERROR(level)          LOG(level, ERROR_TYPE)
+#define LOG_INFO(level)           LOG(level, INFO_TYPE )
+#define LOG_WARNING(level)        LOG(level, WARNING_TYPE )
+#define LOG_ERROR(level)          LOG(level, ERROR_TYPE )

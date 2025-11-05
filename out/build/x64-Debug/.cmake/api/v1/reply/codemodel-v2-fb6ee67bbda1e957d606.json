@@ -36,7 +36,7 @@
 					"source" : "server",
 					"targetIndexes" : 
 					[
-						0
+						1
 					]
 				},
 				{
@@ -110,15 +110,19 @@
 					"source" : "SMTP"
 				},
 				{
-					"build" : "Logger",
-					"jsonFile" : "directory-Logger-Debug-960a158749c1796fbe81.json",
+					"build" : "logger",
+					"jsonFile" : "directory-logger-Debug-540440305f9964810dc4.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.30"
 					},
 					"parentIndex" : 0,
 					"projectIndex" : 0,
-					"source" : "Logger"
+					"source" : "logger",
+					"targetIndexes" : 
+					[
+						0
+					]
 				}
 			],
 			"name" : "Debug",
@@ -139,7 +143,11 @@
 						0,
 						8
 					],
-					"name" : "softserve_smtp"
+					"name" : "softserve_smtp",
+					"targetIndexes" : 
+					[
+						0
+					]
 				},
 				{
 					"directoryIndexes" : 
@@ -150,7 +158,7 @@
 					"parentIndex" : 0,
 					"targetIndexes" : 
 					[
-						0
+						1
 					]
 				},
 				{
@@ -209,9 +217,16 @@
 			"targets" : 
 			[
 				{
+					"directoryIndex" : 8,
+					"id" : "logger::@d605ba84040dd83ce0d4",
+					"jsonFile" : "target-logger-Debug-424eaec9664a747217c9.json",
+					"name" : "logger",
+					"projectIndex" : 0
+				},
+				{
 					"directoryIndex" : 1,
 					"id" : "smtp_server::@d19778d2e34a1e3ddfc0",
-					"jsonFile" : "target-smtp_server-Debug-c8822dae04552949bd2b.json",
+					"jsonFile" : "target-smtp_server-Debug-7192e821d3fdf2a24886.json",
 					"name" : "smtp_server",
 					"projectIndex" : 1
 				}

@@ -5,8 +5,8 @@
 
 //std::unique_ptr<Logger> Logger::instance = nullptr;
 
-Logger::Logger(const LogLevel& level, const std::string& path, const unsigned int amount)
-    : queue(8192), location{ FUNCTION_NAME }, local_level{ level }, output_path{ path }, amount{ amount }, end(false), do_flush(true) {
+Logger::Logger(const LogLevel& level, const std::string& path, const unsigned int amount, const bool do_flush)
+    : queue(DEFAULT_SIZE), local_level{ level }, output_path{ path }, amount{ amount }, end(DEFAULT_END), do_flush(do_flush) {
     fileInit(this->amount);
 
     thrd = std::thread([this]() {
@@ -24,9 +24,9 @@ Logger::Logger(const LogLevel& level, const std::string& path, const unsigned in
 
 }
 
-Logger& Logger::getInstance(const LogLevel& level, const std::string& path, const unsigned int amount) {
+Logger& Logger::getInstance(const LogLevel& level, const std::string& path, const unsigned int amount, const bool do_flush) {
 
-    static Logger instance(level, path, amount);
+    static Logger instance(level, path, amount, do_flush);
     return instance;
 }
 
