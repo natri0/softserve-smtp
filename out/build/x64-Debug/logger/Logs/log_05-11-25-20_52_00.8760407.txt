@@ -1,0 +1,7 @@
+20:52:00.8807921-05.11.25	[INFO]	DEBUG	exampleFunction	(thread 15767351512368200797)	Function is started
+20:52:00.8815684-05.11.25	[INFO]	TRACE	exampleFunction	(thread 15767351512368200797)	Example function started
+20:52:00.9478098-05.11.25	[WARNING]	DEBUG	exampleFunction	(thread 15767351512368200797)	This is a warning from exampleFunction
+20:52:00.9483122-05.11.25	[ERROR]	PROD	exampleFunction	(thread 15767351512368200797)	Error occurred in exampleFunction
+20:52:00.9485563-05.11.25	[INFO]	DEBUG	exampleFunction	(thread 15767351512368200797)	Function is started
+20:52:00.9487502-05.11.25	[ERROR]	PROD	main::<lambda_2>::operator ()	(thread 11972002499991345046)	Thread 2 error
+20:52:00.9491451-05.11.25	[INFO]	DEBUG	main::<lambda_1>::operator ()	(thread 4579134707759526771)	Thread 1 running

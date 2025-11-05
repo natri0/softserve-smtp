@@ -20,8 +20,8 @@ TEST(TestLogger, SetLevel) {
 TEST(TestLogger, BlockLog) {
 	Logger& logger = Logger::getInstance();
 	logger.setLevel(DEBUG_LOG_LEVEL);
-	ASSERT_EQ(logger.blockLog(PROD_LOG_LEVEL), true);
-	ASSERT_EQ(logger.blockLog(TRACE_LOG_LEVEL), false);
+	ASSERT_EQ(logger.blockLog(PROD_LOG_LEVEL), false);
+	ASSERT_EQ(logger.blockLog(TRACE_LOG_LEVEL), true);
 }
 
 TEST(TestLogger, ToString) {
