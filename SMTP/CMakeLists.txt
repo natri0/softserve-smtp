@@ -19,10 +19,10 @@ add_library(SMTP
 	 "source/SMTPState.cpp" 
 	 "source/SMTPReply.cpp" 
 	 "source/SMTPCommandParser.cpp" 
-	 
-	 "source/SMTPConfig.cpp"
-	 "source/SMTPConfigBuilder.cpp" "include/SMTPIMailbox.h")
+	 "source/SMTPClient.cpp"
 
+	 "source/SMTPConfig.cpp"
+	 "source/SMTPConfigBuilder.cpp")
 target_include_directories(SMTP PUBLIC "include")
 
 add_subdirectory(gtests)

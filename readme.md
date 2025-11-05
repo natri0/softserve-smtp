@@ -5,6 +5,7 @@ TODO: fill in readme once we start actually writing the project
 ## Technologies used
 
 - C++23
+- Boost libraries
 - (we'll probably use more stuff as time goes on)
 
 ## Project structure
