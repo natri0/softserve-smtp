@@ -12,7 +12,7 @@
 //#define DEFAULT_CONFIG false
 #define DEFAULT_FLUSH true
 #define DEFAULT_SIZE 8192
-#define DEFAULT_END 8192
+#define DEFAULT_END false
 #define DEFAULT_LOG_LEVEL TRACE_LOG_LEVEL
 
 
