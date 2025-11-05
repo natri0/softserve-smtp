@@ -14,9 +14,9 @@ void work(Logger& log) {
     s << "hi my name is: " << std::this_thread::get_id();
     std::string id = s.str();
     for (size_t i = 0; i < 10; ++i) {
-        log.logError(id);
-        log.logInfo(id);
-        log.logWarning(id);
+        LOG_ERROR(LogLevel::PROD)<<id;
+        LOG_INFO(LogLevel::PROD) << id;
+        LOG_WARNING(LogLevel::PROD) << id;
     }
 }
 
