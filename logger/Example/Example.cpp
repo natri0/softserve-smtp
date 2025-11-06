@@ -31,15 +31,15 @@ void readingLogs() {
     Logger& logger = Logger::getInstance();
     logger.setFlush(false);
 
-    LogReader reader("C:/Users/user/source/repos/softserve-smtp/out/build/x64-Release/logger/Logs/log_06-11-25-08_14_58.5619886.txt");
+    //LogReader reader("C:/Users/user/source/repos/softserve-smtp/out/build/x64-Release/logger/Logs/log_06-11-25-08_14_58.5619886.txt");
 
-    auto all = reader.readAll();
-    auto errors = reader.readByParameter("[ERROR]");
+    auto all = logger.readAllLogs();
+    auto errors = logger.readLogsByKeyword("[INFO]");
 
     std::cout << "--- All logs ---\n";
     for (auto& l : all) std::cout << l << '\n';
 
-    std::cout << "--- Only [ERROR] ---\n";
+    std::cout << "--- Only [INFO] ---\n";
     for (auto& e : errors) std::cout << e << '\n';
 }
 

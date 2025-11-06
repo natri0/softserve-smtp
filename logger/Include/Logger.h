@@ -14,6 +14,7 @@
 #include <filesystem>
 #include <boost/lockfree/queue.hpp>
 #include <shared_mutex>
+#include <fstream>
 #include "Macros.h"
 
 /**
@@ -61,10 +62,24 @@ private:
 
     void log(const LogData&);
 
+    /**
+     * @brief Determines if a message should be blocked based on its log level.
+     * @param level Log level of the message
+     * @return true if log should be blocked, false otherwise
+     */
+
+    bool blockLog(LogLevel level);
+
     void write_log_to_file(const LogData& data);
 
     void write_log_to_console(const LogData& data);
 
+    /**
+     * @brief Flushes a message to output (file and/or console).
+     * @param data Log record
+     */
+
+    void flushMessage(const LogData& data);
 
 public:
 
@@ -95,15 +110,11 @@ public:
 
     ~Logger();
 
+    std::vector<std::string> readAllLogs() const;
+
+    std::vector<std::string> readLogsByKeyword(const std::string& keyword) const;
+
     void operator+=(const LogData& data);
-
-    /**
-     * @brief Determines if a message should be blocked based on its log level.
-     * @param level Log level of the message
-     * @return true if log should be blocked, false otherwise
-     */
-
-    bool blockLog(LogLevel level);
 
     void setOutputPath(const std::string& path);
 
@@ -121,13 +132,7 @@ public:
 
     std::string toString(LogLevel level);
 
-    /**
-     * @brief Flushes a message to output (file and/or console).
-     * @param data Log record
-     */
-
-    void flushMessage(const LogData& data);
-
+    
     /**
      * @brief Stops the background thread and finalizes logging.
      */

@@ -188,6 +188,44 @@ void Logger::flushMessage(const LogData& data)
 
 }
 
+std::vector<std::string> Logger::readAllLogs() const {
+    std::shared_lock lock(mutex);
+
+    std::ifstream file(output_path);
+    std::vector<std::string> lines;
+    std::string line;
+
+    if (!file.is_open()) {
+        LOG_ERROR(LogLevel::PROD) <<"ERROR: cannot open log file: " << output_path;
+        return lines;
+    }
+
+    while (std::getline(file, line)) {
+        lines.push_back(line);
+    }
+    return lines;
+}
+
+std::vector<std::string> Logger::readLogsByKeyword(const std::string& keyword) const {
+    std::shared_lock lock(mutex);
+
+    std::ifstream file(output_path);
+    std::vector<std::string> filtered;
+    std::string line;
+
+    if (!file.is_open()) {
+        LOG_ERROR(LogLevel::PROD) << "ERROR: cannot open log file: " << output_path;
+        return filtered;
+    }
+
+    while (std::getline(file, line)) {
+        if (line.find(keyword) != std::string::npos) {
+            filtered.push_back(line);
+        }
+    }
+    return filtered;
+}
+
 void Logger::operator+=(const LogData& data) {
     log(data);
 }
