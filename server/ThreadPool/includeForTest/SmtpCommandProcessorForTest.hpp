@@ -4,6 +4,7 @@
 #include <memory>
 #include "SMTPSessionForTest.hpp"
 
+
 class SmtpCommandProcessor {
 public:
     void handle(std::shared_ptr<SmtpSession> session, const std::string& cmd) {
@@ -86,15 +87,15 @@ public:
 
 private:
     static void sendResponse(std::shared_ptr<SmtpSession> session,
-                            std::shared_ptr<asio::ip::tcp::socket> socket,
+                            std::shared_ptr<boost::asio::ip::tcp::socket> socket,
                             std::string response) {
     
         auto exec = socket->get_executor();
         
-        asio::post(asio::bind_executor(exec, 
+        boost::asio::post(boost::asio::bind_executor(exec, 
             [session, socket, resp = std::make_shared<std::string>(std::move(response))]() {
-                asio::async_write(*socket, asio::buffer(*resp),
-                    [session, socket, resp](const asio::error_code& ec, std::size_t) {
+                boost::asio::async_write(*socket, boost::asio::buffer(*resp),
+                    [session, socket, resp](const boost::system::error_code& ec, std::size_t) {
                         if (ec) {
                             std::cerr << "Write error: " << ec.message() << std::endl;
                             session->close();

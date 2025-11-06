@@ -1,14 +1,71 @@
 cmake_minimum_required(VERSION 3.30)
-project(smtp_server)
+
+project(THREADPOOL LANGUAGES CXX)
+
 
 set(CMAKE_CXX_STANDARD 23)
 
-set(BOOST_ROOT "${CMAKE_SOURCE_DIR}/../3rdparty/boost_1_89_0")
+
+set(BOOST_ROOT "${CMAKE_SOURCE_DIR}/../../3rdparty/boost_1_89_0")
+
 set(BOOST_INCLUDEDIR "${BOOST_ROOT}/include")
 set(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib")
 
 find_package(Boost REQUIRED COMPONENTS system thread)
+
 find_package(OpenSSL REQUIRED)
+
+
+# 🔹 Include paths
+# include_directories(
+#     ${CMAKE_SOURCE_DIR}/include
+#     ${CMAKE_SOURCE_DIR}/BoostCustom/asio/include
+#     ${CMAKE_SOURCE_DIR}/includeForTest
+# )
+
+include_directories(
+    ${Boost_INCLUDE_DIRS}
+    ${CMAKE_SOURCE_DIR}${CMAKE_SOURCE_DIR}/../../3rdparty/boost_1_89_0/boost/asio.hpp
+    ${CMAKE_SOURCE_DIR}/../../3rdparty/boost_1_89_0
+    ${CMAKE_SOURCE_DIR}/includeForTest
+    ${CMAKE_SOURCE_DIR}/include
+)
+# 🔹 Find Threads (cross-platform)
+find_package(Threads REQUIRED)
+
+# =====================================================================
+# 🔸 Executable: TestServer
+# =====================================================================
+add_executable(TestServer
+    TestConnection/ServerFromTestClient.cpp
+    TestConnection/SMTPSessionForTest.cpp
+    src/ThreadPool.cpp
+)
+
+target_link_libraries(TestServer 
+    PRIVATE 
+        Threads::Threads
+        Boost::system
+        Boost::thread
+)
+
+# =====================================================================
+# 🔸 Executable: TestClient
+# =====================================================================
+add_executable(TestClient
+    TestConnection/TestClientConnection.cpp
+)
+
+target_link_libraries(TestClient 
+    PRIVATE 
+        Threads::Threads
+        Boost::system
+        Boost::thread
+)
+
+# =====================================================================
+# 🔸 GoogleTest + GoogleMock (FetchContent)
+# =====================================================================
 
 include(FetchContent)
 
@@ -36,6 +93,8 @@ add_executable(ThreadPoolIntegrationTest
 
 target_link_libraries(ThreadPoolIntegrationTest
     PRIVATE
+        Boost::system
+        Boost::thread
         Threads::Threads
         GTest::gmock_main
 )

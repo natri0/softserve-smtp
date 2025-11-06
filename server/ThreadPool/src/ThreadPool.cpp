@@ -8,10 +8,16 @@ ThreadPool::ThreadPool(int n) {
 
 void ThreadPool::start() {
 
-    if (!threads.empty()) {
-        throw std::runtime_error("ThreadPool already started");
+    State expected = State::NotStarted;
+    
+    if (!CurrentState.compare_exchange_strong(expected, State::Running)) {
+        if (expected == State::Running) {
+            throw std::runtime_error("ThreadPool already running");
+        } else {
+            throw std::runtime_error("Cannot restart stopped ThreadPool");
+        }
     }
-
+    
     for (int i = 0; i < cnt_thread; ++i) {
         threads.emplace_back([this] { 
             currentThread = this;
@@ -21,23 +27,31 @@ void ThreadPool::start() {
 }
 
 bool ThreadPool::isShutDown() const noexcept{
-    return shutDown.load();
+    return CurrentState.load(std::memory_order_acquire) == State::Stopped;
 }
 
 void ThreadPool::stop() {
-
-    bool expected = false;
-    if (!shutDown.compare_exchange_strong(expected, true)) {
-        return;
+    State expected = State::Running;
+    if (CurrentState.compare_exchange_strong(expected, State::Stopped)) {
+        taskQueue->shutDown();
+        for (auto &t : threads) {
+            if (t.joinable()) t.join();
+        }
+        threads.clear();
     }
-
-    taskQueue->shutDown();
-    for (auto &t : threads) {
-        if (t.joinable()) t.join();
+    else if (expected == State::NotStarted) {
+        expected = State::NotStarted;
+        if (CurrentState.compare_exchange_strong(expected, State::Stopped)) {
+            taskQueue->shutDown();
+        }
     }
 }
 
-ThreadPool* ThreadPool::Current()
+ThreadPool::State ThreadPool::getState() const noexcept {
+    return CurrentState.load(std::memory_order_acquire);
+}
+
+ThreadPool* ThreadPool::Current() noexcept
 {
 	return  currentThread;
 }
@@ -57,7 +71,7 @@ void ThreadPool::workerThread() {
     }
 }
 
-ThreadPool::~ThreadPool() {
+ThreadPool::~ThreadPool() noexcept{
     stop();
 }
 

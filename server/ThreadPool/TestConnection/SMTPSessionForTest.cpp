@@ -1,6 +1,6 @@
 #include "SMTPSessionForTest.hpp"
 
-SmtpSession::SmtpSession(std::shared_ptr<asio::ip::tcp::socket> sock)
+SmtpSession::SmtpSession(std::shared_ptr<boost::asio::ip::tcp::socket> sock)
     : socket(sock)
 {
     initialize();
@@ -88,8 +88,8 @@ void SmtpSession::close() {
     {
         std::lock_guard<std::mutex> lock(socket_mutex);
         if (socket && socket->is_open()) {
-            std::error_code ec;
-            socket->shutdown(asio::ip::tcp::socket::shutdown_both, ec);
+            boost::system::error_code ec;
+            socket->shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
             socket->close(ec);
         }
     }
@@ -100,7 +100,7 @@ bool SmtpSession::isClosed() const {
 }
 
 // --- Socket & info ---
-std::shared_ptr<asio::ip::tcp::socket> SmtpSession::getSocket() { 
+std::shared_ptr<boost::asio::ip::tcp::socket> SmtpSession::getSocket() { 
     std::lock_guard<std::mutex> lock(socket_mutex);
     if (closed.load(std::memory_order_acquire)) {
         return nullptr; 

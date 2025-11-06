@@ -8,6 +8,7 @@
 #include "ThreadSafeQueue.hpp"
 #include "FunctionWrapper.hpp"
 
+
 /**
  * @class ThreadPool
  * @brief A thread pool implementation for concurrent task execution.
@@ -17,6 +18,15 @@
  * Supports graceful shutdown and task result retrieval via futures.
  */
 class ThreadPool {
+
+private:
+
+    enum class State {
+        NotStarted,  
+        Running,     
+        Stopped      
+    };
+
 public:
     /**
     * @brief Constructs a ThreadPool with specified number of threads.
@@ -30,7 +40,7 @@ public:
     /**
     * @brief Destructor. Calls stop() to ensure graceful shutdown.
     */
-    ~ThreadPool();
+    ~ThreadPool() noexcept;
 
     /** @brief Deleted copy constructor */
     ThreadPool(const ThreadPool&) = delete;
@@ -49,7 +59,7 @@ public:
     *
     * @return Pointer to ThreadPool if called from a worker thread, nullptr otherwise.
     */
-    static ThreadPool* Current();
+    static ThreadPool* Current() noexcept;
 
     /**
     * @brief Start all worker threads.
@@ -85,11 +95,8 @@ public:
     auto submit(FunctionType&& f, Args&&... args)
         -> std::future<std::invoke_result_t<std::decay_t<FunctionType>, std::decay_t<Args>...>>
     {
-        if (isShutDown()) {
-            throw std::runtime_error("Cannot submit task: ThreadPool is shut down");
-        }
-        if (threads.empty()) {
-            throw std::runtime_error("ThreadPool not started. Call start() first");
+        if (CurrentState.load() != State::Running) {
+            throw std::runtime_error("ThreadPool not started or is shut down");
         }
 
         using result_type = std::invoke_result_t<std::decay_t<FunctionType>, std::decay_t<Args>...>;
@@ -107,6 +114,7 @@ public:
         return res;
     }
 
+    State getState() const noexcept;
 
     /**
     * @brief Check if the ThreadPool is shut down.
@@ -126,14 +134,13 @@ private:
     */
     void workerThread();
 
-     /** @brief Flag indicating if ThreadPool is shut down */
-    std::atomic<bool> shutDown{false};
-
     /** @brief Number of worker threads */
     int cnt_thread = std::max(std::thread::hardware_concurrency(), 2u);
 
     /** @brief Vector of worker threads */
     std::vector<std::thread> threads;
+
+    std::atomic<State> CurrentState{State::NotStarted};
 
     /** @brief Thread-safe queue for storing pending tasks */
     std::shared_ptr<ThreadSafeQueue<FunctionWrapper>> taskQueue;

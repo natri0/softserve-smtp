@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 #include <functional>
-#include "asio.hpp"
+#include <boost/asio.hpp>
 
 #include "SmtpCommandProcessorForTest.hpp"
 #include "ThreadPool.hpp"
@@ -32,7 +32,7 @@ void processCommand(std::shared_ptr<SmtpSession> session, const std::string& cmd
         response = "250 Message accepted\r\n";
     } else if (upper_cmd.starts_with("QUIT")) {
         response = "221 Bye\r\n";
-        asio::async_write(*socket, asio::buffer(response),
+        boost::asio::async_write(*socket, boost::asio::buffer(response),
             [session](std::error_code ec, std::size_t) {
                 if (!ec) session->close();
             });
@@ -41,7 +41,7 @@ void processCommand(std::shared_ptr<SmtpSession> session, const std::string& cmd
         response = "500 Unknown command\r\n";
     }
 
-    asio::async_write(*socket, asio::buffer(response),
+    boost::asio::async_write(*socket, boost::asio::buffer(response),
         [socket](std::error_code ec, std::size_t) {
             if (ec) std::cout << "❌ Write failed: " << ec.message() << "\n";
         });
@@ -80,32 +80,32 @@ void onClientCommand(std::shared_ptr<SmtpSession> session, const std::string& cm
 
 int main() {
     try {
-        asio::io_context io;
-        asio::ip::tcp::acceptor acceptor(io, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), 2525));
+        boost::asio::io_context io;
+        boost::asio::ip::tcp::acceptor acceptor(io, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 2525));
 
         pool->start();
         std::cout << "✅ SMTP test server started on port 2525\n";
 
         std::function<void()> do_accept;
         do_accept = [&]() {
-            auto socket = std::make_shared<asio::ip::tcp::socket>(io);
+            auto socket = std::make_shared<boost::asio::ip::tcp::socket>(io);
             acceptor.async_accept(*socket, [&, socket](std::error_code ec) mutable {
                 if (!ec) {
                     auto session = std::make_shared<SmtpSession>(socket);
 
                     std::string hello = "220 Simple SMTP Server Ready\r\n";
-                    asio::async_write(*socket, asio::buffer(hello),
+                    boost::asio::async_write(*socket, boost::asio::buffer(hello),
                         [socket](std::error_code ec, std::size_t) {
                             if (ec) std::cout << "❌ Failed to send greeting: " << ec.message() << "\n";
                         });
 
-                    auto buffer = std::make_shared<asio::streambuf>();
+                    auto buffer = std::make_shared<boost::asio::streambuf>();
                     auto readLoop = std::make_shared<std::function<void()>>();
 
                     *readLoop = [=]() mutable {
                         if (session->isClosed()) return;
 
-                        asio::async_read_until(*socket, *buffer, "\r\n",
+                        boost::asio::async_read_until(*socket, *buffer, "\r\n",
                             [=](std::error_code ec, std::size_t) mutable {
                                 if (ec) {
                                     std::cout << "❌ Connection closed from [" << session->getClientIp() << "]: " << ec.message() << "\n";
