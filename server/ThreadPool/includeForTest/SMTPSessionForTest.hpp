@@ -3,7 +3,7 @@
 #include <string>
 #include <queue>
 #include <mutex>
-#include "asio.hpp"
+#include <boost/asio.hpp>
 
 /**
 * @class SmtpSession
@@ -30,7 +30,7 @@ public:
     * @brief Construct a new SmtpSession object.
     * @param sock Shared pointer to the client's socket.
     */
-    explicit SmtpSession(std::shared_ptr<asio::ip::tcp::socket> sock);
+    explicit SmtpSession(std::shared_ptr<boost::asio::ip::tcp::socket> sock);
 
     // Delete copy and move operations to enforce unique ownership
     SmtpSession(const SmtpSession&) = delete;
@@ -100,7 +100,7 @@ public:
     * @brief Get shared pointer to the client socket.
     * @return Shared pointer to socket.
     */
-    std::shared_ptr<asio::ip::tcp::socket> getSocket();
+    std::shared_ptr<boost::asio::ip::tcp::socket> getSocket();
 
     /**
     * @brief Get client IP address.
@@ -144,7 +144,7 @@ private:
     std::queue<std::string> commandQueue;
 
     mutable std::mutex socket_mutex;
-    std::shared_ptr<asio::ip::tcp::socket> socket;
+    std::shared_ptr<boost::asio::ip::tcp::socket> socket;
 
     /**
     * @brief initialize session constructure.

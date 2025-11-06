@@ -1,7 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"/home/vlodko/softserve-smtp/server/ThreadPool/build/_deps/googletest-subbuild/cmake_install.cmake"
-	],
-	"Parallel" : false
-}

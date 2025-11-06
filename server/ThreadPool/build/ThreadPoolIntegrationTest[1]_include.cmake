@@ -1,5 +1,0 @@
-if(EXISTS "/home/vlodko/softserve-smtp/server/ThreadPool/build/ThreadPoolIntegrationTest[1]_tests.cmake")
-  include("/home/vlodko/softserve-smtp/server/ThreadPool/build/ThreadPoolIntegrationTest[1]_tests.cmake")
-else()
-  add_test(ThreadPoolIntegrationTest_NOT_BUILT ThreadPoolIntegrationTest_NOT_BUILT)
-endif()

@@ -1,1 +1,0 @@
-/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/TestServer.dir/link.d CMakeFiles/TestServer.dir/TestConnection/ServerFromTestClient.cpp.o CMakeFiles/TestServer.dir/TestConnection/SMTPSessionForTest.cpp.o CMakeFiles/TestServer.dir/src/ThreadPool.cpp.o -o TestServer
