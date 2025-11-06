@@ -13,6 +13,7 @@
 #include "ServerConsoleUI.h"
 #include "../networking/SSL/SSLContextFactory.h"
 #include "config/config.h"
+#include <list>
 
 class ThreadPool;
 

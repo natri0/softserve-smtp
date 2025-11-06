@@ -2,11 +2,9 @@ cmake_minimum_required(VERSION 3.30)
 project(softserve_smtp)
 
 set(CMAKE_CXX_STANDARD 23)
-<<<<<<< HEAD
 
 find_package(OpenSSL REQUIRED)
-=======
->>>>>>> ThreadPoolSmtp
+
 
 add_subdirectory(server)
 add_subdirectory(server/config)

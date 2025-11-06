@@ -78,6 +78,13 @@
         "cfenv": "cpp",
         "typeindex": "cpp",
         "typeinfo": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "csetjmp": "cpp",
+        "rope": "cpp",
+        "slist": "cpp",
+        "ranges": "cpp",
+        "scoped_allocator": "cpp",
+        "stdfloat": "cpp",
+        "valarray": "cpp"
     }
 }
