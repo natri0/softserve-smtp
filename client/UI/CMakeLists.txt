@@ -1,3 +1,6 @@
+cmake_minimum_required(VERSION 3.30)
+project(smtp_client)
+
 set(PROJECT_SOURCES
     src/main.cpp
     src/SMTPClientWindow.cpp

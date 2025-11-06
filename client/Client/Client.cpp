@@ -13,7 +13,8 @@ Client::Client(const std::string& host, const unsigned short port) :
     server_endpoint(net::ip::make_address(host), port),
     session(std::make_shared<Session>(std::make_shared<net::ip::tcp::socket>(io))),
     timer(io),
-    sslContext(smtp::ssl::SSLContextFactory::createClientContext())
+    sslContext(smtp::ssl::SSLContextFactory::createClientContext()),
+    m_recipientIndex(0)
 {
 };
 
@@ -26,7 +27,6 @@ bool Client::start()
 {
     init();
     connect();
-    run();
 
     return true;
 }
@@ -72,23 +72,55 @@ void Client::init()
                 }
                 else if (cmd.starts_with("250") && cmd.find("Hello") != std::string::npos)
                 {
-                    session->send(net::buffer("MAIL FROM:<test@example.com>\r\n"));
+                    session->send(net::buffer("MAIL FROM:<" + email_info.from + ">\r\n"));
                 }
                 else if (cmd.starts_with("250 OK"))
                 {
-                    session->send(net::buffer("RCPT TO:<admin@example.com>\r\n"));
+                  m_recipientIndex = 0;
+                  if (!email_info.to.empty())
+                  {
+                    session->send(net::buffer("RCPT TO:<" + email_info.to[m_recipientIndex] + ">\r\n"));
+                    m_recipientIndex++;
+                  }
+                  else
+                  {
+                    m_lastError = "Error: No recipients specified.";
+                    session->disconnect();
+                    io.stop();
+                  }
                 }
                 else if (cmd.starts_with("250 Accepted"))
                 {
+                  if (m_recipientIndex < email_info.to.size())
+                  {
+                    session->send(net::buffer("RCPT TO:<" + email_info.to[m_recipientIndex] + ">\r\n"));
+                    m_recipientIndex++;
+                  }
+                  else
+                  {
                     session->send(net::buffer("DATA\r\n"));
+                  }
                 }
                 else if (cmd.starts_with("354"))
                 {
-                    session->send(net::buffer(email_info.body + "\r\n.\r\n"));
+                  std::string fullBody = "Subject: " + email_info.subj + "\r\n";
+                  fullBody += "From: " + email_info.from + "\r\n";
+
+                  fullBody += "To: " + email_info.to[0] + "\r\n\r\n";
+                  fullBody += email_info.body + "\r\n.\r\n";
+
+                  session->send(net::buffer(full_body));
                 }
                 else if (cmd.starts_with("250 Message"))
                 {
                     session->send(net::buffer("QUIT\r\n"));
+                }
+                else if (cmd.starts_with("5") || cmd.starts_with("4"))
+                {
+                  std::cerr << "SMTP Error: " << cmd << std::endl;
+                  m_lastError = cmd;
+                  session->disconnect();
+                  io.stop();
                 }
                 else
                 {
@@ -118,20 +150,23 @@ void Client::reconnect()
         {
             connect();
             if (!session->isConnected()) reconnect();
-            else run();
         }
     });
 }
 
 bool Client::run()
 {
-    if (isRunning) return false;
-    std::cout << "Client is running" << std::endl;
-
-    io_thread = std::jthread([this]() { io.run(); });
-    isRunning = true;
-
-    return true;
+  std::cout << "Client is running." << std::endl;
+  try {
+    io.run();
+    std::cout << "Client io.run() finished." << std::endl;
+    return true; // Loop finished cleanly
+  }
+  catch (std::exception& e) {
+    std::cerr << "Client io.run() exception: " << e.what() << std::endl;
+    m_lastError = e.what(); 
+    return false; // Loop failed
+  }
 };
 
 bool Client::sendMail(EmailMessage e_msg)
@@ -139,20 +174,17 @@ bool Client::sendMail(EmailMessage e_msg)
     if (!session->isConnected())
     {
         std::cout << "Client is not connected" << std::endl;
+        m_lastError = "Client is not connected.";
         return false;
     }
 
-    email_info = e_msg;
-    session->send(net::buffer("HELO example.com\r\n"));
-    std::cout << "Sending..." << std::endl;
+    m_emailInfo = e_msg;
+    std::cout << "Email queued for sending..." << std::endl;
     return true;
 }
 
 bool Client::stop()
 {
-    if (!isRunning) return false;
-    isRunning = false;
-
     session->disconnect();
     io.stop();
 

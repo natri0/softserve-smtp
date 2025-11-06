@@ -7,6 +7,7 @@
 
 #include "../networking/Session.h"
 #include <thread>
+#include <string>
 
 #include "EmailMessage.h"
 #include "../networking/SSL/SSLContextFactory.h"
@@ -22,10 +23,13 @@ public:
 
     bool sendMail(EmailMessage e_msg);
 
+    std::string getLastError() const { return m_lastError; }
 private:
-    EmailMessage email_info;
+    EmailMessage m_emailInfo;
 
-    bool isRunning = false;
+    std::string m_lastError;
+    size_t m_recipientIndex;
+
     void reconnect();
 
     void init();
