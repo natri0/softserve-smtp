@@ -3,4 +3,6 @@ project(smtp_server)
 
 set(CMAKE_CXX_STANDARD 23)
 
+add_subdirectory(ThreadPool)
+
 add_executable(smtp_server main.cpp)
