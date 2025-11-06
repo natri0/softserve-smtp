@@ -6,13 +6,15 @@
 #define EMAILMESSAGE_H
 
 #include <string>
+#include <vector>
 
 struct EmailMessage
 {
     std::string from;
-    std::string to;
-    std::string subj;
+    std::vector<std::string> to;
+    std::string subject;
     std::string body;
+    std::vector<std::string> attachmentPaths;
 };
 
 
