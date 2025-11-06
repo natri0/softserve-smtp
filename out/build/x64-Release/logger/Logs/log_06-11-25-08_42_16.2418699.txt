@@ -1,0 +1,2 @@
+08:42:16.4230800-06.11.25	[ERROR]	PROD	exampleFunction	(thread 9043137534026864063)	Error occurred in exampleFunction
+08:42:16.4722547-06.11.25	[ERROR]	PROD	multiThreadLogging::<lambda_2>::operator ()	(thread 457679238597388133)	Thread 2 error

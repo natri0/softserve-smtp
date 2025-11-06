@@ -27,28 +27,28 @@ void multiThreadLogging() {
     t2.join();
 }
 
-//void readingLogs() {
-//    Logger& logger = Logger::getInstance();
-//    logger.setFlush(false);
-//    LogReader reader(logger.getOutputPath());
-//
-//    auto all = reader.readAll();
-//    auto errors = reader.readByParameter("[ERROR]");
-//
-//    std::cout << "--- All logs ---\n";
-//    for (auto& l : all) std::cout << l << '\n';
-//
-//    std::cout << "--- Only [ERROR] ---\n";
-//    for (auto& e : errors) std::cout << e << '\n';
-//}
+void readingLogs() {
+    Logger& logger = Logger::getInstance();
+    logger.setFlush(false);
+
+    LogReader reader("C:/Users/user/source/repos/softserve-smtp/out/build/x64-Release/logger/Logs/log_06-11-25-08_14_58.5619886.txt");
+
+    auto all = reader.readAll();
+    auto errors = reader.readByParameter("[ERROR]");
+
+    std::cout << "--- All logs ---\n";
+    for (auto& l : all) std::cout << l << '\n';
+
+    std::cout << "--- Only [ERROR] ---\n";
+    for (auto& e : errors) std::cout << e << '\n';
+}
 
 
 int main() {
     exampleFunction();
     multiThreadLogging();
 
-
-    //readingLogs();
+    readingLogs();
 
     return 0;
 }

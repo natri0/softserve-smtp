@@ -7,6 +7,8 @@ class LogReader {
     public:
         explicit LogReader(const std::string& filename);
 
+        std::vector<std::string> readByParameterRegex(const std::string& pattern);
+
         bool filter_by_keyword(const std::string& keyword, const std::string& line) const;
 
 

@@ -42,20 +42,31 @@ std::vector<std::string> LogReader::readAll() {
     return lines;
 }
 
+std::vector<std::string> LogReader::readByParameterRegex(const std::string& pattern) {
+    std::lock_guard<std::mutex> guard(mutex);
+    std::ifstream file(filename_);
+    std::vector<std::string> filtered;
+    std::regex re(pattern);
+    std::string line;
+
+    while (std::getline(file, line)) {
+        if (std::regex_search(line, re)) {
+            filtered.push_back(line);
+        }
+    }
+
+    return filtered;
+}
 
 std::vector<std::string> LogReader::readByParameter(const std::string& parameter) {
     std::lock_guard<std::mutex> guard(mutex);
     std::ifstream file(filename_);
     std::vector<std::string> filtered;
     std::string line;
-    bool is_regex = true;
     while (std::getline(file, line)) {
         if (filter_by_keyword(parameter, line)) {
             filtered.push_back(line);
-            is_regex = false;
-        }
-        else if (is_regex && filter_by_regex(parameter, line)) {
-            filtered.push_back(line);
+
         }
     }
     return filtered;
