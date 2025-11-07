@@ -68,7 +68,7 @@ private:
      * @return true if log should be blocked, false otherwise
      */
 
-    bool blockLog(LogLevel level);
+    
 
     void write_log_to_file(const LogData& data);
 
@@ -109,6 +109,8 @@ public:
      */
 
     ~Logger();
+
+    bool blockLog(LogLevel level);
 
     std::vector<std::string> readAllLogs() const;
 
