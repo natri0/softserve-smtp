@@ -4,8 +4,7 @@ find_package(Threads REQUIRED)
 
 add_library(logger
     Include/Logger.cpp
-    Include/LogReader.cpp
- )
+  "Include/LogData.cpp")
 
 target_include_directories(logger
     PUBLIC
@@ -17,10 +16,10 @@ target_link_libraries(logger PUBLIC Threads::Threads)
 
 
 add_executable(logger_main
-    Tests/StressTest/Main.cpp)
+    Tests/StressTest/Main.cpp "Include/LogData.cpp")
 
 add_executable(logger_example
-    Example/Example.cpp)
+    Example/Example.cpp "Include/LogData.cpp")
 
 target_link_libraries(logger_main PRIVATE logger)
 
@@ -52,7 +51,7 @@ endif()
 
 
 add_executable(logger_benchmark
-    Tests/Benchmarks/Benchmarks.cpp)
+    Tests/Benchmarks/Benchmarks.cpp "Include/LogData.cpp")
 
 
 target_include_directories(logger_benchmark
@@ -86,7 +85,7 @@ enable_testing()
 
 add_executable(logger_tests
     Tests/UnitTests/test.cpp
-)
+ "Include/LogData.cpp")
 
 target_include_directories(logger_tests
     PRIVATE

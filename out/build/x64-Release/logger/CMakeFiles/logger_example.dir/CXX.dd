@@ -1,3 +1,5 @@
 ninja_dyndep_version = 1.0
 build logger\CMakeFiles\logger_example.dir\Example\Example.cpp.obj: dyndep
 
+build logger\CMakeFiles\logger_example.dir\Include\LogData.cpp.obj: dyndep
+

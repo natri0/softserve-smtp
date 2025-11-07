@@ -1,0 +1,477 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						2,
+						3,
+						4,
+						6,
+						7,
+						8
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Release-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.30"
+					},
+					"projectIndex" : 0,
+					"source" : "."
+				},
+				{
+					"build" : "server",
+					"jsonFile" : "directory-server-Release-ca16530337ce509e32d1.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.30"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "server",
+					"targetIndexes" : 
+					[
+						11
+					]
+				},
+				{
+					"build" : "utils",
+					"jsonFile" : "directory-utils-Release-bb33f781d987d5385f78.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.30"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 2,
+					"source" : "utils"
+				},
+				{
+					"build" : "client",
+					"jsonFile" : "directory-client-Release-3c37cf1077c78f229df7.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.30"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 3,
+					"source" : "client"
+				},
+				{
+					"build" : "networking",
+					"childIndexes" : 
+					[
+						5
+					],
+					"jsonFile" : "directory-networking-Release-55ae3935383fb4835272.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.30"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 4,
+					"source" : "networking"
+				},
+				{
+					"build" : "networking/SSL",
+					"jsonFile" : "directory-networking.SSL-Release-d545f169f43dc94e6ca7.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.30"
+					},
+					"parentIndex" : 4,
+					"projectIndex" : 5,
+					"source" : "networking/SSL"
+				},
+				{
+					"build" : "db",
+					"jsonFile" : "directory-db-Release-14b3f8d48828c18af914.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.30"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 6,
+					"source" : "db"
+				},
+				{
+					"build" : "SMTP",
+					"jsonFile" : "directory-SMTP-Release-ab35e1f85449bb0649d1.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.30"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 7,
+					"source" : "SMTP"
+				},
+				{
+					"build" : "logger",
+					"childIndexes" : 
+					[
+						9,
+						11
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-logger-Release-540440305f9964810dc4.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.30"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "logger",
+					"targetIndexes" : 
+					[
+						6,
+						7,
+						8,
+						9,
+						10
+					]
+				},
+				{
+					"build" : "_deps/benchmark-build",
+					"childIndexes" : 
+					[
+						10
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-_deps.benchmark-build-Release-cf07aaa385c542fb5913.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 8,
+					"projectIndex" : 8,
+					"source" : "out/build/x64-Release/_deps/benchmark-src"
+				},
+				{
+					"build" : "_deps/benchmark-build/src",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-_deps.benchmark-build.src-Release-25a7cf95680ebef7ad90.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 9,
+					"projectIndex" : 8,
+					"source" : "out/build/x64-Release/_deps/benchmark-src/src",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				},
+				{
+					"build" : "_deps/googletest-build",
+					"childIndexes" : 
+					[
+						12
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-_deps.googletest-build-Release-714a2ae2d508b9ca6f9c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"parentIndex" : 8,
+					"projectIndex" : 9,
+					"source" : "out/build/x64-Release/_deps/googletest-src"
+				},
+				{
+					"build" : "_deps/googletest-build/googlemock",
+					"childIndexes" : 
+					[
+						13
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-_deps.googletest-build.googlemock-Release-47ab0daefb2e59466b41.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"parentIndex" : 11,
+					"projectIndex" : 10,
+					"source" : "out/build/x64-Release/_deps/googletest-src/googlemock",
+					"targetIndexes" : 
+					[
+						2,
+						3
+					]
+				},
+				{
+					"build" : "_deps/googletest-build/googletest",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-_deps.googletest-build.googletest-Release-534e807d75e37a9b1b99.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"parentIndex" : 12,
+					"projectIndex" : 11,
+					"source" : "out/build/x64-Release/_deps/googletest-src/googletest",
+					"targetIndexes" : 
+					[
+						4,
+						5
+					]
+				}
+			],
+			"name" : "Release",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1,
+						2,
+						3,
+						4,
+						6,
+						7,
+						8,
+						9
+					],
+					"directoryIndexes" : 
+					[
+						0,
+						8
+					],
+					"name" : "softserve_smtp",
+					"targetIndexes" : 
+					[
+						6,
+						7,
+						8,
+						9,
+						10
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "smtp_server",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						11
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						2
+					],
+					"name" : "utils",
+					"parentIndex" : 0
+				},
+				{
+					"directoryIndexes" : 
+					[
+						3
+					],
+					"name" : "client",
+					"parentIndex" : 0
+				},
+				{
+					"childIndexes" : 
+					[
+						5
+					],
+					"directoryIndexes" : 
+					[
+						4
+					],
+					"name" : "networking",
+					"parentIndex" : 0
+				},
+				{
+					"directoryIndexes" : 
+					[
+						5
+					],
+					"name" : "SSL",
+					"parentIndex" : 4
+				},
+				{
+					"directoryIndexes" : 
+					[
+						6
+					],
+					"name" : "db",
+					"parentIndex" : 0
+				},
+				{
+					"directoryIndexes" : 
+					[
+						7
+					],
+					"name" : "SMTP",
+					"parentIndex" : 0
+				},
+				{
+					"directoryIndexes" : 
+					[
+						9,
+						10
+					],
+					"name" : "benchmark",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						10
+					],
+					"directoryIndexes" : 
+					[
+						11
+					],
+					"name" : "googletest-distribution",
+					"parentIndex" : 0
+				},
+				{
+					"childIndexes" : 
+					[
+						11
+					],
+					"directoryIndexes" : 
+					[
+						12
+					],
+					"name" : "gmock",
+					"parentIndex" : 9,
+					"targetIndexes" : 
+					[
+						2,
+						3
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						13
+					],
+					"name" : "gtest",
+					"parentIndex" : 10,
+					"targetIndexes" : 
+					[
+						4,
+						5
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 10,
+					"id" : "benchmark::@2fa91c1ea4e05cbc4511",
+					"jsonFile" : "target-benchmark-Release-afe8be66308698d0a63c.json",
+					"name" : "benchmark",
+					"projectIndex" : 8
+				},
+				{
+					"directoryIndex" : 10,
+					"id" : "benchmark_main::@2fa91c1ea4e05cbc4511",
+					"jsonFile" : "target-benchmark_main-Release-762c186a2cc9d8150fdd.json",
+					"name" : "benchmark_main",
+					"projectIndex" : 8
+				},
+				{
+					"directoryIndex" : 12,
+					"id" : "gmock::@0f7bb11d64f3678238c7",
+					"jsonFile" : "target-gmock-Release-3744e67a78ac8bf5344f.json",
+					"name" : "gmock",
+					"projectIndex" : 10
+				},
+				{
+					"directoryIndex" : 12,
+					"id" : "gmock_main::@0f7bb11d64f3678238c7",
+					"jsonFile" : "target-gmock_main-Release-e7cba180fbcdcf865de8.json",
+					"name" : "gmock_main",
+					"projectIndex" : 10
+				},
+				{
+					"directoryIndex" : 13,
+					"id" : "gtest::@1ea2dfc0605fe3ab2a3f",
+					"jsonFile" : "target-gtest-Release-563974333318160720b1.json",
+					"name" : "gtest",
+					"projectIndex" : 11
+				},
+				{
+					"directoryIndex" : 13,
+					"id" : "gtest_main::@1ea2dfc0605fe3ab2a3f",
+					"jsonFile" : "target-gtest_main-Release-121400f2d3caab75b887.json",
+					"name" : "gtest_main",
+					"projectIndex" : 11
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "logger::@d605ba84040dd83ce0d4",
+					"jsonFile" : "target-logger-Release-0ccdeb9268aa8d700f35.json",
+					"name" : "logger",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "logger_benchmark::@d605ba84040dd83ce0d4",
+					"jsonFile" : "target-logger_benchmark-Release-e3827b76ad030c1654d7.json",
+					"name" : "logger_benchmark",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "logger_example::@d605ba84040dd83ce0d4",
+					"jsonFile" : "target-logger_example-Release-cafadda2109474cc9445.json",
+					"name" : "logger_example",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "logger_main::@d605ba84040dd83ce0d4",
+					"jsonFile" : "target-logger_main-Release-e75c1fa925bf839a1f84.json",
+					"name" : "logger_main",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "logger_tests::@d605ba84040dd83ce0d4",
+					"jsonFile" : "target-logger_tests-Release-3019ffd8b24e188ccedf.json",
+					"name" : "logger_tests",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "smtp_server::@d19778d2e34a1e3ddfc0",
+					"jsonFile" : "target-smtp_server-Release-0ea77534406b33a739b7.json",
+					"name" : "smtp_server",
+					"projectIndex" : 1
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/user/source/repos/softserve-smtp/out/build/x64-Release",
+		"source" : "C:/Users/user/source/repos/softserve-smtp"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 8
+	}
+}

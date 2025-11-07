@@ -22,10 +22,10 @@
 	"module-dir" : "C:/Users/user/source/repos/softserve-smtp/out/build/x64-Release/logger/CMakeFiles/logger.dir",
 	"sources" : 
 	{
-		"logger/CMakeFiles/logger.dir/Include/LogReader.cpp.obj" : 
+		"logger/CMakeFiles/logger.dir/Include/LogData.cpp.obj" : 
 		{
 			"language" : "CXX",
-			"source" : "C:/Users/user/source/repos/softserve-smtp/logger/Include/LogReader.cpp"
+			"source" : "C:/Users/user/source/repos/softserve-smtp/logger/Include/LogData.cpp"
 		},
 		"logger/CMakeFiles/logger.dir/Include/Logger.cpp.obj" : 
 		{

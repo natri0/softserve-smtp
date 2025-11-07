@@ -15,6 +15,14 @@
 #define DEFAULT_END false
 #define DEFAULT_LOG_LEVEL TRACE_LOG_LEVEL
 
+#define FORMAT_NO     ""
+#define FORMAT_PROD   "[{:T}]{:t}| {:m}"
+#define FORMAT_DEBUG  "[{:T}]{:t}[{:l}][{:L}]| {:m}"
+#define FORMAT_TRACE  "[{:i}][{:T}]{:t}[{:l}][{:L}]| {:m}"
+
+#define DEFAULT_FORMAT FORMAT_NO
+
+
 
 #define NO_LOG_LEVEL LogLevel::NONE
 #define PROD_LOG_LEVEL LogLevel::PROD
@@ -41,10 +49,10 @@
 
 #define IF_LOG_(level)   if (Logger::getInstance().blockLog(level)) { ; } else
 
-//IF_LOG_(level)
+//
 
-#define LOG(level,type)  (Logger::getInstance()) += \
-    LogData("", type, LOG_GET_FUNC(), level, std::this_thread::get_id()).ref()
+#define LOG(level,type) IF_LOG_(level) (Logger::getInstance()) += \
+    LogData("", type, LOG_GET_FUNC(), level, std::this_thread::get_id(), Logger::getInstance().getFormat()).ref()
 
 #define LOG_INFO(level)           LOG(level, INFO_TYPE )
 #define LOG_WARNING(level)        LOG(level, WARNING_TYPE )

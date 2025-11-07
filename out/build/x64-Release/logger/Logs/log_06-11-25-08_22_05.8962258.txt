@@ -1,3 +1,0 @@
-08:22:06.1299164-06.11.25	[INFO]	DEBUG	exampleFunction	(thread 17906063545766933744)	Function is started
-08:22:06.1301000-06.11.25	[ERROR]	PROD	exampleFunction	(thread 17906063545766933744)	Error occurred in exampleFunction
-08:22:06.2707267-06.11.25	[ERROR]	PROD	multiThreadLogging::<lambda_2>::operator ()	(thread 8632950277566451597)	Thread 2 error

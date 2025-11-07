@@ -1,17 +1,18 @@
 #include "Logger.h"
-#include "LogReader.h"
 #include <iostream>
 #include <thread>
 
 void exampleFunction() {
-    LOG_INFO(LogLevel::DEBUG) << "Function is started";
+    /*LOG_INFO(LogLevel::DEBUG) << "Function is started";
     LOG_INFO(LogLevel::TRACE) << "Example function started";
     std::this_thread::sleep_for(std::chrono::milliseconds(50));
     LOG_WARNING(LogLevel::DEBUG) << "This is a warning from exampleFunction";
     LOG_ERROR(LogLevel::PROD) << "Error occurred in exampleFunction";
     LOG_INFO(LogLevel::TRACE) << "Example function finished";
-    LOG_INFO(LogLevel::DEBUG) << "Function is finished";
-    
+    LOG_INFO(LogLevel::DEBUG) << "Function is finished";*/
+    LOG_INFO(LogLevel::TRACE) << "Program started!";
+    LOG_WARNING(LogLevel::DEBUG) << "Potential issue detected";
+    LOG_ERROR(LogLevel::PROD) << "Critical failure!";
 }
 
 
@@ -46,9 +47,9 @@ void readingLogs() {
 
 int main() {
     exampleFunction();
-    multiThreadLogging();
+    //multiThreadLogging();
 
-    readingLogs();
+    //readingLogs();
 
     return 0;
 }

@@ -1,3 +1,5 @@
 ninja_dyndep_version = 1.0
 build logger\CMakeFiles\logger_main.dir\Tests\StressTest\Main.cpp.obj: dyndep
 
+build logger\CMakeFiles\logger_main.dir\Include\LogData.cpp.obj: dyndep
+
