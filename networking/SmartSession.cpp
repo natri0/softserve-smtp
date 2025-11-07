@@ -4,6 +4,8 @@
 
 #include "SmartSession.h"
 
+#include <iostream>
+
 #include "SSL/KeyExchanger.h"
 
 SmartSession::SmartSession(std::shared_ptr<net::ip::tcp::socket> socket, Type sessionType) :

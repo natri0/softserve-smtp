@@ -108,10 +108,6 @@ void Client::SMTPHandling(boost::asio::const_buffer msg)
     {
         session->net_session->send(net::buffer("test body\r\n.\r\n"));
     }
-    else
-    {
-        std::cout << "Want to proceed? Yes: 1\tNo: 0" << std::endl;
-    }
 };
 
 bool Client::sendMail(EmailMessage e_msg)

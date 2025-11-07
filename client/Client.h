@@ -34,8 +34,6 @@ private:
     void connect();
     bool run();
 
-    void setConnection(std::shared_ptr<net::ip::tcp::socket> socket);
-
     net::io_context io;
     net::ip::tcp::endpoint server_endpoint;
     std::shared_ptr<SmartSession> session;
