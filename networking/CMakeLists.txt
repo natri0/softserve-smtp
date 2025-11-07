@@ -1,4 +1,6 @@
-find_package(Boost REQUIRED COMPONENTS system thread asio)
+if (NOT UNIX)
+    find_package(Boost REQUIRED COMPONENTS system thread asio)
+endif ()
 find_package(OpenSSL REQUIRED)
 
 add_library(networking
@@ -16,9 +18,11 @@ target_include_directories(networking
 target_link_libraries(networking
         PUBLIC
         ${Boost_LIBRARIES}
-        ws2_32
-        mswsock
         OpenSSL::SSL
         OpenSSL::Crypto
         SMTP
 )
+
+if (WIN32)
+    target_link_libraries(networking PRIVATE ws2_32 mswsock)
+endif ()

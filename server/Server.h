@@ -8,6 +8,7 @@
 #include "../networking/Session.h"
 #include <mutex>
 #include <condition_variable>
+#include <list>
 #include <memory>
 
 #include "ServerConsoleUI.h"

@@ -4,7 +4,9 @@ project(smtp_client)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build/client/bin")
 
-find_package(Boost REQUIRED COMPONENTS system thread asio)
+if (NOT UNIX)
+    find_package(Boost REQUIRED COMPONENTS system thread asio)
+endif ()
 find_package(OpenSSL REQUIRED)
 
 add_executable(smtp_client main.cpp
@@ -23,11 +25,14 @@ add_custom_command(TARGET smtp_client POST_BUILD
 target_include_directories(smtp_client PRIVATE ${Boost_INCLUDE_DIRS}
 )
 
-target_link_libraries(smtp_client PRIVATE ws2_32
+target_link_libraries(smtp_client PRIVATE
         ${Boost_LIBRARIES}
-        mswsock
         networking
         ssl_support
         OpenSSL::SSL
         OpenSSL::Crypto
 )
+
+if (WIN32)
+    target_link_libraries(smtp_client PRIVATE ws2_32 mswsock)
+endif ()
