@@ -10,6 +10,7 @@
 #include "../networking/SSL/KeyExchanger.h"
 #include "SMTPSession.h"
 #include "config/config.h"
+#include "Database/Manager.hpp"
 
 // temp till we don't have parser
 
@@ -34,6 +35,13 @@ bool Server::init()
         if (config.has_key("port")) port = config.get<unsigned short>("port");
         if (config.has_key("thread_pool_size")) thread_pool_size = config.get<unsigned short>("thread_pool_size");
     }
+
+    // mailbox lifespan = server lifespan
+    static std::shared_ptr<ISXSMTP::SMTPIMailbox> mailbox = std::make_shared<SQLiteMailbox>();
+    SMTPConfigBuilder builder;
+    builder.SetMailbox(mailbox);
+    //builder.SetDomain(domain_from_config_file_should_be_here);
+    builder.SetCurrentAsDefault();
 
     threadPool = std::make_unique<ThreadPool>(thread_pool_size);
 
