@@ -57,7 +57,6 @@ private:
     std::shared_ptr<smtp::ssl::SSLContextFactory::SSLContext> sslContext;
 
     // networking callbacks
-    void SSLHandling(boost::asio::const_buffer msg, std::shared_ptr<SmartSession> session, std::shared_ptr<std::pair<std::vector<unsigned char>, std::vector<unsigned char>>> keys);
     void SMTPHandling(boost::asio::const_buffer msg, std::shared_ptr<SmartSession> session);
 };
 
