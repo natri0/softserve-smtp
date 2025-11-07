@@ -2,3 +2,45 @@ cmake_minimum_required(VERSION 3.30)
 project(db)
 
 set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+option(DB_ENABLE_TESTS "Enable building of database unit tests" OFF)
+option(DB_SHARED_LIBS "Build libraries as shared instead of static" ON)
+
+set(DB_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/Connection.cpp)
+if (DB_SHARED_LIBS)
+    add_library(${PROJECT_NAME} SHARED ${DB_SOURCES})
+else()
+    add_library(${PROJECT_NAME} STATIC ${DB_SOURCES})
+endif()
+
+target_include_directories(${PROJECT_NAME} PUBLIC include)
+
+include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/CPM.cmake)
+if (NOT TARGET fmt::fmt)
+    CPMAddPackage("gh:fmtlib/fmt#12.1.0")
+endif()
+
+set(SQLITE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/sqlite3)
+target_sources(${PROJECT_NAME} PRIVATE ${SQLITE_DIR}/sqlite3.c)
+target_include_directories(${PROJECT_NAME} PRIVATE ${SQLITE_DIR})
+
+target_link_libraries(${PROJECT_NAME} PUBLIC utils fmt::fmt)
+
+if (DB_ENABLE_TESTS)
+    if (NOT TARGET GTest::GTest)
+        CPMAddPackage(
+            NAME googletest
+            GITHUB_REPOSITORY google/googletest
+            VERSION 1.17.0
+            OPTIONS
+                "BUILD_GMOCK OFF"
+                "INSTALL_GTEST OFF"
+        )
+    endif()
+    add_executable(${PROJECT_NAME}_tests tests/Test.cpp)
+    target_link_libraries(${PROJECT_NAME}_tests PRIVATE ${PROJECT_NAME} utils GTest::gtest_main)
+    include(GoogleTest)
+    gtest_discover_tests(${PROJECT_NAME}_tests)
+endif()

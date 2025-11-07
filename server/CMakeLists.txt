@@ -36,6 +36,7 @@ target_link_libraries(smtp_server PRIVATE
         OpenSSL::Crypto
         config_parser
         SMTP
+        db
 )
 
 if (WIN32)
