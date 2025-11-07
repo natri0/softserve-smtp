@@ -9,6 +9,7 @@
 #include "ThreadPool/include/ThreadPool.hpp"
 #include "../networking/SSL/KeyExchanger.h"
 #include "SMTPSession.h"
+#include "../logger/Include/Logger.h"
 
 // temp till we don't have parser
 
@@ -27,7 +28,8 @@ bool Server::init()
 {
     // initialization from config
     if (Config config; !config.load_from_file("server/config/config.json"))
-        std::cout << "Couldn't load config.json" << std::endl;
+        LOG_ERROR(LogLevel::PROD) << "Couldn't load config.json";
+    // std::cout << "Couldn't load config.json" << std::endl;
     else
     {
         if (config.has_key("port")) port = config.get<unsigned short>("port");

@@ -21,3 +21,7 @@ target_link_libraries(ssl_support PUBLIC
         OpenSSL::SSL
         OpenSSL::Crypto
 )
+
+if (WIN32)
+    target_link_libraries(ssl_support PUBLIC ws2_32 mswsock)
+endif ()

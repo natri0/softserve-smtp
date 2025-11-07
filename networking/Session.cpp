@@ -3,7 +3,7 @@
 //
 
 #include "Session.h"
-#include "Logger.h"
+#include "../logger/Include/Logger.h"
 #include <iostream>
 
 constexpr std::size_t BUFFER_SIZE = 1024;
@@ -22,8 +22,8 @@ void Session::connect(const net::ip::tcp::endpoint& endpoint)
     {
         if (!ec)
         {
-            //LOG_INFO(PROD_LOG_LEVEL) << "Connected";// << std::endl;
-            std::cerr << "Connected" << std::endl;
+            LOG_INFO(PROD_LOG_LEVEL) << "Connected";
+            // std::cerr << "Connected" << std::endl;
             connected = true;
             if (onConnected) onConnected();
         }
@@ -31,8 +31,8 @@ void Session::connect(const net::ip::tcp::endpoint& endpoint)
         {
             connected = false;
             if (onDisconnect) onDisconnect();
-            std::cerr << "Connect failed: " << ec.message() << std::endl;
-            //LOG_INFO(PROD_LOG_LEVEL) << "Connect failed: " << ec.message();
+            // std::cerr << "Connect failed: " << ec.message() << std::endl;
+            LOG_INFO(PROD_LOG_LEVEL) << "Connect failed: " << ec.message();
         }
     });
 }

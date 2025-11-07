@@ -1,12 +1,12 @@
 if (NOT UNIX)
     find_package(Boost REQUIRED COMPONENTS system thread asio)
 endif ()
+
 find_package(OpenSSL REQUIRED)
 
 add_library(networking
         Session.cpp
         SmartSession.cpp
-        SmartSession.h
 )
 
 target_include_directories(networking
@@ -21,6 +21,8 @@ target_link_libraries(networking
         OpenSSL::SSL
         OpenSSL::Crypto
         SMTP
+        logger
+        ssl_support
 )
 
 if (WIN32)
