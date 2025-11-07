@@ -74,7 +74,11 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
+<<<<<<< HEAD
   include("C:/Users/user/source/repos/softserve-smtp/out/build/x64-Debug/Logger/cmake_install.cmake")
+=======
+  include("C:/Users/user/source/repos/softserve-smtp/out/build/x64-Debug/logger/cmake_install.cmake")
+>>>>>>> Logger
 endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT

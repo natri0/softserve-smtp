@@ -14,17 +14,29 @@
 #include <filesystem>
 #include <boost/lockfree/queue.hpp>
 #include <shared_mutex>
+#include <fstream>
 #include "Macros.h"
 
+/**
+ * @brief Color codes for console output.
+ */
 
+//const std::unordered_map<std::string, std::string> colored{
+//    {"[ERROR]", ERROR_COLOR},
+//    {"[WARNING]", WARNING_COLOR},
+//    {"[INFO]", INFORMATION_COLOR},
+//    {"[DEFAULT]", DEFAULT_COLOR}
+//};
 
-const std::unordered_map<std::string, std::string> colored{
-    {"[ERROR]", ERROR_COLOR},
-    {"[WARNING]", WARNING_COLOR},
-    {"[INFO]", INFORMATION_COLOR},
-    {"[DEFAULT]", DEFAULT_COLOR}
-};
-
+/**
+ * @brief Asynchronous thread-safe logger.
+ *
+ * The Logger class supports:
+ *  - Asynchronous log processing using a background thread
+ *  - Lock-free queue
+ *  - Log file rotation and colored console output
+ *  - Configurable log levels and output paths
+ */
 
 class Logger {
 private:
@@ -36,10 +48,14 @@ private:
     std::atomic<unsigned int> amount;
     std::atomic<bool> end;
     std::atomic<bool> do_flush;
-
     LogLevel local_level;
+    std::string format;
 
-    Logger(const LogLevel&, const std::string&, const unsigned int, const bool);
+    /**
+     * @brief Private constructor (Singleton pattern).
+     */
+
+    Logger(const LogLevel&, const std::string&, const unsigned int, const bool, std::string);
 
     void fileInit(const unsigned int);
 
@@ -47,16 +63,41 @@ private:
 
     void log(const LogData&);
 
+    /**
+     * @brief Determines if a message should be blocked based on its log level.
+     * @param level Log level of the message
+     * @return true if log should be blocked, false otherwise
+     */
+
+    bool blockLog(LogLevel level);
+
     void write_log_to_file(const LogData& data);
 
     void write_log_to_console(const LogData& data);
 
+    /**
+     * @brief Flushes a message to output (file and/or console).
+     * @param data Log record
+     */
+
+    void flushMessage(const LogData& data);
 
 public:
 
-    static Logger& getInstance(const LogLevel& level = DEFAULT_LOG_LEVEL, const std::string& path = DEFAULT_PATH, const unsigned int amount = DEFAULT_AMOUNT, const bool do_flush = DEFAULT_FLUSH);
+    /**
+     * @brief Returns the singleton logger instance.
+     *
+     * @param level Initial log level
+     * @param path Output directory (optional)
+     * @param amount Maximum number of log files to keep
+     * @param do_flush Whether to print to console
+     * 
+     * @return Reference to the Logger instance
+     */
 
-    void operator+=(const LogData& data);
+    static Logger& getInstance(const LogLevel& level = DEFAULT_LOG_LEVEL, const std::string& path = DEFAULT_PATH, const unsigned int amount = DEFAULT_AMOUNT, const bool do_flush = DEFAULT_FLUSH, std::string format= DEFAULT_FORMAT);
+
+    
 
     Logger(const Logger&) = delete;
     void operator=(const Logger&) = delete;
@@ -64,9 +105,21 @@ public:
 
     Logger() = delete;
 
+    /**
+     * @brief Destructor — safely shuts down background thread and closes file.
+     */
+
     ~Logger();
 
-    bool blockLog(LogLevel level);
+    std::vector<std::string> readAllLogs() const;
+
+    std::vector<std::string> readLogsByKeyword(const std::string& keyword) const;
+
+    void operator+=(const LogData& data);
+
+    void setFormat(const std::string& format);
+
+    std::string getFormat(const std::string& format) const;
 
     void setOutputPath(const std::string& path);
 
@@ -76,58 +129,30 @@ public:
 
     void setFlush(const bool);
 
+
+    std::string chooseFormat(LogLevel level);
+
     const LogLevel& getLevel() const;
 
-    std::string toString(LogLevel level);
+    /**
+     * @brief Converts a log level to string (e.g., TRACE ? "TRACE").
+     */
 
-    void flushMessage(const LogData& data, bool if_flush);
+    static std::string toString(LogLevel level);
+
+    
+    /**
+     * @brief Stops the background thread and finalizes logging.
+     */
 
     void shutDown();
 
 
-
-
-    void logError(const std::string&);
-
-    void logWarning(const std::string&);
-
-    void logInfo(const std::string&);
+    // Common message shortcuts
 
     void logFuncStart();
 
     void logFuncEnd();
 
-
-    /*void logArguments()
-    {
-        m_real->save_to_queue({ "arguments: " + m_buff.get() }, "[INFO]", location, local_level);
-        m_buff.clear();
-    }
-
-    template<typename T, typename... Args>
-    void logArguments(const T& first, Args&... args)
-    {
-        if (static_cast<int>(local_level) == 3)
-        {
-            logArgument(first);
-            logArguments(std::forward<Args>(args)...);
-        }
-        else
-            this->logFuncStart();
-    }
-
-    template<typename T>
-    void logReturn(const T& value)
-    {
-        if (static_cast<int>(local_level) == 3)
-        {
-            m_buff << value;
-            temp_wrap::wrap_return(m_buff.get(), m_location, m_local_level, m_local_format);
-            m_buff.clear();
-        }
-        else
-            this->log_return_nothing();
-    }*/
-
-
+  
 };

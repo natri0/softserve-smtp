@@ -20,13 +20,22 @@
 	{
 		"commands" : 
 		[
+<<<<<<<< HEAD:out/build/x64-Debug/.cmake/api/v1/reply/target-config_parser-Debug-c53ee0b04753a4155989.json
 			"_add_library",
 			"add_library"
+========
+			"_add_executable",
+			"add_executable"
+>>>>>>>> Logger:out/build/x64-Debug/.cmake/api/v1/reply/target-smtp_server-Debug-7192e821d3fdf2a24886.json
 		],
 		"files" : 
 		[
 			"C:/vcpkg/scripts/buildsystems/vcpkg.cmake",
+<<<<<<<< HEAD:out/build/x64-Debug/.cmake/api/v1/reply/target-config_parser-Debug-c53ee0b04753a4155989.json
 			"server/config/CMakeLists.txt"
+========
+			"server/CMakeLists.txt"
+>>>>>>>> Logger:out/build/x64-Debug/.cmake/api/v1/reply/target-smtp_server-Debug-7192e821d3fdf2a24886.json
 		],
 		"nodes" : 
 		[
@@ -36,13 +45,21 @@
 			{
 				"command" : 1,
 				"file" : 1,
+<<<<<<<< HEAD:out/build/x64-Debug/.cmake/api/v1/reply/target-config_parser-Debug-c53ee0b04753a4155989.json
 				"line" : 1,
+========
+				"line" : 6,
+>>>>>>>> Logger:out/build/x64-Debug/.cmake/api/v1/reply/target-smtp_server-Debug-7192e821d3fdf2a24886.json
 				"parent" : 0
 			},
 			{
 				"command" : 0,
 				"file" : 0,
+<<<<<<<< HEAD:out/build/x64-Debug/.cmake/api/v1/reply/target-config_parser-Debug-c53ee0b04753a4155989.json
 				"line" : 649,
+========
+				"line" : 608,
+>>>>>>>> Logger:out/build/x64-Debug/.cmake/api/v1/reply/target-smtp_server-Debug-7192e821d3fdf2a24886.json
 				"parent" : 1
 			}
 		]

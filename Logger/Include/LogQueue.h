@@ -46,6 +46,10 @@ public:
 		return std::move(extracted);
 	}
 
+	bool Empty() const {
+		std::lock_guard lock(mutex);
+		return buffer.empty();
+	}
 private:
 	T PopLocked()
 	{
@@ -57,7 +61,7 @@ private:
 
 private:
 	std::queue<T> buffer;
-	std::mutex mutex;
+	mutable std::mutex mutex;
 	std::condition_variable is_not_empty;
 	std::atomic<bool> is_closed{ false };
 };

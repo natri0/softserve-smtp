@@ -1,10 +1,10 @@
-#include "Macros.h"
 #include "Logger.h"
+#include "Formatter.h"
 
 //std::unique_ptr<Logger> Logger::instance = nullptr;
 
-Logger::Logger(const LogLevel& level, const std::string& path, const unsigned int amount, const bool do_flush)
-    : queue(DEFAULT_SIZE), local_level{ level}, output_path{ path }, amount{ amount }, end(DEFAULT_END), do_flush(do_flush) {
+Logger::Logger(const LogLevel& level, const std::string& path, const unsigned int amount, const bool do_flush, std::string format)
+    : queue(DEFAULT_SIZE), local_level{ level }, output_path{ path }, amount{ amount }, end(DEFAULT_END), do_flush(do_flush) {
     fileInit(this->amount);
 
     thrd = std::thread([this]() {
@@ -12,7 +12,7 @@ Logger::Logger(const LogLevel& level, const std::string& path, const unsigned in
         while (!end || !queue.empty()) {
             while (queue.pop(msg)) {
                 if (msg) {
-                    flushMessage(*msg, false);
+                    flushMessage(*msg);
                     delete msg;
                 }
             }
@@ -20,11 +20,13 @@ Logger::Logger(const LogLevel& level, const std::string& path, const unsigned in
         }
         });
 
+    if (format == "")format = chooseFormat(local_level);
+
 }
 
-Logger& Logger::getInstance(const LogLevel& level, const std::string& path, const unsigned int amount, const bool do_flush) {
+Logger& Logger::getInstance(const LogLevel& level, const std::string& path, const unsigned int amount, const bool do_flush, std::string format) {
 
-    static Logger instance(level, path, amount, do_flush);
+    static Logger instance(level, path, amount, do_flush, format);
     return instance;
 }
 
@@ -80,6 +82,33 @@ Logger::~Logger() {
     shutDown();
 }
 
+//auto& log = Logger::getInstance();
+
+//log.setFormat("%TIME% %LEVEL% (%THREAD%) %MSG%");
+//log.setFormat("%TIME% [%TYPE%][%LEVEL%] [%FUNC%] (%THREAD%) %MSG%");
+
+
+void Logger::setFormat(const std::string& format) {
+    std::unique_lock lock(mutex);
+    this->format = format;
+}
+
+std::string Logger::getFormat(const std::string& format) const{
+    std::shared_lock lock(mutex);
+    return format;
+}
+
+std::string Logger::chooseFormat(LogLevel level)
+{
+    switch (level)
+    {
+    case LogLevel::PROD:   return FORMAT_PROD;
+    case LogLevel::DEBUG:  return FORMAT_DEBUG;
+    case LogLevel::TRACE:  return FORMAT_TRACE;
+    default:               return FORMAT_NO;
+    }
+}
+
 void Logger::setOutputPath(const std::string& path)
 {
 
@@ -110,6 +139,7 @@ void Logger::setFlush(const bool if_flush) {
     do_flush = if_flush;
 }
 
+
 bool Logger::blockLog(LogLevel level)
 {
     return static_cast<std::underlying_type<LogLevel>::type>(level) > \
@@ -125,67 +155,117 @@ std::string Logger::toString(LogLevel level) {
     }
 }
 
-void  Logger::write_log_to_file(const LogData& data) {
-    std::string file_output;
+//void Logger::write_log_to_file(const LogData& data){
+//    std::string file_output;
+//
+//    file_output += std::format("{:%H:%M:%S-%d.%m.%y}", std::chrono::system_clock::now());
+//    file_output += '\t';
+//    file_output += data.type;
+//    file_output += '\t';
+//    file_output += toString(data.level);
+//    file_output += '\t';
+//    file_output += data.location;
+//    file_output += '\t';
+//    file_output += "(thread ";
+//    file_output += std::to_string(std::hash<std::thread::id>{}(data.thr_id));
+//    file_output += ")";
+//    file_output += '\t';
+//    file_output += data.msg;
+//    file_output += '\n';
+//
+//    file << file_output;
+//    file.flush();
+//}
+//
+//void Logger::write_log_to_console(const LogData& data) {
+//    std::string console_output;
+//
+//    console_output += std::format("{:%H:%M:%S-%d.%m.%y}", std::chrono::system_clock::now());
+//    console_output += '\t';
+//
+//    auto it = colored.find(data.type);
+//    if (it != colored.end())
+//        console_output += it->second + data.type + DEFAULT_COLOR;
+//    else
+//        console_output += data.type;
+//
+//    console_output += '\t';
+//    console_output += data.location;
+//    console_output += '\t';
+//    console_output += "(thread ";
+//    console_output += std::to_string(std::hash<std::thread::id>{}(data.thr_id));
+//    console_output += ")";
+//    console_output += '\t';
+//    console_output += data.msg;
+//    console_output += '\n';
+//
+//    std::cout << console_output;
+//
+//}
 
-    file_output += std::format("{:%H:%M:%S-%d.%m.%y}", std::chrono::system_clock::now());
-    file_output += '\t';
-    file_output += data.type;
-    file_output += '\t';
-    file_output += toString(data.level);
-    file_output += '\t';
-    file_output += data.location;
-    file_output += '\t';
-    file_output += "(thread ";
-    file_output += std::to_string(std::hash<std::thread::id>{}(data.thr_id));
-    file_output += ")";
-    file_output += '\t';
-    file_output += data.msg;
-    file_output += '\n';
-
-    file << file_output;
-    file.flush();
+void Logger::write_log_to_file(const LogData& data) {
+    std::string file_output = std::format(data.ft, data);
+    file << file_output << std::endl;
 }
 
-void write_log_to_console(const LogData& data) {
-    std::string console_output;
-
-    console_output += std::format("{:%H:%M:%S-%d.%m.%y}", std::chrono::system_clock::now());
-    console_output += '\t';
-
-    auto it = colored.find(data.type);
-    if (it != colored.end())
-        console_output += it->second + data.type + DEFAULT_COLOR;
-    else
-        console_output += data.type;
-
-    console_output += '\t';
-    console_output += data.location;
-    console_output += '\t';
-    console_output += "(thread ";
-    console_output += std::to_string(std::hash<std::thread::id>{}(data.thr_id));
-    console_output += ")";
-    console_output += '\t';
-    console_output += data.msg;
-    console_output += '\n';
-
-    std::cout<< console_output;
-
+void Logger::write_log_to_console(const LogData& data) {
+    std::string console_output = std::format(data.ft, ConsoleLog{data});
+    std::cout << console_output << std::endl;
 }
 
-void Logger::flushMessage(const LogData& data, bool if_flush)
+
+void Logger::flushMessage(const LogData& data)
 {
-    if (blockLog(data.level))
-        return;
+    
 
     if (static_cast<int>(local_level) == 0) return;
 
 
+    if (blockLog(data.level))
+        return;
+
+    write_log_to_file(data);
+    if (do_flush)  write_log_to_console(data);
     
 
-    if (do_flush)  write_log_to_console(data);
-    write_log_to_file(data);
-   
+}
+
+std::vector<std::string> Logger::readAllLogs() const {
+    std::shared_lock lock(mutex);
+
+    std::ifstream file(output_path);
+    std::vector<std::string> lines;
+    std::string line;
+
+    if (!file.is_open()) {
+        LOG_ERROR(LogLevel::PROD) <<"ERROR: cannot open log file: " << output_path;
+        return lines;
+    }
+
+    while (std::getline(file, line)) {
+        lines.push_back(line);
+    }
+    return lines;
+}
+
+std::vector<std::string> Logger::readLogsByKeyword(const std::string& keyword) const {
+    std::shared_lock lock(mutex);
+
+    std::ifstream file(output_path);
+    std::vector<std::string> filtered;
+    std::string line;
+
+    if (!file.is_open()) {
+        LOG_ERROR(LogLevel::PROD) << "ERROR: cannot open log file: " << output_path;
+        return filtered;
+    }
+
+    while (std::getline(file, line)) {
+        if (line.find(keyword) != std::string::npos) {
+            filtered.push_back(line);
+        }
+    }
+    return filtered;
 }
 
 void Logger::operator+=(const LogData& data) {
@@ -208,21 +288,6 @@ void Logger::log(const std::string& str, const std::string& type, const std::str
     }
 }
 
-
-void Logger::logError(const std::string& msg)
-{
-    log(msg, "[ERROR]", LOG_GET_FUNC(), local_level);
-}
-
-void Logger::logWarning(const std::string& msg)
-{
-    log(msg, "[WARNING]", LOG_GET_FUNC(), local_level);
-}
-
-void Logger::logInfo(const std::string& msg)
-{
-    log(msg, "[INFO]", LOG_GET_FUNC(), local_level);
-}
 
 void Logger::logFuncStart() {
 

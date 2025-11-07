@@ -1,10 +1,10 @@
-find_package(Boost CONFIG REQUIRED)
+find_package(Boost REQUIRED)
 
+find_package(Threads REQUIRED)
 
 add_library(logger STATIC
     Include/Logger.cpp
-    Include/LogReader.cpp
-)
+  "Include/LogData.cpp")
 
 target_include_directories(logger
     PUBLIC

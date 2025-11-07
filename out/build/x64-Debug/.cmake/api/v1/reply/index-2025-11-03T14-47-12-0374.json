@@ -26,7 +26,11 @@
 	"objects" : 
 	[
 		{
+<<<<<<<< HEAD:out/build/x64-Debug/.cmake/api/v1/reply/index-2025-11-03T14-47-12-0374.json
 			"jsonFile" : "codemodel-v2-4602bf16e84263ab4457.json",
+========
+			"jsonFile" : "codemodel-v2-54fb07835734104089bc.json",
+>>>>>>>> Logger:out/build/x64-Debug/.cmake/api/v1/reply/index-2025-11-05T20-47-37-0625.json
 			"kind" : "codemodel",
 			"version" : 
 			{
@@ -35,7 +39,11 @@
 			}
 		},
 		{
+<<<<<<<< HEAD:out/build/x64-Debug/.cmake/api/v1/reply/index-2025-11-03T14-47-12-0374.json
 			"jsonFile" : "cache-v2-9ee22baddc068e51cda1.json",
+========
+			"jsonFile" : "cache-v2-8c4cd69d38084074b14c.json",
+>>>>>>>> Logger:out/build/x64-Debug/.cmake/api/v1/reply/index-2025-11-05T20-47-37-0625.json
 			"kind" : "cache",
 			"version" : 
 			{
@@ -44,7 +52,11 @@
 			}
 		},
 		{
+<<<<<<<< HEAD:out/build/x64-Debug/.cmake/api/v1/reply/index-2025-11-03T14-47-12-0374.json
 			"jsonFile" : "cmakeFiles-v1-7ffb8f0512ca00b662d9.json",
+========
+			"jsonFile" : "cmakeFiles-v1-fa69e409836195aa4d20.json",
+>>>>>>>> Logger:out/build/x64-Debug/.cmake/api/v1/reply/index-2025-11-05T20-47-37-0625.json
 			"kind" : "cmakeFiles",
 			"version" : 
 			{
@@ -90,7 +102,11 @@
 				"responses" : 
 				[
 					{
+<<<<<<<< HEAD:out/build/x64-Debug/.cmake/api/v1/reply/index-2025-11-03T14-47-12-0374.json
 						"jsonFile" : "cache-v2-9ee22baddc068e51cda1.json",
+========
+						"jsonFile" : "cache-v2-8c4cd69d38084074b14c.json",
+>>>>>>>> Logger:out/build/x64-Debug/.cmake/api/v1/reply/index-2025-11-05T20-47-37-0625.json
 						"kind" : "cache",
 						"version" : 
 						{
@@ -99,7 +115,11 @@
 						}
 					},
 					{
+<<<<<<<< HEAD:out/build/x64-Debug/.cmake/api/v1/reply/index-2025-11-03T14-47-12-0374.json
 						"jsonFile" : "cmakeFiles-v1-7ffb8f0512ca00b662d9.json",
+========
+						"jsonFile" : "cmakeFiles-v1-fa69e409836195aa4d20.json",
+>>>>>>>> Logger:out/build/x64-Debug/.cmake/api/v1/reply/index-2025-11-05T20-47-37-0625.json
 						"kind" : "cmakeFiles",
 						"version" : 
 						{
@@ -108,7 +128,11 @@
 						}
 					},
 					{
+<<<<<<<< HEAD:out/build/x64-Debug/.cmake/api/v1/reply/index-2025-11-03T14-47-12-0374.json
 						"jsonFile" : "codemodel-v2-4602bf16e84263ab4457.json",
+========
+						"jsonFile" : "codemodel-v2-54fb07835734104089bc.json",
+>>>>>>>> Logger:out/build/x64-Debug/.cmake/api/v1/reply/index-2025-11-05T20-47-37-0625.json
 						"kind" : "codemodel",
 						"version" : 
 						{

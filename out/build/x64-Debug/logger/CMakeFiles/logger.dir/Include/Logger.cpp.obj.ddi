@@ -3,10 +3,17 @@
     "revision": 0,
     "rules": [
         {
+<<<<<<< HEAD
             "primary-output": "Logger\\CMakeFiles\\logger.dir\\Include\\Logger.cpp.obj",
             "outputs": [
                 "C:\\Users\\user\\source\\repos\\softserve-smtp\\out\\build\\x64-Debug\\vc140.pdb",
                 "Logger\\CMakeFiles\\logger.dir\\Include\\Logger.cpp.obj.ddi"
+=======
+            "primary-output": "logger\\CMakeFiles\\logger.dir\\Include\\Logger.cpp.obj",
+            "outputs": [
+                "C:\\Users\\user\\source\\repos\\softserve-smtp\\out\\build\\x64-Debug\\vc140.pdb",
+                "logger\\CMakeFiles\\logger.dir\\Include\\Logger.cpp.obj.ddi"
+>>>>>>> Logger
             ],
             "requires": []
         }
