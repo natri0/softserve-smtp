@@ -21,12 +21,12 @@
  * @brief Color codes for console output.
  */
 
-//const std::unordered_map<std::string, std::string> colored{
-//    {"[ERROR]", ERROR_COLOR},
-//    {"[WARNING]", WARNING_COLOR},
-//    {"[INFO]", INFORMATION_COLOR},
-//    {"[DEFAULT]", DEFAULT_COLOR}
-//};
+const std::unordered_map<std::string, std::string> colored{
+    {"[ERROR]", ERROR_COLOR},
+    {"[WARNING]", WARNING_COLOR},
+    {"[INFO]", INFORMATION_COLOR},
+    {"[DEFAULT]", DEFAULT_COLOR}
+};
 
 /**
  * @brief Asynchronous thread-safe logger.
@@ -49,13 +49,12 @@ private:
     std::atomic<bool> end;
     std::atomic<bool> do_flush;
     LogLevel local_level;
-    std::string format;
 
     /**
      * @brief Private constructor (Singleton pattern).
      */
 
-    Logger(const LogLevel&, const std::string&, const unsigned int, const bool, std::string);
+    Logger(const LogLevel&, const std::string&, const unsigned int, const bool);
 
     void fileInit(const unsigned int);
 
@@ -91,13 +90,13 @@ public:
      * @param path Output directory (optional)
      * @param amount Maximum number of log files to keep
      * @param do_flush Whether to print to console
-     * 
+     *
      * @return Reference to the Logger instance
      */
 
-    static Logger& getInstance(const LogLevel& level = DEFAULT_LOG_LEVEL, const std::string& path = DEFAULT_PATH, const unsigned int amount = DEFAULT_AMOUNT, const bool do_flush = DEFAULT_FLUSH, std::string format= DEFAULT_FORMAT);
+    static Logger& getInstance(const LogLevel& level = DEFAULT_LOG_LEVEL, const std::string& path = DEFAULT_PATH, const unsigned int amount = DEFAULT_AMOUNT, const bool do_flush = DEFAULT_FLUSH);
 
-    
+
 
     Logger(const Logger&) = delete;
     void operator=(const Logger&) = delete;
@@ -117,10 +116,6 @@ public:
 
     void operator+=(const LogData& data);
 
-    void setFormat(const std::string& format);
-
-    std::string getFormat(const std::string& format) const;
-
     void setOutputPath(const std::string& path);
 
     const std::string& getOutputPath() const;
@@ -129,18 +124,15 @@ public:
 
     void setFlush(const bool);
 
-
-    std::string chooseFormat(LogLevel level);
-
     const LogLevel& getLevel() const;
 
     /**
      * @brief Converts a log level to string (e.g., TRACE ? "TRACE").
      */
 
-    static std::string toString(LogLevel level);
+    std::string toString(LogLevel level);
 
-    
+
     /**
      * @brief Stops the background thread and finalizes logging.
      */
@@ -154,5 +146,5 @@ public:
 
     void logFuncEnd();
 
-  
+
 };

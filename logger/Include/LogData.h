@@ -3,8 +3,6 @@
 #include <string>
 #include <thread>
 #include "LogLevel.h"
-#include "Macros.h"
-#include "Logger.h"
 
 /**
  * @brief Represents a single log record.
@@ -19,7 +17,6 @@ struct LogData {
     std::string location;
     LogLevel level;
     std::thread::id thr_id;
-    std::string ft;
     //void* object_ptr
 
     /**
@@ -29,7 +26,6 @@ struct LogData {
     LogData(const std::string& m, const std::string& type, const std::string& loc,
         const LogLevel& level, std::thread::id id) //void* ptr = nullptr)
         : msg(m), type(type), location(loc), level(level), thr_id(id) { //, object_ptr(ptr) {
-        ft = Logger::chooseFormat(level);
     }
 
     /**
@@ -60,9 +56,6 @@ struct LogData {
     {
         return *this;
     }
-
-
-    
 
 
 };

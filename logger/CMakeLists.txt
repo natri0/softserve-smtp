@@ -3,8 +3,7 @@ find_package(Boost REQUIRED)
 find_package(Threads REQUIRED)
 
 add_library(logger STATIC
-    Include/Logger.cpp
-  "Include/LogData.cpp")
+    Include/Logger.cpp)
 
 target_include_directories(logger
     PUBLIC
