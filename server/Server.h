@@ -14,6 +14,8 @@
 #include "../networking/SSL/SSLContextFactory.h"
 #include "config/config.h"
 
+#include "../networking/SmartSession.h"
+
 class ThreadPool;
 
 class Server : public std::enable_shared_from_this<Server>
@@ -37,11 +39,12 @@ private:
     net::ip::tcp::acceptor acceptor;
     unsigned short port = 12345;
 
-    std::list<std::shared_ptr<Session>> sessions;
+    std::list<std::shared_ptr<SmartSession>> sessions;
     std::mutex sessionMutex;
 
     void runAcceptor();
     bool setUpAcceptor();
+    void setConnection(std::shared_ptr<net::ip::tcp::socket> socket);
 
     std::unique_ptr<ThreadPool> threadPool;
     unsigned short thread_pool_size = 4;
@@ -52,6 +55,9 @@ private:
 
     // crypto
     std::shared_ptr<smtp::ssl::SSLContextFactory::SSLContext> sslContext;
+
+    // networking callbacks
+    void SMTPHandling(boost::asio::const_buffer msg, std::shared_ptr<SmartSession> session);
 };
 
 #endif //SERVER_H

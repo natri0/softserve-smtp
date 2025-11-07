@@ -3,6 +3,8 @@ find_package(OpenSSL REQUIRED)
 
 add_library(networking
         Session.cpp
+        SmartSession.cpp
+        SmartSession.h
 )
 
 target_include_directories(networking
@@ -18,5 +20,6 @@ target_link_libraries(networking
         mswsock
         OpenSSL::SSL
         OpenSSL::Crypto
+        SMTP
         logger
 )

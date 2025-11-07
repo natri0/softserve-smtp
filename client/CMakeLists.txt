@@ -31,5 +31,3 @@ target_link_libraries(smtp_client PRIVATE ws2_32
         OpenSSL::SSL
         OpenSSL::Crypto
 )
-
-#C:/Users/alkir/vcpkg/scripts/buildsystems/vcpkg.cmake
