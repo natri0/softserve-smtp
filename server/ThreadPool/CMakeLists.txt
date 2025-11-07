@@ -4,57 +4,47 @@ project(THREADPOOL LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+include(ExternalProject)
+
+# =====================================================================
+# 🔹 Boost build (локально)
+# =====================================================================
 set(BOOST_ROOT "${CMAKE_SOURCE_DIR}/../../3rdparty/boost_1_89_0")
-set(BOOST_INCLUDEDIR "${BOOST_ROOT}/include")
-set(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib")
 
-find_package(Boost REQUIRED COMPONENTS system thread)
+if(WIN32)
+    set(BOOST_BOOTSTRAP_CMD bootstrap.bat)
+    set(BOOST_BUILD_CMD b2.exe threading=multi)
+else()
+    execute_process(COMMAND chmod +x ${BOOST_ROOT}/bootstrap.sh)
+    execute_process(COMMAND chmod +x ${BOOST_ROOT}/tools/build/src/engine/build.sh)
+    set(BOOST_BOOTSTRAP_CMD bash bootstrap.sh)
+    set(BOOST_BUILD_CMD ./b2 threading=multi)
+endif()
+
+ExternalProject_Add(
+    Boost_Build
+    SOURCE_DIR ${BOOST_ROOT}
+    CONFIGURE_COMMAND ${BOOST_BOOTSTRAP_CMD}
+    BUILD_COMMAND ${BOOST_BUILD_CMD} --with-system --with-thread
+    INSTALL_COMMAND ""
+    BUILD_IN_SOURCE 1
+)
+
+set(BOOST_INCLUDEDIR "${BOOST_ROOT}")
+set(BOOST_LIBRARYDIR "${BOOST_ROOT}/stage/lib")
+
+# =====================================================================
 # 🔹 Include paths
-# include_directories(
-#     ${CMAKE_SOURCE_DIR}/include
-#     ${CMAKE_SOURCE_DIR}/BoostCustom/asio/include
-#     ${CMAKE_SOURCE_DIR}/includeForTest
-# )
-
+# =====================================================================
 include_directories(
-    ${Boost_INCLUDE_DIRS}
-    ${CMAKE_SOURCE_DIR}${CMAKE_SOURCE_DIR}/../../3rdparty/boost_1_89_0/boost/asio.hpp
-    ${CMAKE_SOURCE_DIR}/../../3rdparty/boost_1_89_0
+    ${BOOST_INCLUDEDIR}
+    ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/includeForTest
     ${CMAKE_SOURCE_DIR}/include
 )
+
 # 🔹 Find Threads (cross-platform)
 find_package(Threads REQUIRED)
-
-# =====================================================================
-# 🔸 Executable: TestServer
-# =====================================================================
-add_executable(TestServer
-    TestConnection/ServerFromTestClient.cpp
-    TestConnection/SMTPSessionForTest.cpp
-    src/ThreadPool.cpp
-)
-
-target_link_libraries(TestServer 
-    PRIVATE 
-        Threads::Threads
-        Boost::system
-        Boost::thread
-)
-
-# =====================================================================
-# 🔸 Executable: TestClient
-# =====================================================================
-add_executable(TestClient
-    TestConnection/TestClientConnection.cpp
-)
-
-target_link_libraries(TestClient 
-    PRIVATE 
-        Threads::Threads
-        Boost::system
-        Boost::thread
-)
 
 # =====================================================================
 # 🔸 GoogleTest + GoogleMock (FetchContent)
@@ -75,6 +65,45 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 # =====================================================================
+# 🔸 Executable: TestServer
+# =====================================================================
+add_executable(TestServer
+    TestConnection/ServerFromTestClient.cpp
+    TestConnection/SMTPSessionForTest.cpp
+    src/ThreadPool.cpp
+)
+
+add_dependencies(TestServer Boost_Build)
+
+# Лінкування Boost бібліотек
+if(WIN32)
+    file(GLOB BOOST_LIBS "${BOOST_LIBRARYDIR}/*.lib")
+else()
+    file(GLOB BOOST_LIBS "${BOOST_LIBRARYDIR}/*.a")
+endif()
+
+target_link_libraries(TestServer 
+    PRIVATE 
+        Threads::Threads
+        ${BOOST_LIBS}
+)
+
+# =====================================================================
+# 🔸 Executable: TestClient
+# =====================================================================
+add_executable(TestClient
+    TestConnection/TestClientConnection.cpp
+)
+
+add_dependencies(TestClient Boost_Build)
+
+target_link_libraries(TestClient 
+    PRIVATE 
+        Threads::Threads
+        ${BOOST_LIBS}
+)
+
+# =====================================================================
 # 🔸 Executable: ThreadPoolIntegrationTest
 # =====================================================================
 add_executable(ThreadPoolIntegrationTest
@@ -82,10 +111,11 @@ add_executable(ThreadPoolIntegrationTest
     src/ThreadPool.cpp
 )
 
+add_dependencies(ThreadPoolIntegrationTest Boost_Build)
+
 target_link_libraries(ThreadPoolIntegrationTest
     PRIVATE
-        Boost::system
-        Boost::thread
+        ${BOOST_LIBS}
         Threads::Threads
         GTest::gmock_main
 )
