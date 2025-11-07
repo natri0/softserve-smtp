@@ -3,6 +3,7 @@
 //
 
 #include "Session.h"
+#include "Logger.h"
 #include <iostream>
 
 constexpr std::size_t BUFFER_SIZE = 1024;
@@ -21,6 +22,7 @@ void Session::connect(const net::ip::tcp::endpoint& endpoint)
     {
         if (!ec)
         {
+            //LOG_INFO(PROD_LOG_LEVEL) << "Connected";// << std::endl;
             std::cerr << "Connected" << std::endl;
             connected = true;
             if (onConnected) onConnected();
@@ -30,6 +32,7 @@ void Session::connect(const net::ip::tcp::endpoint& endpoint)
             connected = false;
             if (onDisconnect) onDisconnect();
             std::cerr << "Connect failed: " << ec.message() << std::endl;
+            //LOG_INFO(PROD_LOG_LEVEL) << "Connect failed: " << ec.message();
         }
     });
 }
@@ -110,6 +113,7 @@ void Session::write()
                          else if (self->onDisconnect && ec != net::error::operation_aborted)
                          {
                              if (self->onDisconnect) self->onDisconnect();
+                             //LOG_INFO(PROD_LOG_LEVEL) << "write failed: " << ec.message();
                              std::cout << "write failed: " << ec.message() << std::endl;
                              self->connected = false;
                              self->disconnect();
@@ -152,6 +156,7 @@ void Session::read()
                                 else if (self->onDisconnect && ec != net::error::operation_aborted)
                                 {
                                     if (self->onDisconnect) self->onDisconnect();
+                                    //LOG_INFO(PROD_LOG_LEVEL) << "read failed: " << ec.message();
                                     std::cout << "read failed: " << ec.message() << std::endl;
                                     self->disconnect();
                                 }
