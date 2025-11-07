@@ -3,9 +3,9 @@
 //
 
 #include "Client.h"
-#include <iostream>
 
 #include "../networking/SSL/KeyExchanger.h"
+#include "../logger/Include/Logger.h"
 
 constexpr uint8_t RECONNECT_DELAY_TIME = 2;
 
@@ -24,6 +24,8 @@ Client::~Client()
 
 bool Client::start()
 {
+    changeLogLevel("PROD");
+
     init();
     connect();
     run();
@@ -37,7 +39,7 @@ void Client::init()
 
     session->net_session->setOnConnected([this]()
     {
-        std::cout << "Client connected" << std::endl;
+        LOG_INFO(PROD_LOG_LEVEL) << "Client connected";
         auto keys = std::make_shared<std::pair<std::vector<unsigned char>, std::vector<unsigned char>>>(
             smtp::ssl::KeyExchange::generateKeyPair()
         );
@@ -72,7 +74,7 @@ void Client::reconnect()
 bool Client::run()
 {
     if (isRunning) return false;
-    std::cout << "Client is running" << std::endl;
+    LOG_INFO(PROD_LOG_LEVEL) << "Client is running";
 
     io_thread = std::jthread([this]() { io.run(); });
     isRunning = true;
@@ -84,7 +86,7 @@ void Client::SMTPHandling(boost::asio::const_buffer msg)
 {
     std::string cmd(static_cast<const char*>(msg.data()), msg.size());
 
-    std::cout << "Received message: " << cmd << std::endl;
+    LOG_INFO(DEBUG_LOG_LEVEL) << "Received message: " << cmd;
 
     // temp; will integrate smtp logic in future
     if (cmd.starts_with("220"))
@@ -94,7 +96,7 @@ void Client::SMTPHandling(boost::asio::const_buffer msg)
     else if (cmd.find("250 HELP") != std::string::npos)
     {
         canSend = true;
-        std::cout << "Ready to send" << std::endl;
+        LOG_INFO(DEBUG_LOG_LEVEL) << "Received 250 HELP; Ready to send";
     }
     else if (cmd.starts_with("250 Action completed"))
     {
@@ -120,7 +122,7 @@ bool Client::sendMail(EmailMessage e_msg)
 
     if (!session->net_session->isConnected())
     {
-        std::cout << "Client is not connected" << std::endl;
+        LOG_WARNING(DEBUG_LOG_LEVEL) << "Client is not connected";
         return false;
     }
 
@@ -130,8 +132,21 @@ bool Client::sendMail(EmailMessage e_msg)
         session->net_session->send(net::buffer(sendInfo.front()));
         sendInfo.pop();
     }
-    std::cout << "Sending..." << std::endl;
+    LOG_INFO(PROD_LOG_LEVEL) << "Sending...";
     return true;
+}
+
+// will be modified after GUI integration
+void Client::changeLogLevel(const std::string& level) const
+{
+    if (level == "NONE")
+        Logger::getInstance().setLevel(LogLevel::NONE);
+    if (level == "PROD")
+        Logger::getInstance().setLevel(PROD_LOG_LEVEL);
+    if (level == "DEBUG")
+        Logger::getInstance().setLevel(DEBUG_LOG_LEVEL);
+    if (level == "TRACE")
+        Logger::getInstance().setLevel(TRACE_LOG_LEVEL);
 }
 
 bool Client::stop()

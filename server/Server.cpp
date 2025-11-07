@@ -29,7 +29,6 @@ bool Server::init()
     // initialization from config
     if (Config config; !config.load_from_file("server/config/config.json"))
         LOG_ERROR(LogLevel::PROD) << "Couldn't load config.json";
-    // std::cout << "Couldn't load config.json" << std::endl;
     else
     {
         if (config.has_key("port")) port = config.get<unsigned short>("port");
@@ -38,10 +37,10 @@ bool Server::init()
 
     threadPool = std::make_unique<ThreadPool>(thread_pool_size);
 
-    ui->showBanner(port);
-
     if (!setUpAcceptor()) return false;
     threadPool->start();
+
+    ui->start(port);
 
     return true;
 }
@@ -52,7 +51,8 @@ bool Server::stop()
     acceptor.cancel(ec);
     if (acceptor.is_open()) acceptor.close(ec);
 
-    if (ec) std::cerr << "Error closing acceptor: " << ec.message() << std::endl;
+    if (ec)
+        LOG_ERROR(DEBUG_LOG_LEVEL) << "Error closing acceptor: " << ec.message();
 
     sessions.clear();
     io->stop();
@@ -88,18 +88,11 @@ void Server::run()
 
     runAcceptor();
 
-    ui->logEvent("Server is Running");
+    LOG_INFO(PROD_LOG_LEVEL) << "Server is running";
 
-    bool running = true;
-    while (running)
-    {
-        ui->showMenu();
-        int cmd;
-        std::cin >> cmd;
-        running = ui->handleCommand(cmd);
-    }
+    ui->run();
 
-    ui->logEvent("Server shut down.");
+    LOG_INFO(PROD_LOG_LEVEL) << "Server shut down";
 
     stop();
 }
@@ -111,7 +104,8 @@ void Server::runAcceptor()
     acceptor.async_accept(*socket, [this, socket](const boost::system::error_code& ec)
     {
         if (!ec) setConnection(socket);
-        else { std::cerr << "Accept failed: " << ec.message() << std::endl; }
+        else
+            LOG_ERROR(PROD_LOG_LEVEL) << "Accept failed: " << ec.message();
 
         runAcceptor();
     });
@@ -129,7 +123,7 @@ bool Server::setUpAcceptor()
 
     if (ec)
     {
-        std::cerr << "Bind failed: " << ec.message() << std::endl;
+        LOG_ERROR(PROD_LOG_LEVEL) << "Bind failed: " << ec.message();
         return false;
     }
 
@@ -139,7 +133,7 @@ bool Server::setUpAcceptor()
 
 void Server::setConnection(std::shared_ptr<net::ip::tcp::socket> socket)
 {
-    std::cout << "New connection from " << socket->remote_endpoint() << std::endl;
+    LOG_INFO(PROD_LOG_LEVEL) << "New connection from " << socket->remote_endpoint();
     auto session = std::make_shared<SmartSession>(socket, SmartSession::Type::SERVER);
 
     {
@@ -153,12 +147,13 @@ void Server::setConnection(std::shared_ptr<net::ip::tcp::socket> socket)
             std::lock_guard lock(sessionMutex);
             sessions.remove(session);
         }
-        std::cout << "Client disconnected" << std::endl;
+        LOG_INFO(PROD_LOG_LEVEL) << "Client disconnected";
+
+        // made this the menu option
         std::cout << "Number of active clients: " << sessions.size() << std::endl;
     });
 
     session->setSMTPHandling([this, session](boost::asio::const_buffer msg) { SMTPHandling(msg, session); });
-
     session->setConnection();
 }
 
@@ -170,8 +165,8 @@ void Server::SMTPHandling(boost::asio::const_buffer msg, std::shared_ptr<SmartSe
     auto rpl = session->smtp_session->OnMessage(cmd.c_str());
     session->net_session->send(net::buffer(rpl));
 
-    std::cout << "Received message from: " << session->net_session->getSocket()->
-                                                       remote_endpoint() << std::endl;
-    std::cout << "Received message: " << cmd << std::endl;
-    std::cout << "Reply: " << rpl << std::endl;
+    LOG_INFO(DEBUG_LOG_LEVEL) << "Received message from: " << session->net_session->getSocket()->
+                                                                       remote_endpoint();
+    LOG_INFO(DEBUG_LOG_LEVEL) << "Message: " << cmd;
+    LOG_INFO(DEBUG_LOG_LEVEL) << "Reply: " << rpl;
 }

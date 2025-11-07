@@ -11,15 +11,27 @@
 
 class ServerConsoleUI {
 public:
-    void showBanner(unsigned short port);
-    void logEvent(const std::string& msg);
+    void start(unsigned short port);
+    void run();
+
     void logClientConnected(const std::string& addr);
     void logClientDisconnected(const std::string& addr);
     void logError(const std::string& msg);
-    void showMenu();
-    bool handleCommand(int cmd);
 
 private:
+    unsigned short currentPort = 0;
+
+    void showBanner();
+    void updateScreen();
+
+    void showMenu(std::string_view menu);
+    std::string_view modifyLoggerMenu();
+
+    bool handleCommand(int cmd);
+    bool runLoggerMenu();
+
+    void logEvent(const std::string& msg);
+
     std::mutex consoleMutex;
     std::vector<std::string> logBuffer;
 };

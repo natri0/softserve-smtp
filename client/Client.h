@@ -69,6 +69,8 @@ public:
      */
     bool sendMail(EmailMessage e_msg);
 
+    void changeLogLevel(const std::string& level) const;
+
 private:
     /// Stores the currently prepared email message.
     EmailMessage email_info;

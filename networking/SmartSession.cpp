@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "SSL/KeyExchanger.h"
+#include "Logger.h"
 
 SmartSession::SmartSession(std::shared_ptr<net::ip::tcp::socket> socket, Type sessionType) :
     type(sessionType),
@@ -24,7 +25,7 @@ void SmartSession::setConnection()
     net_session->setOnMessage([this, keys](boost::asio::const_buffer msg) { setKeys(msg, keys); });
 
     if (type == SERVER) net_session->send(net::buffer(keys->second));
-    std::cout << "Sent public key" << std::endl;
+    LOG_INFO(DEBUG_LOG_LEVEL) << "Sent public key";
     net_session->run();
 }
 
@@ -34,10 +35,7 @@ void SmartSession::setKeys(boost::asio::const_buffer msg,
     auto& private_key = keys->first;
     auto& public_key = keys->second;
 
-    std::cout << "Get msg: [Received " << msg.size() << " bytes of client public key]"
-        << std::endl;
-    std::cout << "Server private key size: " << private_key.size() << std::endl;
-    std::cout << "Server public key size: " << public_key.size() << std::endl;
+    LOG_INFO(DEBUG_LOG_LEVEL) << "Received peer public key";
 
     if (type == CLIENT) net_session->send(net::buffer(public_key));
 
@@ -51,7 +49,7 @@ void SmartSession::setKeys(boost::asio::const_buffer msg,
     const auto sessionKey = smtp::ssl::KeyExchange::deriveSessionKey(sharedSecret);
 
     net_session->setKey(sessionKey);
-    std::cout << "Session key established" << std::endl;
+    LOG_INFO(DEBUG_LOG_LEVEL) << "Session key established successfully";
 
     boost::asio::post(net_session->getSocket()->get_executor(), [this]()
     {
