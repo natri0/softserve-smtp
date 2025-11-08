@@ -38,6 +38,8 @@
  *  - Configurable log levels and output paths
  */
 
+struct LogData;
+
 class Logger {
 private:
     mutable std::shared_mutex mutex;
@@ -69,7 +71,7 @@ private:
      * @return true if log should be blocked, false otherwise
      */
 
-    bool blockLog(LogLevel level);
+    
 
     void write_log_to_file(const LogData& data);
 
@@ -119,7 +121,7 @@ public:
 
     void setFormat(const std::string& format);
 
-    std::string getFormat(const std::string& format) const;
+    std::string getFormat() const;
 
     void setOutputPath(const std::string& path);
 
@@ -140,7 +142,8 @@ public:
 
     static std::string toString(LogLevel level);
 
-    
+    bool blockLog(LogLevel level);
+
     /**
      * @brief Stops the background thread and finalizes logging.
      */

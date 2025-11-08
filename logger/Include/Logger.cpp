@@ -1,7 +1,12 @@
 #include "Logger.h"
-#include "Formatter.h"
+#include "LogData.h"
+//#include "Formatter.h"
 
 //std::unique_ptr<Logger> Logger::instance = nullptr;
+#define FILE data, data, data, data, data, data
+
+#define CONSOLE                                                                                                   \
+	content, content, content, content, content, content
 
 Logger::Logger(const LogLevel& level, const std::string& path, const unsigned int amount, const bool do_flush, std::string format)
     : queue(DEFAULT_SIZE), local_level{ level }, output_path{ path }, amount{ amount }, end(DEFAULT_END), do_flush(do_flush) {
@@ -67,8 +72,10 @@ void Logger::fileInit(const unsigned int amount)
 
     output_path = buff_name;
 
-    if (error)
+    if (error) {
         log("invalid output path, default will be used", "[WARNING]", FUNCTION_NAME, local_level, std::this_thread::get_id());
+        std::cerr << "ERROR: cannot open file: " << output_path << std::endl;
+    }
 }
 
 void Logger::shutDown() {
@@ -93,7 +100,7 @@ void Logger::setFormat(const std::string& format) {
     this->format = format;
 }
 
-std::string Logger::getFormat(const std::string& format) const{
+std::string Logger::getFormat() const{
     std::shared_lock lock(mutex);
     return format;
 }
@@ -204,12 +211,15 @@ std::string Logger::toString(LogLevel level) {
 //}
 
 void Logger::write_log_to_file(const LogData& data) {
-    std::string file_output = std::format(data.ft, data);
+    //std::string file_output = std::vformat(data.ft, data.format_args());
+    std::string file_output = std::vformat(data.ft.c_str(), std::make_format_args(FILE));
     file << file_output << std::endl;
 }
 
 void Logger::write_log_to_console(const LogData& data) {
-    std::string console_output = std::format(data.ft, ConsoleLog{data});
+    ConsoleLog content = ConsoleLog{ data };
+    //std::string console_output = std::vformat(data.ft, content.format_args());//ConsoleLog{ data }, ConsoleLog{ data }, ConsoleLog{ data }, ConsoleLog{ data }, ConsoleLog{ data }, ConsoleLog{ data }));
+    std::string console_output = std::vformat(data.ft.c_str(), std::make_format_args(CONSOLE));
     std::cout << console_output << std::endl;
 }
 
@@ -273,6 +283,7 @@ void Logger::operator+=(const LogData& data) {
 }
 
 void Logger::log(const LogData& data) {
+    std::cout << "LOG RECEIVED: " << data.msg << std::endl;
     LogData* msg = new LogData{ data };
     while (!queue.push(msg)) {
         std::this_thread::yield();
@@ -282,7 +293,7 @@ void Logger::log(const std::string& str, const std::string& type, const std::str
     const LogLevel& level, std::thread::id id = std::this_thread::get_id())
     //void* ptr_this = nullptr)
 {
-    LogData* msg = new LogData{ str, type, location, level, id };//, ptr_this };
+    LogData* msg = new LogData{ str, type, location, level, id , format};//, ptr_this };
     while (!queue.push(msg)) {
         std::this_thread::yield();
     }

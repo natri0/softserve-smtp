@@ -4,7 +4,7 @@ find_package(Threads REQUIRED)
 
 add_library(logger
     Include/Logger.cpp
-  "Include/LogData.cpp")
+    Include/LogData.cpp)
 
 target_include_directories(logger
     PUBLIC

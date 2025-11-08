@@ -3,7 +3,6 @@
 #include <chrono>
 #include <string>
 #include "Macros.h"
-#include "Logger.h"
 
 const std::unordered_map<std::string, std::string> colored{
     {"[ERROR]", ERROR_COLOR},
@@ -14,6 +13,11 @@ const std::unordered_map<std::string, std::string> colored{
 
 struct ConsoleLog {
     const LogData& ref;
+
+    auto format_args() const
+    {
+        return ref.format_args();
+    }
 };
 
 template<>
@@ -76,7 +80,7 @@ public:
         if (type) {
             auto it = colored.find(obj.ref.type);
             if (it != colored.end())
-                formatted += += it->second + obj.ref.type + DEFAULT_COLOR;
+                formatted += it->second + obj.ref.type + DEFAULT_COLOR;
             else
                 formatted += obj.ref.type;
 
