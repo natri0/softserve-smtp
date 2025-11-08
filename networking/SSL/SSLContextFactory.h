@@ -9,7 +9,6 @@ namespace smtp::ssl {
     using SSLContext = boost::asio::ssl::context;
 
     static std::shared_ptr<SSLContext> createServerContext();
-
     static std::shared_ptr<SSLContext> createClientContext();
 
   private:

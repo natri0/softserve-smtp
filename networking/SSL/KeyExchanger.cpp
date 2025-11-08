@@ -78,7 +78,7 @@ namespace smtp::ssl {
   }
 
   std::vector<unsigned char> KeyExchange::performDHExchange(
-    const std::vector<unsigned char> &publicKey,
+    const std::vector<unsigned char> &peerPublicKey,
     const std::vector<unsigned char> &privateKey)
   {
     const unsigned char *priv_ptr = privateKey.data();
@@ -87,8 +87,8 @@ namespace smtp::ssl {
       throw std::runtime_error("Failed to load private key");
     }
 
-    const unsigned char *pub_ptr = publicKey.data();
-    EVP_PKEY *peerKey = d2i_PUBKEY(nullptr, &pub_ptr, static_cast<long>(publicKey.size()));
+    const unsigned char *pub_ptr = peerPublicKey.data();
+    EVP_PKEY *peerKey = d2i_PUBKEY(nullptr, &pub_ptr, static_cast<long>(peerPublicKey.size()));
     if (!peerKey) {
       EVP_PKEY_free(privKey);
       throw std::runtime_error("Failed to load peer public key");

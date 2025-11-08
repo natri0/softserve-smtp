@@ -85,7 +85,7 @@ namespace smtp::ssl {
     int len = 0;
     int plaintext_len = 0;
 
-    if (EVP_DecryptUpdate(ctx, plaintext.data(), &len, binaryCiphertext.data() + 16, binaryCiphertext.size() - 16) != 1) {
+    if (EVP_DecryptUpdate(ctx, plaintext.data(), &len, binaryCiphertext.data() + 16, static_cast<int>(binaryCiphertext.size()) - 16) != 1) {
       EVP_CIPHER_CTX_free(ctx);
       throw std::runtime_error("Decryption failed");
     }
@@ -101,14 +101,14 @@ namespace smtp::ssl {
     EVP_CIPHER_CTX_free(ctx);
 
     plaintext.resize(plaintext_len);
-    return std::string(plaintext.begin(), plaintext.end());
+    return {plaintext.begin(), plaintext.end()};
   }
 
   std::vector<unsigned char> CryptoManager::base64Encode(const std::vector<unsigned char> &data) {
     BIO *bio = BIO_new(BIO_s_mem());
     BIO *b64 = BIO_new(BIO_f_base64());
     BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
-    BIO_push(b64, bio);
+    BIO_push(b64, bio); // input -> b64 -> bio
 
     BIO_write(b64, data.data(), static_cast<int>(data.size()));
     BIO_flush(b64);

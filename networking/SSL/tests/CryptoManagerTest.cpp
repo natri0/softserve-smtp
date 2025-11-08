@@ -83,7 +83,7 @@ TEST_F(CryptoManagerTest, EncryptSpecialCharacters) {
 
 TEST_F(CryptoManagerTest, EncryptUnicodeCharacters) {
     const CryptoManager manager(sessionKey);
-    const std::string plaintext = "Hello мир 世界 🌍";
+    const std::string plaintext = "Hello світ 世界 🌍";
 
     const auto encrypted = manager.encrypt(plaintext);
     const auto decrypted = manager.decrypt(encrypted);

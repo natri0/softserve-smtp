@@ -9,7 +9,7 @@ namespace smtp::ssl {
     static std::pair<std::vector<unsigned char>, std::vector<unsigned char>> generateKeyPair();
 
     static std::vector<unsigned char> performDHExchange(
-      const std::vector<unsigned char> &publicKey,
+      const std::vector<unsigned char> &peerPublicKey,
       const std::vector<unsigned char> &privateKey
     );
 
