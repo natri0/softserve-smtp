@@ -12,8 +12,3 @@ LogData& LogData::ref()
 {
     return *this;
 }
-
-std::format_args LogData::format_args() const
-{
-    return std::make_format_args(msg,type,location, level, thr_id);
-}

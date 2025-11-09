@@ -1,0 +1,14 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "_deps\\googletest-build\\googlemock\\CMakeFiles\\gmock.dir\\src\\gmock-all.cc.obj",
+            "outputs": [
+                "C:\\Users\\user\\source\\repos\\softserve-smtp\\out\\build\\x64-Debug\\vc140.pdb",
+                "_deps\\googletest-build\\googlemock\\CMakeFiles\\gmock.dir\\src\\gmock-all.cc.obj.ddi"
+            ],
+            "requires": []
+        }
+    ]
+}

@@ -1,3 +1,0 @@
-set_property(TARGET "GTest::gtest"
-  PROPERTY IMPORTED_CXX_MODULES_RELEASE
-)

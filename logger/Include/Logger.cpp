@@ -1,15 +1,15 @@
 #include "Logger.h"
 #include "LogData.h"
-//#include "Formatter.h"
+#include "Formatter.h"
 
 //std::unique_ptr<Logger> Logger::instance = nullptr;
-#define FILE data, data, data, data, data, data
+#define LOGDATA data, data, data, data, data, data, data, data
 
 #define CONSOLE                                                                                                   \
-	content, content, content, content, content, content
+	content, content, content, content, content, content, content, content
 
 Logger::Logger(const LogLevel& level, const std::string& path, const unsigned int amount, const bool do_flush, std::string format)
-    : queue(DEFAULT_SIZE), local_level{ level }, output_path{ path }, amount{ amount }, end(DEFAULT_END), do_flush(do_flush) {
+    : queue(DEFAULT_SIZE), local_level{ level }, output_path{ path }, amount{ amount }, end(DEFAULT_END), do_flush(do_flush),format(format) {
     fileInit(this->amount);
 
     thrd = std::thread([this]() {
@@ -212,14 +212,21 @@ std::string Logger::toString(LogLevel level) {
 
 void Logger::write_log_to_file(const LogData& data) {
     //std::string file_output = std::vformat(data.ft, data.format_args());
-    std::string file_output = std::vformat(data.ft.c_str(), std::make_format_args(FILE));
+    std::cout << "In write file" << std::endl;
+    std::string file_output = std::vformat(data.ft, std::make_format_args(data));
+
+
     file << file_output << std::endl;
+    file.flush();
 }
 
 void Logger::write_log_to_console(const LogData& data) {
-    ConsoleLog content = ConsoleLog{ data };
+    const ConsoleLog content = ConsoleLog{ data };
+    std::cout << "In write console" << std::endl;
     //std::string console_output = std::vformat(data.ft, content.format_args());//ConsoleLog{ data }, ConsoleLog{ data }, ConsoleLog{ data }, ConsoleLog{ data }, ConsoleLog{ data }, ConsoleLog{ data }));
-    std::string console_output = std::vformat(data.ft.c_str(), std::make_format_args(CONSOLE));
+    std::string console_output = std::vformat(data.ft, std::make_format_args(content)); //std::format(data.ft, content)
+   
+
     std::cout << console_output << std::endl;
 }
 

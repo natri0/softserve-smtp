@@ -2,6 +2,9 @@
 #include "LogLevel.h"
 #include "LogData.h"
 
+
+class Logger;
+
 #define ERROR_COLOR "\033[41m"
 #define WARNING_COLOR "\033[43m"
 #define INFORMATION_COLOR "\033[42m"
@@ -16,11 +19,11 @@
 #define DEFAULT_LOG_LEVEL TRACE_LOG_LEVEL
 
 #define FORMAT_NO     ""
-#define FORMAT_PROD   "[{:T}]{:t}| {:m}"
-#define FORMAT_DEBUG  "[{:T}]{:t}[{:l}][{:L}]| {:m}"
-#define FORMAT_TRACE  "[{:i}][{:T}]{:t}[{:l}][{:L}]| {:m}"
+#define FORMAT_PROD   "[{0:T}]{0:t}| {0:m}"
+#define FORMAT_DEBUG  "[{0:T}]{0:t}[{0:l}][{0:L}]| {0:m}"
+#define FORMAT_TRACE  "[{0:T}]{0:t}[{0:l}][{0:L}][{0:i}]| {0:m}"
 
-#define DEFAULT_FORMAT FORMAT_NO
+#define DEFAULT_FORMAT FORMAT_TRACE
 
 
 
