@@ -22,7 +22,7 @@ Logger::Logger(const LogLevel& level, const std::string& path, const std::uint32
         });
 
     if (format == "") {
-        format = chooseFormat(local_level);
+        this->format = chooseFormat(local_level);
     }
 
 }
@@ -91,11 +91,6 @@ void Logger::shutDown() {
 Logger::~Logger() {
     shutDown();
 }
-
-//auto& log = Logger::getInstance();
-
-//log.setFormat("%TIME% %LEVEL% (%THREAD%) %MSG%");
-//log.setFormat("%TIME% [%TYPE%][%LEVEL%] [%FUNC%] (%THREAD%) %MSG%");
 
 
 void Logger::setFormat(const std::string& format) {
