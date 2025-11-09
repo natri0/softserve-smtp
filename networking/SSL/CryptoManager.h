@@ -1,4 +1,6 @@
-#pragma once
+#ifndef CRYPTO_MANAGER_H
+#define CRYPTO_MANAGER_H
+
 #include <string>
 #include <vector>
 
@@ -19,3 +21,5 @@ namespace smtp::ssl {
     static std::vector<unsigned char> base64Decode(const std::vector<unsigned char> &encoded);
   };
 }
+
+#endif

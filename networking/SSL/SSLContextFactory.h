@@ -1,4 +1,6 @@
-#pragma once
+#ifndef SSL_CONTEXT_FACTORY_H
+#define SSL_CONTEXT_FACTORY_H
+
 #include <boost/asio/ssl.hpp>
 #include <memory>
 #include <string>
@@ -19,3 +21,5 @@ namespace smtp::ssl {
     static void configureContext(SSLContext &ctx);
   };
 }
+
+#endif
