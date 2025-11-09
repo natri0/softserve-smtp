@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LOGQUEUE_H
+#define LOGQUEUE_H
 
 #include <atomic>
 #include <cassert>
@@ -50,7 +51,10 @@ public:
 		std::lock_guard lock(mutex);
 		return buffer.empty();
 	}
+
+
 private:
+
 	T PopLocked()
 	{
 		assert(!buffer.empty());
@@ -59,9 +63,10 @@ private:
 		return value;
 	}
 
-private:
 	std::queue<T> buffer;
 	mutable std::mutex mutex;
 	std::condition_variable is_not_empty;
 	std::atomic<bool> is_closed{ false };
 };
+
+#endif

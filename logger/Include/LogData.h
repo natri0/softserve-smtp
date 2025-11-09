@@ -1,4 +1,6 @@
-#pragma once
+#ifndef LOGDATA_H
+#define LOGDATA_H
+
 #include <iostream>
 #include <string>
 #include <thread>
@@ -57,4 +59,6 @@ struct LogData {
 
 
 };
+
+#endif
 

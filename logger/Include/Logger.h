@@ -1,4 +1,6 @@
-#pragma once
+#ifndef LOGGER_H
+#define LOGGER_H
+
 #include <iostream>
 #include <fstream>
 #include <queue>
@@ -14,7 +16,6 @@
 #include <filesystem>
 #include <boost/lockfree/queue.hpp>
 #include <shared_mutex>
-#include <fstream>
 #include "Macros.h"
 
 /**
@@ -57,7 +58,7 @@ private:
      * @brief Private constructor (Singleton pattern).
      */
 
-    Logger(const LogLevel&, const std::string&, const unsigned int, const bool, std::string);
+    Logger(const LogLevel&, const std::string&, const std::uint32_t, const bool, const std::string&);
 
     void fileInit(const unsigned int);
 
@@ -97,7 +98,7 @@ public:
      * @return Reference to the Logger instance
      */
 
-    static Logger& getInstance(const LogLevel& level = DEFAULT_LOG_LEVEL, const std::string& path = DEFAULT_PATH, const unsigned int amount = DEFAULT_AMOUNT, const bool do_flush = DEFAULT_FLUSH, std::string format= DEFAULT_FORMAT);
+    static Logger& getInstance(const LogLevel& level = DEFAULT_LOG_LEVEL, const std::string& path = DEFAULT_PATH, const std::uint32_t amount = DEFAULT_AMOUNT, const bool do_flush = DEFAULT_FLUSH, const std::string& format= DEFAULT_FORMAT);
 
     
 
@@ -129,7 +130,7 @@ public:
 
     void setLevel(LogLevel level);
 
-    void setFlush(const bool);
+    void setFlush( bool);
 
 
     std::string chooseFormat(LogLevel level);
@@ -159,3 +160,5 @@ public:
 
   
 };
+
+#endif

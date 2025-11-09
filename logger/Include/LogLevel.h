@@ -1,8 +1,11 @@
-#pragma once
+#ifndef LOGLEVEL_H
+#define LOGLEVEL_H
 
 enum class LogLevel {
-    NONE = 0,
-    PROD = 1,
-    DEBUG = 2,
-    TRACE = 3
+    None = 0,
+    Prod = 1,
+    Debug = 2,
+    Trace = 3
 };
+
+#endif

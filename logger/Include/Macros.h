@@ -1,4 +1,6 @@
-#pragma once
+#ifndef MACROS_H
+#define MACROS_H
+
 #include "LogLevel.h"
 #include "LogData.h"
 
@@ -16,7 +18,7 @@ class Logger;
 #define DEFAULT_FLUSH true
 #define DEFAULT_SIZE 8192
 #define DEFAULT_END false
-#define DEFAULT_LOG_LEVEL TRACE_LOG_LEVEL
+#define DEFAULT_LOG_LEVEL TRACE
 
 #define FORMAT_NO     ""
 #define FORMAT_PROD   "[{0:T}]{0:t}| {0:m}"
@@ -25,12 +27,12 @@ class Logger;
 
 #define DEFAULT_FORMAT FORMAT_TRACE
 
+#define SETLevel(level) Logger::getInstance().setLevel(level)
 
-
-#define NO_LOG_LEVEL LogLevel::NONE
-#define PROD_LOG_LEVEL LogLevel::PROD
-#define DEBUG_LOG_LEVEL LogLevel::DEBUG
-#define TRACE_LOG_LEVEL LogLevel::TRACE
+#define NO LogLevel::None
+#define PROD LogLevel::Prod
+#define DEBUG LogLevel::Debug
+#define TRACE LogLevel::Trace
 
 #define INFO_TYPE "[INFO]"
 #define ERROR_TYPE "[ERROR]"
@@ -60,3 +62,5 @@ class Logger;
 #define LOG_INFO(level)           LOG(level, INFO_TYPE )
 #define LOG_WARNING(level)        LOG(level, WARNING_TYPE )
 #define LOG_ERROR(level)          LOG(level, ERROR_TYPE )
+
+#endif
