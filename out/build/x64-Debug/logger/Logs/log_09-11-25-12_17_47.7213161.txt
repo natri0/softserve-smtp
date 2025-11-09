@@ -1,3 +1,0 @@
-[12.17.47.7304566-09.11.25][INFO][TRACE][exampleFunction][thread 7266622419354596734]| Program started!
-[12.17.47.7317330-09.11.25][WARNING][DEBUG][exampleFunction][thread 7266622419354596734]| Potential issue detected
-[12.17.47.7328761-09.11.25][ERROR][PROD][exampleFunction][thread 7266622419354596734]| Critical failure!

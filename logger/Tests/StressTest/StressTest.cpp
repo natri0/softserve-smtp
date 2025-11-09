@@ -1,5 +1,5 @@
-#include "../../Include/Logger.h"
-#include "../../Include/LogLevel.h"
+#include "Logger.h"
+#include "LogLevel.h"
 #include <thread>
 #include <vector>
 #include <cassert>

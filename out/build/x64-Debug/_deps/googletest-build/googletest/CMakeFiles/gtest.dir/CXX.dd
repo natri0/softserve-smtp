@@ -1,3 +1,0 @@
-ninja_dyndep_version = 1.0
-build _deps\googletest-build\googletest\CMakeFiles\gtest.dir\src\gtest-all.cc.obj: dyndep
-

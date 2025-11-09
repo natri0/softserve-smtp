@@ -24,11 +24,6 @@
 	"module-dir" : "C:/Users/user/source/repos/softserve-smtp/out/build/x64-Debug/logger/CMakeFiles/logger_tests.dir",
 	"sources" : 
 	{
-		"logger/CMakeFiles/logger_tests.dir/Include/LogData.cpp.obj" : 
-		{
-			"language" : "CXX",
-			"source" : "C:/Users/user/source/repos/softserve-smtp/logger/Include/LogData.cpp"
-		},
 		"logger/CMakeFiles/logger_tests.dir/Tests/UnitTests/test.cpp.obj" : 
 		{
 			"language" : "CXX",

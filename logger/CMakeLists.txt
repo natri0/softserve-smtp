@@ -16,10 +16,10 @@ target_link_libraries(logger PUBLIC Threads::Threads)
 
 
 add_executable(logger_main
-    Tests/StressTest/Main.cpp "Include/LogData.cpp")
+    Tests/StressTest/Main.cpp )
 
 add_executable(logger_example
-    Example/Example.cpp "Include/LogData.cpp")
+    Example/Example.cpp )
 
 target_link_libraries(logger_main PRIVATE logger)
 
@@ -30,7 +30,7 @@ target_link_libraries(logger_example PRIVATE
     Boost::boost)
 
 
-# ----------- Benchmark Tests -----------
+
 find_package(benchmark QUIET)
 if (NOT benchmark_FOUND)
     message(STATUS "Google Benchmark not found — downloading...")
@@ -51,7 +51,7 @@ endif()
 
 
 add_executable(logger_benchmark
-    Tests/Benchmarks/Benchmarks.cpp "Include/LogData.cpp")
+    Tests/Benchmarks/Benchmarks.cpp)
 
 
 target_include_directories(logger_benchmark
@@ -67,7 +67,7 @@ target_link_libraries(logger_benchmark
     Boost::boost
 )
 
-# ----------- Unit Tests -----------
+
 find_package(GTest QUIET)
 if (NOT GTest_FOUND)
     message(STATUS "GoogleTest not found — downloading...")
@@ -84,8 +84,7 @@ endif()
 enable_testing()
 
 add_executable(logger_tests
-    Tests/UnitTests/test.cpp
- "Include/LogData.cpp")
+    Tests/UnitTests/test.cpp)
 
 target_include_directories(logger_tests
     PRIVATE

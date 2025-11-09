@@ -1,5 +1,5 @@
-#include "../../Include/Logger.h"
-#include "../../Include/Macros.h"
+#include "Logger.h"
+#include "Macros.h"
 
 #include <thread>
 #include <vector>

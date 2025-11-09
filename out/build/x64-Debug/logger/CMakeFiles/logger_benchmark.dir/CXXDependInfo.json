@@ -23,11 +23,6 @@
 	"module-dir" : "C:/Users/user/source/repos/softserve-smtp/out/build/x64-Debug/logger/CMakeFiles/logger_benchmark.dir",
 	"sources" : 
 	{
-		"logger/CMakeFiles/logger_benchmark.dir/Include/LogData.cpp.obj" : 
-		{
-			"language" : "CXX",
-			"source" : "C:/Users/user/source/repos/softserve-smtp/logger/Include/LogData.cpp"
-		},
 		"logger/CMakeFiles/logger_benchmark.dir/Tests/Benchmarks/Benchmarks.cpp.obj" : 
 		{
 			"language" : "CXX",

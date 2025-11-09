@@ -26,11 +26,6 @@
 		{
 			"language" : "CXX",
 			"source" : "C:/Users/user/source/repos/softserve-smtp/logger/Example/Example.cpp"
-		},
-		"logger/CMakeFiles/logger_example.dir/Include/LogData.cpp.obj" : 
-		{
-			"language" : "CXX",
-			"source" : "C:/Users/user/source/repos/softserve-smtp/logger/Include/LogData.cpp"
 		}
 	}
 }
