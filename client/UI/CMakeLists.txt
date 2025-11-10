@@ -32,6 +32,13 @@ target_link_libraries(smtpUI PRIVATE
         smtp_client_lib
 )
 
+if(WIN32)
+    add_custom_command(TARGET smtpUI POST_BUILD
+            COMMAND "${Qt6_DIR}/../../../bin/windeployqt.exe" "$<TARGET_FILE:smtpUI>"
+            COMMENT "Deploying Qt runtime..."
+    )
+endif()
+
 include(GNUInstallDirs)
 install(TARGETS smtpUI
         BUNDLE DESTINATION .
