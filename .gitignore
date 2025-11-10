@@ -5,6 +5,8 @@
 /build/
 /client/UI/build/
 
-.vs/
+.vs
+out
+
 CMakeSettings.json
-.out/
+

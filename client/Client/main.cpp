@@ -15,13 +15,11 @@ int main()
     client.start();
 
     // temp loop till there's no proper email manager snd UI loop to keep server alive
-    int escape = 1;
     do
     {
         std::cout << "\nContent: ";
         std::cin >> e_msg.body;
         client.sendMail(e_msg);
-        std::cin >> escape;
     }
-    while (escape == 1);
+    while (true);
 }

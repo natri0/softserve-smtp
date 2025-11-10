@@ -3,15 +3,15 @@
 //
 
 #include "Client.h"
-#include <iostream>
 
 #include "../networking/SSL/KeyExchanger.h"
+#include "../logger/Include/Logger.h"
 
 constexpr uint8_t RECONNECT_DELAY_TIME = 2;
 
 Client::Client(const std::string& host, const unsigned short port) :
     server_endpoint(net::ip::make_address(host), port),
-    session(std::make_shared<Session>(std::make_shared<net::ip::tcp::socket>(io))),
+    session(std::make_shared<SmartSession>(std::make_shared<net::ip::tcp::socket>(io), SmartSession::Type::CLIENT)),
     timer(io),
     sslContext(smtp::ssl::SSLContextFactory::createClientContext()),
     m_recipientIndex(0)
@@ -25,6 +25,8 @@ Client::~Client()
 
 bool Client::start()
 {
+    changeLogLevel("PROD");
+
     init();
     connect();
 
@@ -33,11 +35,16 @@ bool Client::start()
 
 void Client::init()
 {
-    // crypto key exchange section
-    session->setOnConnected([this]()
+    session->net_session->setOnDisconnect([this]() { reconnect(); });
+
+    session->net_session->setOnConnected([this]()
     {
-        std::cout << "Client connected" << std::endl;
-        const auto [clientPriv, clientPub] = smtp::ssl::KeyExchange::generateKeyPair();
+        LOG_INFO(PROD_LOG_LEVEL) << "Client connected";
+        auto keys = std::make_shared<std::pair<std::vector<unsigned char>, std::vector<unsigned char>>>(
+            smtp::ssl::KeyExchange::generateKeyPair()
+        );
+        session->setSMTPHandling([this](boost::asio::const_buffer msg) { SMTPHandling(msg); });
+        session->setConnection();
 
         session->setOnMessage([this, clientPriv, clientPub](boost::asio::const_buffer msg)
         {
@@ -128,16 +135,14 @@ void Client::init()
                 }
             });
         });
-        session->run();
+        session->net_session->run();
     });
-
-    session->setOnDisconnect([this]() { reconnect(); });
 }
 
 void Client::connect()
 {
-    if (session->isConnected()) return;
-    session->connect(server_endpoint);
+    if (session->net_session->isConnected()) return;
+    session->net_session->connect(server_endpoint);
 }
 
 void Client::reconnect()
@@ -149,13 +154,19 @@ void Client::reconnect()
         if (!ec)
         {
             connect();
+<<<<<<< HEAD:client/Client/Client.cpp
             if (!session->isConnected()) reconnect();
+=======
+            if (!session->net_session->isConnected()) reconnect();
+            else run();
+>>>>>>> origin/server:client/Client.cpp
         }
     });
 }
 
 bool Client::run()
 {
+<<<<<<< HEAD:client/Client/Client.cpp
   std::cout << "Client is running." << std::endl;
   try {
     io.run();
@@ -167,12 +178,58 @@ bool Client::run()
     m_lastError = e.what(); 
     return false; // Loop failed
   }
+=======
+    if (isRunning) return false;
+    LOG_INFO(PROD_LOG_LEVEL) << "Client is running";
+
+    io_thread = std::jthread([this]() { io.run(); });
+    isRunning = true;
+
+    return true;
+}
+
+void Client::SMTPHandling(boost::asio::const_buffer msg)
+{
+    std::string cmd(static_cast<const char*>(msg.data()), msg.size());
+
+    LOG_INFO(DEBUG_LOG_LEVEL) << "Received message: " << cmd;
+
+    // temp; will integrate smtp logic in future
+    if (cmd.starts_with("220"))
+    {
+        session->net_session->send(net::buffer("EHLO example.com\r\n"));
+    }
+    else if (cmd.find("250 HELP") != std::string::npos)
+    {
+        canSend = true;
+        LOG_INFO(DEBUG_LOG_LEVEL) << "Received 250 HELP; Ready to send";
+    }
+    else if (cmd.starts_with("250 Action completed"))
+    {
+        if (!sendInfo.empty())
+        {
+            session->net_session->send(net::buffer(sendInfo.front()));
+            sendInfo.pop();
+        }
+    }
+    else if (cmd.starts_with("354"))
+    {
+        session->net_session->send(net::buffer("test body\r\n.\r\n"));
+    }
+>>>>>>> origin/server:client/Client.cpp
 };
 
 bool Client::sendMail(EmailMessage e_msg)
 {
-    if (!session->isConnected())
+    // temp
+    sendInfo.emplace("MAIL FROM:<reverse@smtp.test>\r\n");
+    sendInfo.emplace("RCPT TO:<forward1@smtp.test>\r\n");
+    sendInfo.emplace("DATA\r\n");
+    sendInfo.emplace("RSET\r\n");
+
+    if (!session->net_session->isConnected())
     {
+<<<<<<< HEAD:client/Client/Client.cpp
         std::cout << "Client is not connected" << std::endl;
         m_lastError = "Client is not connected.";
         return false;
@@ -180,12 +237,46 @@ bool Client::sendMail(EmailMessage e_msg)
 
     m_emailInfo = e_msg;
     std::cout << "Email queued for sending..." << std::endl;
+=======
+        LOG_WARNING(DEBUG_LOG_LEVEL) << "Client is not connected";
+        return false;
+    }
+
+    email_info = e_msg;
+    if (canSend)
+    {
+        session->net_session->send(net::buffer(sendInfo.front()));
+        sendInfo.pop();
+    }
+    LOG_INFO(PROD_LOG_LEVEL) << "Sending...";
+>>>>>>> origin/server:client/Client.cpp
     return true;
+}
+
+// will be modified after GUI integration
+void Client::changeLogLevel(const std::string& level) const
+{
+    if (level == "NONE")
+        Logger::getInstance().setLevel(LogLevel::NONE);
+    if (level == "PROD")
+        Logger::getInstance().setLevel(PROD_LOG_LEVEL);
+    if (level == "DEBUG")
+        Logger::getInstance().setLevel(DEBUG_LOG_LEVEL);
+    if (level == "TRACE")
+        Logger::getInstance().setLevel(TRACE_LOG_LEVEL);
 }
 
 bool Client::stop()
 {
+<<<<<<< HEAD:client/Client/Client.cpp
     session->disconnect();
+=======
+    if (!isRunning) return false;
+    isRunning = false;
+
+    session->net_session->disconnect();
+
+>>>>>>> origin/server:client/Client.cpp
     io.stop();
 
     return true;

@@ -16,3 +16,5 @@ add_subdirectory(networking)
 add_subdirectory(networking/SSL)
 add_subdirectory(db)
 add_subdirectory(SMTP)
+add_subdirectory(logger)
+
