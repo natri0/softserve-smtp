@@ -72,14 +72,14 @@ void Client::init()
                 }
                 else if (cmd.starts_with("250") && cmd.find("Hello") != std::string::npos)
                 {
-                    session->send(net::buffer("MAIL FROM:<" + email_info.from + ">\r\n"));
+                    session->send(net::buffer("MAIL FROM:<" + m_emailInfo.from + ">\r\n"));
                 }
                 else if (cmd.starts_with("250 OK"))
                 {
                   m_recipientIndex = 0;
-                  if (!email_info.to.empty())
+                  if (!m_emailInfo.to.empty())
                   {
-                    session->send(net::buffer("RCPT TO:<" + email_info.to[m_recipientIndex] + ">\r\n"));
+                    session->send(net::buffer("RCPT TO:<" + m_emailInfo.to[m_recipientIndex] + ">\r\n"));
                     m_recipientIndex++;
                   }
                   else
@@ -91,9 +91,9 @@ void Client::init()
                 }
                 else if (cmd.starts_with("250 Accepted"))
                 {
-                  if (m_recipientIndex < email_info.to.size())
+                  if (m_recipientIndex < m_emailInfo.to.size())
                   {
-                    session->send(net::buffer("RCPT TO:<" + email_info.to[m_recipientIndex] + ">\r\n"));
+                    session->send(net::buffer("RCPT TO:<" + m_emailInfo.to[m_recipientIndex] + ">\r\n"));
                     m_recipientIndex++;
                   }
                   else
@@ -103,13 +103,13 @@ void Client::init()
                 }
                 else if (cmd.starts_with("354"))
                 {
-                  std::string fullBody = "Subject: " + email_info.subj + "\r\n";
-                  fullBody += "From: " + email_info.from + "\r\n";
+                  std::string fullBody = "Subject: " + m_emailInfo.subject + "\r\n";
+                  fullBody += "From: " + m_emailInfo.from + "\r\n";
 
-                  fullBody += "To: " + email_info.to[0] + "\r\n\r\n";
-                  fullBody += email_info.body + "\r\n.\r\n";
+                  fullBody += "To: " + m_emailInfo.to[0] + "\r\n\r\n";
+                  fullBody += m_emailInfo.body + "\r\n.\r\n";
 
-                  session->send(net::buffer(full_body));
+                  session->send(net::buffer(m_emailInfo.body));
                 }
                 else if (cmd.starts_with("250 Message"))
                 {

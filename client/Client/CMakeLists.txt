@@ -12,11 +12,11 @@ add_library(smtp_client_lib
     EmailMessage.cpp
 )
 
-add_custom_command(TARGET smtp_client POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:smtp_client>/networking/SSL/certs
+add_custom_command(TARGET smtp_client_lib POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:smtp_client_lib>/networking/SSL/certs
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_SOURCE_DIR}/networking/SSL/certs
-        $<TARGET_FILE_DIR:smtp_client>/networking/SSL/certs
+        $<TARGET_FILE_DIR:smtp_client_lib>/networking/SSL/certs
 )
 
 target_include_directories(smtp_client_lib PUBLIC

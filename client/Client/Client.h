@@ -20,6 +20,7 @@ public:
 
     bool stop();
     bool start();
+    bool run();
 
     bool sendMail(EmailMessage e_msg);
 
@@ -34,7 +35,6 @@ private:
 
     void init();
     void connect();
-    bool run();
 
     // SMTP
     // Logger
