@@ -6,6 +6,6 @@
 # Visual Studio
 .vs/
 
-.out/
+out/
 
 CMakeSettings.json
