@@ -1,4 +1,6 @@
-#pragma once
+#ifndef KEY_EXCHANGER_H
+#define KEY_EXCHANGER_H
+
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
 #include <vector>
@@ -22,3 +24,5 @@ namespace smtp::ssl {
     static bool assignKey(std::vector<unsigned char>& keyContainer, EVP_PKEY* pkey, bool isPublic);
   };
 }
+
+#endif

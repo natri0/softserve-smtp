@@ -8,9 +8,9 @@ find_package(OpenSSL REQUIRED)
 find_package(Boost REQUIRED COMPONENTS asio)
 
 add_library(ssl_support
-        KeyExchanger.cpp
-        SSLContextFactory.cpp
-        CryptoManager.cpp
+        src/KeyExchanger.cpp
+        src/SSLContextFactory.cpp
+        src/CryptoManager.cpp
 )
 
 target_compile_definitions(ssl_support PUBLIC

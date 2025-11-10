@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "KeyExchanger.h"
+#include "../include/KeyExchanger.h"
 
 using namespace smtp::ssl;
 

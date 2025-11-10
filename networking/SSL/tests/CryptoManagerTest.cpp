@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "CryptoManager.h"
+#include "../include/CryptoManager.h"
 
 using namespace smtp::ssl;
 

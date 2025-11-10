@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "SSLContextFactory.h"
+#include "../include/SSLContextFactory.h"
 #include "boost/asio/ip/tcp.hpp"
 
 using namespace smtp::ssl;
