@@ -1,4 +1,4 @@
-#include "CryptoManager.h"
+#include "../include/CryptoManager.h"
 #include <openssl/evp.h>
 #include <openssl/rand.h>
 #include <openssl/bio.h>
@@ -16,7 +16,7 @@ namespace smtp::ssl
 
   std::vector<unsigned char> CryptoManager::generateIV() {
     std::vector<unsigned char> iv(16);
-    if (RAND_bytes(iv.data(), iv.size()) != 1) {
+    if (RAND_bytes(iv.data(), static_cast<int>(iv.size())) != 1) {
       throw std::runtime_error("Failed to generate IV");
     }
     return iv;
@@ -44,7 +44,7 @@ namespace smtp::ssl
     int len = 0;
     int ciphertext_len = 0;
 
-    if (EVP_EncryptUpdate(ctx, ciphertext.data() + iv.size(), &len, data.data(), data.size()) != 1) {
+    if (EVP_EncryptUpdate(ctx, ciphertext.data() + iv.size(), &len, data.data(), static_cast<int>(data.size())) != 1) {
       EVP_CIPHER_CTX_free(ctx);
       throw std::runtime_error("Encryption failed");
     }
@@ -124,13 +124,13 @@ namespace smtp::ssl
   }
 
   std::vector<unsigned char> CryptoManager::base64Decode(const std::vector<unsigned char> &encoded) {
-    BIO *bio = BIO_new_mem_buf(encoded.data(), encoded.size());
+    BIO *bio = BIO_new_mem_buf(encoded.data(), static_cast<int>(encoded.size()));
     BIO *b64 = BIO_new(BIO_f_base64());
     BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
     BIO_push(b64, bio);
 
     std::vector<unsigned char> result(encoded.size());
-    const int decoded_length = BIO_read(b64, result.data(), encoded.size());
+    const int decoded_length = BIO_read(b64, result.data(), static_cast<int>(encoded.size()));
 
     BIO_free_all(b64);
 

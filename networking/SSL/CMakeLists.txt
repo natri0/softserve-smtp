@@ -7,9 +7,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(OpenSSL REQUIRED)
 
 add_library(ssl_support
-        KeyExchanger.cpp
-        SSLContextFactory.cpp
-        CryptoManager.cpp
+        src/KeyExchanger.cpp
+        src/SSLContextFactory.cpp
+        src/CryptoManager.cpp
 )
 
 target_include_directories(ssl_support PUBLIC
