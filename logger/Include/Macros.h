@@ -26,7 +26,10 @@ class Logger;
 
 #define DEFAULT_FORMAT FORMAT_TRACE
 
-#define SETLevel(level) Logger::getInstance().setLevel(level)
+#define SET_LEVEL(level) Logger::getInstance().setLevel(level)
+#define GET_LEVEL() Logger::getInstance().getLevel()
+
+#define GET_LEVEL_NAME(level) Logger::getInstance().getLevelName(level)
 
 #define NO LogLevel::None
 #define PROD LogLevel::Prod
@@ -49,11 +52,11 @@ class Logger;
 #define LOG_GET_FILE()      __FILE__
 
 
-#define IF_LOG_(level)   if (Logger::getInstance().blockLog(level)) { ; } else
+#define IF_LOG(level)   if (Logger::getInstance().blockLog(level)) { ; } else
 
 //
 
-#define LOG(level,type) IF_LOG_(level) (Logger::getInstance()) += \
+#define LOG(level,type) IF_LOG(level) (Logger::getInstance()) += \
     LogData("", type, LOG_GET_FUNC(), level, std::this_thread::get_id(), Logger::getInstance().getFormat()).ref()
 
 #define LOG_INFO(level)           LOG(level, INFO_TYPE )

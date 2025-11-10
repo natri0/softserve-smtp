@@ -154,7 +154,7 @@ bool Logger::blockLog(LogLevel level)
         static_cast<std::underlying_type<LogLevel>::type>(local_level);
 }
 
-std::string Logger::toString(LogLevel level) {
+std::string Logger::getLevelName(LogLevel level) {
     switch (level) {
         case LogLevel::Trace:
             return "TRACE";
@@ -167,14 +167,14 @@ std::string Logger::toString(LogLevel level) {
     }
 }
 
-void Logger::write_log_to_file(const LogData& data) {
+void Logger::writeLogToFile(const LogData& data) {
     std::string file_output = std::vformat(data.format, std::make_format_args(data));
 
     file << file_output << std::endl;
     file.flush();
 }
 
-void Logger::write_log_to_console(const LogData& data) {
+void Logger::writeLogToConsole(const LogData& data) {
     const ConsoleLog content = ConsoleLog{ data };
     std::string console_output = std::vformat(data.format, std::make_format_args(content)); 
    
@@ -196,9 +196,9 @@ void Logger::flushMessage(const LogData& data)
         return;
     }
 
-    write_log_to_file(data);
+    writeLogToFile(data);
     if (do_flush) {
-        write_log_to_console(data);
+        writeLogToConsole(data);
     }
     
 
@@ -259,20 +259,5 @@ void Logger::log(const std::string& str, const std::string& type, const std::str
     LogData* msg = new LogData{ str, type, location, level, id , format};//, ptr_this };
     while (!queue.push(msg)) {
         std::this_thread::yield();
-    }
-}
-
-
-void Logger::logFuncStart() {
-
-    if (static_cast<int>(local_level) >= 2) {
-        log("Function is started", "[INFO]", LOG_GET_FUNC(), local_level);
-    }
-}
-
-void Logger::logFuncEnd()
-{
-    if (static_cast<int>(local_level) >= 2) {
-        log("Function is successfully executed", "[INFO]", LOG_GET_FUNC(), local_level);
     }
 }

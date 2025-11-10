@@ -74,9 +74,9 @@ private:
 
     
 
-    void write_log_to_file(const LogData& data);
+    void writeLogToFile(const LogData& data);
 
-    void write_log_to_console(const LogData& data);
+    void writeLogToConsole(const LogData& data);
 
     /**
      * @brief Flushes a message to output (file and/or console).
@@ -141,7 +141,7 @@ public:
      * @brief Converts a log level to string (e.g., TRACE ? "TRACE").
      */
 
-    static std::string toString(LogLevel level);
+    static std::string getLevelName(LogLevel level);
 
     bool blockLog(LogLevel level);
 
@@ -151,12 +151,6 @@ public:
 
     void shutDown();
 
-
-    // Common message shortcuts
-
-    void logFuncStart();
-
-    void logFuncEnd();
 
   
 };
