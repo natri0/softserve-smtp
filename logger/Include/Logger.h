@@ -60,7 +60,7 @@ private:
 
     Logger(const LogLevel&, const std::string&, const std::uint32_t, const bool, const std::string&);
 
-    void fileInit(const unsigned int);
+    void fileInit(const std::uint32_t);
 
     void log(const std::string&, const std::string&, const std::string&, const LogLevel&, std::thread::id);//, void*);
 

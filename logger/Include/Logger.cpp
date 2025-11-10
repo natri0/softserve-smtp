@@ -33,7 +33,7 @@ Logger& Logger::getInstance(const LogLevel& level, const std::string& path, cons
     return instance;
 }
 
-void Logger::fileInit(const unsigned int amount)
+void Logger::fileInit(const std::uint32_t amount)
 {
     std::string log_dir{ "Logs" };
 
@@ -75,8 +75,7 @@ void Logger::fileInit(const unsigned int amount)
     output_path = buff_name;
 
     if (error) {
-        log("invalid output path, default will be used", "[WARNING]", FUNCTION_NAME, local_level, std::this_thread::get_id());
-        std::cerr << "ERROR: cannot open file: " << output_path << std::endl;
+        log("invalid output path, default will be used", "[WARNING]", LOG_GET_FUNC(), local_level, std::this_thread::get_id());
     }
 }
 
@@ -169,7 +168,7 @@ std::string Logger::toString(LogLevel level) {
 }
 
 void Logger::write_log_to_file(const LogData& data) {
-    std::string file_output = std::vformat(data.ft, std::make_format_args(data));
+    std::string file_output = std::vformat(data.format, std::make_format_args(data));
 
     file << file_output << std::endl;
     file.flush();
@@ -177,7 +176,7 @@ void Logger::write_log_to_file(const LogData& data) {
 
 void Logger::write_log_to_console(const LogData& data) {
     const ConsoleLog content = ConsoleLog{ data };
-    std::string console_output = std::vformat(data.ft, std::make_format_args(content)); 
+    std::string console_output = std::vformat(data.format, std::make_format_args(content)); 
    
 
     std::cout << console_output << std::endl;
@@ -248,7 +247,6 @@ void Logger::operator+=(const LogData& data) {
 }
 
 void Logger::log(const LogData& data) {
-    std::cout << "LOG RECEIVED: " << data.msg << std::endl;
     LogData* msg = new LogData{ data };
     while (!queue.push(msg)) {
         std::this_thread::yield();

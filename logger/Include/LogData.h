@@ -21,7 +21,7 @@ struct LogData {
     std::string location;
     LogLevel level;
     std::thread::id thr_id;
-    std::string ft;
+    std::string format;
     //void* object_ptr
 
     /**
@@ -29,7 +29,7 @@ struct LogData {
      */
 
     LogData(const std::string& m, const std::string& type, const std::string& loc,
-        const LogLevel& level, std::thread::id id, std::string format);
+        const LogLevel& level, std::thread::id id, std::string ft);
 
     /**
      * @brief Appends a value to the message text.

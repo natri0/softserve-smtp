@@ -10,20 +10,20 @@ void exampleFunction() {
     LOG_ERROR(LogLevel::PROD) << "Error occurred in exampleFunction";
     LOG_INFO(LogLevel::TRACE) << "Example function finished";
     LOG_INFO(LogLevel::DEBUG) << "Function is finished";*/
-    LOG_INFO(LogLevel::TRACE) << "Program started!";
-    LOG_WARNING(LogLevel::DEBUG) << "Potential issue detected";
-    LOG_ERROR(LogLevel::PROD) << "Critical failure!";
+    LOG_INFO(LogLevel::Trace) << "Program started!";
+    LOG_WARNING(LogLevel::Debug) << "Potential issue detected";
+    LOG_ERROR(LogLevel::Prod) << "Critical failure!";
 }
 
 
 void multiThreadLogging() {
     
     Logger& logger = Logger::getInstance();
-    logger.setLevel(LogLevel::PROD);
+    logger.setLevel(LogLevel::Prod);
     logger.setFlush(false);
 
-    std::thread t1([] { LOG_INFO(LogLevel::DEBUG) << "Thread 1 running"; });
-    std::thread t2([] { LOG_ERROR(LogLevel::PROD) << "Thread 2 error"; });
+    std::thread t1([] { LOG_INFO(LogLevel::Debug) << "Thread 1 running"; });
+    std::thread t2([] { LOG_ERROR(LogLevel::Prod) << "Thread 2 error"; });
     t1.join();
     t2.join();
 }
@@ -31,8 +31,6 @@ void multiThreadLogging() {
 void readingLogs() {
     Logger& logger = Logger::getInstance();
     logger.setFlush(false);
-
-    //LogReader reader("C:/Users/user/source/repos/softserve-smtp/out/build/x64-Release/logger/Logs/log_06-11-25-08_14_58.5619886.txt");
 
     auto all = logger.readAllLogs();
     auto errors = logger.readLogsByKeyword("[INFO]");

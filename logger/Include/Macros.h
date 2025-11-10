@@ -14,7 +14,6 @@ class Logger;
 
 #define DEFAULT_AMOUNT 30
 #define DEFAULT_PATH ""
-//#define DEFAULT_CONFIG false
 #define DEFAULT_FLUSH true
 #define DEFAULT_SIZE 8192
 #define DEFAULT_END false
@@ -37,8 +36,6 @@ class Logger;
 #define INFO_TYPE "[INFO]"
 #define ERROR_TYPE "[ERROR]"
 #define WARNING_TYPE "[WARNING]"
-
-#define FUNCTION_NAME __FUNCTION__
 
 //#define LOG_GET_THIS()      __if_exists(this) { this } __if_not_exists(this) { 0 }
 
