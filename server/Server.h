@@ -67,10 +67,10 @@ public:
     bool stop();
 
     /**
-     * @brief Restarts the server by stopping and reinitializing all components.
+     * @brief Restarts the server by reinitializing all components.
      * @return True if restart succeeded.
      */
-    bool restart();
+    bool reset();
 
     /**
      * @brief Runs the main server loop.

@@ -26,6 +26,11 @@ Server::~Server()
 
 bool Server::init()
 {
+    // setting logger
+    Logger::getInstance().setLevel(DEBUG_LOG_LEVEL);
+    Logger::getInstance().setFlush(false);
+    ui->do_flush = false;
+
     // initialization from config
     if (Config config; !config.load_from_file("server/config/config.json"))
         LOG_ERROR(LogLevel::PROD) << "Couldn't load config.json";
@@ -37,9 +42,12 @@ bool Server::init()
 
     threadPool = std::make_unique<ThreadPool>(thread_pool_size);
 
+    // net
     if (!setUpAcceptor()) return false;
+
     threadPool->start();
 
+    // starting the console UI
     ui->start(port);
 
     return true;
@@ -61,16 +69,14 @@ bool Server::stop()
     return true;
 }
 
-bool Server::restart()
+bool Server::reset()
 {
     stop();
-
     isStopping = false;
     io->restart();
     threadPool->start();
 
     if (!init())return false;
-
     runAcceptor();
 
     return true;
@@ -89,11 +95,9 @@ void Server::run()
     runAcceptor();
 
     LOG_INFO(PROD_LOG_LEVEL) << "Server is running";
-
     ui->run();
 
     LOG_INFO(PROD_LOG_LEVEL) << "Server shut down";
-
     stop();
 }
 
