@@ -1,5 +1,0 @@
-if(EXISTS "C:/Users/user/source/repos/softserve-smtp/out/build/x64-Debug/logger/logger_tests[1]_tests.cmake")
-  include("C:/Users/user/source/repos/softserve-smtp/out/build/x64-Debug/logger/logger_tests[1]_tests.cmake")
-else()
-  add_test(logger_tests_NOT_BUILT logger_tests_NOT_BUILT)
-endif()
