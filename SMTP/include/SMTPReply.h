@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <array>
 #include <cstdint>
 
 namespace ISXSMTP
@@ -56,6 +55,8 @@ public:
 	 * @param value bool
 	 */
 	void SetMultiLine(bool value);
+
+	bool IsMultiLine() const;
 
 public:
 	static SMTPReply CommandUnrecognized();
