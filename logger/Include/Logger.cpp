@@ -2,10 +2,8 @@
 #include "LogData.h"
 #include "Formatter.h"
 
-//std::unique_ptr<Logger> Logger::instance = nullptr;
-
 Logger::Logger(const LogLevel& level, const std::string& path, const std::uint32_t amount, const bool do_flush, const std::string& format)
-    : queue(DEFAULT_SIZE), local_level{ level }, output_path{ path }, amount{ amount }, end(DEFAULT_END), do_flush(do_flush),format(format) {
+    : queue(DEFAULT_SIZE), local_level{ level }, output_path{ path }, amount{ amount }, end(DEFAULT_END), do_flush(do_flush), format(format) {
     fileInit(this->amount);
 
     thrd = std::thread([this]() {
@@ -97,7 +95,7 @@ void Logger::setFormat(const std::string& format) {
     this->format = format;
 }
 
-std::string Logger::getFormat() const{
+std::string Logger::getFormat() const {
     std::shared_lock lock(mutex);
     return format;
 }
@@ -106,14 +104,14 @@ std::string Logger::chooseFormat(LogLevel level)
 {
     switch (level)
     {
-        case LogLevel::Prod:   
-            return FORMAT_PROD;
-        case LogLevel::Debug:  
-            return FORMAT_DEBUG;
-        case LogLevel::Trace:  
-            return FORMAT_TRACE;
-        default:               
-            return FORMAT_NO;
+    case LogLevel::Prod:
+        return FORMAT_PROD;
+    case LogLevel::Debug:
+        return FORMAT_DEBUG;
+    case LogLevel::Trace:
+        return FORMAT_TRACE;
+    default:
+        return FORMAT_NO;
     }
 }
 
@@ -156,14 +154,14 @@ bool Logger::blockLog(LogLevel level)
 
 std::string Logger::getLevelName(LogLevel level) {
     switch (level) {
-        case LogLevel::Trace:
-            return "TRACE";
-        case LogLevel::Debug:
-            return "DEBUG";
-        case LogLevel::Prod:
-            return "PROD";
-        default:
-            return "NONE";
+    case LogLevel::Trace:
+        return "TRACE";
+    case LogLevel::Debug:
+        return "DEBUG";
+    case LogLevel::Prod:
+        return "PROD";
+    default:
+        return "NONE";
     }
 }
 
@@ -176,8 +174,8 @@ void Logger::writeLogToFile(const LogData& data) {
 
 void Logger::writeLogToConsole(const LogData& data) {
     const ConsoleLog content = ConsoleLog{ data };
-    std::string console_output = std::vformat(data.format, std::make_format_args(content)); 
-   
+    std::string console_output = std::vformat(data.format, std::make_format_args(content));
+
 
     std::cout << console_output << std::endl;
 }
@@ -185,10 +183,10 @@ void Logger::writeLogToConsole(const LogData& data) {
 
 void Logger::flushMessage(const LogData& data)
 {
-    
 
-    if (static_cast<int>(local_level) == 0) { 
-        return; 
+
+    if (static_cast<int>(local_level) == 0) {
+        return;
     }
 
 
@@ -200,7 +198,7 @@ void Logger::flushMessage(const LogData& data)
     if (do_flush) {
         writeLogToConsole(data);
     }
-    
+
 
 }
 
@@ -212,7 +210,7 @@ std::vector<std::string> Logger::readAllLogs() const {
     std::string line;
 
     if (!file.is_open()) {
-        LOG_ERROR(LogLevel::Prod) <<"ERROR: cannot open log file: " << output_path;
+        LOG_ERROR(LogLevel::Prod) << "ERROR: cannot open log file: " << output_path;
         return lines;
     }
 
@@ -252,11 +250,11 @@ void Logger::log(const LogData& data) {
         std::this_thread::yield();
     }
 }
+
 void Logger::log(const std::string& str, const std::string& type, const std::string& location,
     const LogLevel& level, std::thread::id id = std::this_thread::get_id())
-    //void* ptr_this = nullptr)
 {
-    LogData* msg = new LogData{ str, type, location, level, id , format};//, ptr_this };
+    LogData* msg = new LogData{ str, type, location, level, id , format };
     while (!queue.push(msg)) {
         std::this_thread::yield();
     }

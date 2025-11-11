@@ -22,7 +22,6 @@ struct LogData {
     LogLevel level;
     std::thread::id thr_id;
     std::string format;
-    //void* object_ptr
 
     /**
      * @brief Constructs a new LogData object.

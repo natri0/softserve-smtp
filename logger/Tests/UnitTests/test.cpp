@@ -26,9 +26,9 @@ TEST(TestLogger, BlockLog) {
 
 TEST(TestLogger, ToString) {
 	Logger& logger = Logger::getInstance();
-	ASSERT_EQ(logger.toString(LogLevel::Trace), "TRACE");
-	ASSERT_EQ(logger.toString(LogLevel::Debug), "DEBUG");
-	ASSERT_EQ(logger.toString(LogLevel::Prod), "PROD");
-	ASSERT_EQ(logger.toString(LogLevel::None), "NONE");
+	ASSERT_EQ(Logger::getLevelName(LogLevel::Trace), "TRACE");
+	ASSERT_EQ(Logger::getLevelName(LogLevel::Debug), "DEBUG");
+	ASSERT_EQ(Logger::getLevelName(LogLevel::Prod), "PROD");
+	ASSERT_EQ(Logger::getLevelName(LogLevel::None), "NONE");
 
 }

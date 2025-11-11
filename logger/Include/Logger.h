@@ -19,18 +19,7 @@
 #include "Macros.h"
 
 /**
- * @brief Color codes for console output.
- */
-
-//const std::unordered_map<std::string, std::string> colored{
-//    {"[ERROR]", ERROR_COLOR},
-//    {"[WARNING]", WARNING_COLOR},
-//    {"[INFO]", INFORMATION_COLOR},
-//    {"[DEFAULT]", DEFAULT_COLOR}
-//};
-
-/**
- * @brief Asynchronous thread-safe logger.
+ * @brief Asynchronous logger.
  *
  * The Logger class supports:
  *  - Asynchronous log processing using a background thread
@@ -62,7 +51,7 @@ private:
 
     void fileInit(const std::uint32_t);
 
-    void log(const std::string&, const std::string&, const std::string&, const LogLevel&, std::thread::id);//, void*);
+    void log(const std::string&, const std::string&, const std::string&, const LogLevel&, std::thread::id);
 
     void log(const LogData&);
 
@@ -72,7 +61,7 @@ private:
      * @return true if log should be blocked, false otherwise
      */
 
-    
+
 
     void writeLogToFile(const LogData& data);
 
@@ -94,13 +83,13 @@ public:
      * @param path Output directory (optional)
      * @param amount Maximum number of log files to keep
      * @param do_flush Whether to print to console
-     * 
+     *
      * @return Reference to the Logger instance
      */
 
-    static Logger& getInstance(const LogLevel& level = DEFAULT_LOG_LEVEL, const std::string& path = DEFAULT_PATH, const std::uint32_t amount = DEFAULT_AMOUNT, const bool do_flush = DEFAULT_FLUSH, const std::string& format= DEFAULT_FORMAT);
+    static Logger& getInstance(const LogLevel& level = DEFAULT_LOG_LEVEL, const std::string& path = DEFAULT_PATH, const std::uint32_t amount = DEFAULT_AMOUNT, const bool do_flush = DEFAULT_FLUSH, const std::string& format = DEFAULT_FORMAT);
 
-    
+
 
     Logger(const Logger&) = delete;
     void operator=(const Logger&) = delete;
@@ -109,7 +98,7 @@ public:
     Logger() = delete;
 
     /**
-     * @brief Destructor — safely shuts down background thread and closes file.
+     * @brief Destructor safely shuts down background thread and closes file.
      */
 
     ~Logger();
@@ -130,7 +119,7 @@ public:
 
     void setLevel(LogLevel level);
 
-    void setFlush( bool);
+    void setFlush(bool);
 
 
     std::string chooseFormat(LogLevel level);
@@ -152,7 +141,7 @@ public:
     void shutDown();
 
 
-  
+
 };
 
 #endif

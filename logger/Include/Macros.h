@@ -4,7 +4,6 @@
 #include "LogLevel.h"
 #include "LogData.h"
 
-
 class Logger;
 
 #define ERROR_COLOR "\033[41m"
@@ -29,7 +28,6 @@ class Logger;
 #define SET_LEVEL(level) Logger::getInstance().setLevel(level)
 #define GET_LEVEL() Logger::getInstance().getLevel()
 
-#define GET_LEVEL_NAME(level) Logger::getInstance().getLevelName(level)
 
 #define NO LogLevel::None
 #define PROD LogLevel::Prod
@@ -39,8 +37,6 @@ class Logger;
 #define INFO_TYPE "[INFO]"
 #define ERROR_TYPE "[ERROR]"
 #define WARNING_TYPE "[WARNING]"
-
-//#define LOG_GET_THIS()      __if_exists(this) { this } __if_not_exists(this) { 0 }
 
 #ifdef _MSC_VER
 #   define LOG_GET_FUNC()      __FUNCTION__
@@ -53,8 +49,6 @@ class Logger;
 
 
 #define IF_LOG(level)   if (Logger::getInstance().blockLog(level)) { ; } else
-
-//
 
 #define LOG(level,type) IF_LOG(level) (Logger::getInstance()) += \
     LogData("", type, LOG_GET_FUNC(), level, std::this_thread::get_id(), Logger::getInstance().getFormat()).ref()

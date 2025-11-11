@@ -17,7 +17,7 @@ void exampleFunction() {
 
 
 void multiThreadLogging() {
-    
+
     Logger& logger = Logger::getInstance();
     logger.setLevel(LogLevel::Prod);
     logger.setFlush(false);

@@ -41,11 +41,10 @@ static void BM_4Threads(benchmark::State& state) {
     for (auto _ : state) {
         std::vector<std::thread> threads;
 
-        for (size_t  t = 0; t < num_threads; ++t) {
+        for (size_t t = 0; t < num_threads; ++t) {
             threads.emplace_back([&logger, t, messages_per_thread]() {
                 for (size_t i = 0; i < messages_per_thread; ++i) {
                     LOG_INFO(LogLevel::Debug) << "Thread " << std::to_string(t) << " message " << std::to_string(i);
-                    //logger.logInfo("Thread " + std::to_string(t) + " message " + std::to_string(i));
                 }
                 });
         }
@@ -70,7 +69,6 @@ static void BM_6Threads(benchmark::State& state) {
             threads.emplace_back([&logger, t, messages_per_thread]() {
                 for (size_t i = 0; i < messages_per_thread; ++i) {
                     LOG_INFO(LogLevel::Debug) << "Thread " << std::to_string(t) << " message " << std::to_string(i);
-                    //logger.logInfo("Thread " + std::to_string(t) + " message " + std::to_string(i));
                 }
                 });
         }
