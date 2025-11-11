@@ -37,6 +37,7 @@ target_link_libraries(smtp_server PRIVATE
         config_parser
         SMTP
         logger
+        db
 )
 
 if (WIN32)
