@@ -11,7 +11,6 @@
 #include "SMTPSession.h"
 #include "../logger/Include/Logger.h"
 #include "config/config.h"
-#include "Database/Manager.hpp"
 
 // temp till we don't have parser
 
@@ -44,9 +43,9 @@ bool Server::init()
 
     // mailbox lifespan = server lifespan
     static std::shared_ptr<ISXSMTP::SMTPIMailbox> mailbox = std::make_shared<SQLiteMailbox>();
-    SMTPConfigBuilder builder;
+    ISXSMTP::SMTPConfigBuilder builder;
     builder.SetMailbox(mailbox);
-    //builder.SetDomain(domain_from_config_file_should_be_here);
+    builder.SetDomain("smtp.test");
     builder.SetCurrentAsDefault();
 
     threadPool = std::make_unique<ThreadPool>(thread_pool_size);

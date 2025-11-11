@@ -1,5 +1,4 @@
 find_package(Boost REQUIRED)
-
 find_package(Threads REQUIRED)
 
 add_library(logger STATIC

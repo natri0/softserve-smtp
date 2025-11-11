@@ -14,6 +14,7 @@ add_executable(smtp_server main.cpp
         Server.cpp
         ThreadPool/src/ThreadPool.cpp
         ServerConsoleUI.cpp
+        Database/Manager.cpp
 )
 
 add_custom_command(TARGET smtp_server POST_BUILD
@@ -26,6 +27,15 @@ add_custom_command(TARGET smtp_server POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
         ${CMAKE_SOURCE_DIR}/server/config/config.json
         $<TARGET_FILE_DIR:smtp_server>/server/config
+)
+
+add_custom_command(TARGET smtp_server POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "C:/Program Files/JetBrains/CLion 2025.1.1/bin/mingw/bin/libstdc++-6.dll"
+        "C:/Program Files/JetBrains/CLion 2025.1.1/bin/mingw/bin/libgcc_s_seh-1.dll"
+        "C:/Program Files/JetBrains/CLion 2025.1.1/bin/mingw/bin/libwinpthread-1.dll"
+        "C:/Users/alkir/vcpkg/installed/x64-windows/bin/fmt.dll"
+        $<TARGET_FILE_DIR:smtp_server>
 )
 
 target_link_libraries(smtp_server PRIVATE

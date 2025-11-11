@@ -5,8 +5,10 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build/server/bin")
+
 option(DB_ENABLE_TESTS "Enable building of database module tests" OFF)
-option(BUILD_SHARED_LIBS "Build libraries as shared libraries" ON)
+option(BUILD_SHARED_LIBS "Build libraries as shared libraries" OFF)
 
 file(GLOB_RECURSE DB_SOURCES CONFIGURE_DEPENDS src/*.cpp)
 if (BUILD_SHARED_LIBS)

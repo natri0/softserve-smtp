@@ -1,65 +1,119 @@
 #include "Manager.hpp"
 
+#include <iostream>
 #include <fmt/format.h>
 
-constexpr std::string_view CREATE_TABLES = R"(
+// constexpr std::string_view CREATE_TABLES = R"(
+// CREATE TABLE IF NOT EXISTS domains (
+//     id INTEGER PRIMARY KEY AUTOINCREMENT,
+//     name TEXT NOT NULL UNIQUE
+// );
+// CREATE TABLE IF NOT EXISTS users (
+//     user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+//     localpart TEXT NOT NULL UNIQUE,
+//     domain_id INTEGER NOT NULL,
+//     FOREIGN KEY (domain_id) REFERENCES domains(id)
+// );
+// CREATE TABLE IF NOT EXISTS mail (
+//     mail_id INTEGER PRIMARY KEY AUTOINCREMENT,
+//     reverse_path TEXT NOT NULL,
+//     data BLOB NOT NULL
+// );
+// CREATE TABLE IF NOT EXISTS mail_recipients (
+//     mail_id INTEGER NOT NULL,
+//     user_id INTEGER NOT NULL,
+//     FOREIGN KEY (mail_id) REFERENCES mail(mail_id),
+//     FOREIGN KEY (user_id) REFERENCES users(user_id)
+// );
+// )";
+
+constexpr std::string_view CREATE_TABLE_0 = R"(
 CREATE TABLE IF NOT EXISTS domains (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE
 );
+)";
+
+constexpr std::string_view CREATE_TABLE_1 = R"(
 CREATE TABLE IF NOT EXISTS users (
     user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    localpart TEXT NOT NULL UNIQUE
+    localpart TEXT NOT NULL UNIQUE,
     domain_id INTEGER NOT NULL,
     FOREIGN KEY (domain_id) REFERENCES domains(id)
 );
+)";
+
+constexpr std::string_view CREATE_TABLE_2 = R"(
 CREATE TABLE IF NOT EXISTS mail (
     mail_id INTEGER PRIMARY KEY AUTOINCREMENT,
     reverse_path TEXT NOT NULL,
     data BLOB NOT NULL
 );
+)";
+
+constexpr std::string_view CREATE_TABLE_3 = R"(
+
 CREATE TABLE IF NOT EXISTS mail_recipients (
     mail_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
     FOREIGN KEY (mail_id) REFERENCES mail(mail_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
-);)";
+);
+)";
 
-DatabaseManager::DatabaseManager() {
+DatabaseManager::DatabaseManager()
+{
     m_connection.open("database.db")
                 .expect("Failed to open database");
 
-    m_connection.execute(CREATE_TABLES)
+    // m_connection.execute(CREATE_TABLES)
+    //             .expect("Failed to create tables");
+
+    m_connection.execute(CREATE_TABLE_0)
+                .expect("Failed to create tables");
+
+    m_connection.execute(CREATE_TABLE_1)
+                .expect("Failed to create tables");
+
+    m_connection.execute(CREATE_TABLE_2)
+                .expect("Failed to create tables");
+
+    m_connection.execute(CREATE_TABLE_3)
                 .expect("Failed to create tables");
 }
 
-DatabaseManager& DatabaseManager::get() {
+DatabaseManager& DatabaseManager::get()
+{
     static DatabaseManager instance;
     return instance;
 }
 
 Result<> DatabaseManager::emplaceMail(
     std::string_view forwardPath, std::string_view reversePath, std::string_view mailData
-) {
+)
+{
     auto res = m_connection.execute(
         "INSERT INTO mail (reverse_path, data) VALUES (?, ?);",
         reversePath,
         mailData
     );
 
-    if (!res) {
+    if (!res)
+    {
         return Err(fmt::format("Failed to insert mail: {}", res.unwrapErrUnchecked()));
     }
 
     return Ok();
 }
 
-Result<bool> DatabaseManager::checkMailboxAvailability(std::string_view localpart) {
+Result<bool> DatabaseManager::checkMailboxAvailability(std::string_view localpart)
+{
     auto res = m_connection.fetchOne<int>(
         "SELECT COUNT(*) FROM users WHERE localpart = ?;",
         localpart
     );
-    if (!res) {
+    if (!res)
+    {
         return Err(fmt::format("Failed to check mailbox availability: {}", res.unwrapErrUnchecked()));
     }
 
@@ -67,12 +121,14 @@ Result<bool> DatabaseManager::checkMailboxAvailability(std::string_view localpar
     return Ok(count == 0);
 }
 
-Result<std::string> DatabaseManager::suggestAddress(std::string_view request) {
+Result<std::string> DatabaseManager::suggestAddress(std::string_view request)
+{
     auto res = m_connection.fetchOne<std::string>(
         "SELECT localpart FROM users WHERE localpart LIKE ? LIMIT 1;",
         fmt::format("%{}%", request)
     );
-    if (!res) {
+    if (!res)
+    {
         return Err(fmt::format("Failed to suggest address: {}", res.unwrapErrUnchecked()));
     }
 
@@ -82,21 +138,25 @@ Result<std::string> DatabaseManager::suggestAddress(std::string_view request) {
 
 void SQLiteMailbox::DepositMail(
     ISXSMTP::SMTPBuffer forward_path, ISXSMTP::SMTPBuffer reverse_path, ISXSMTP::SMTPBuffer mail_data
-) {
+)
+{
     auto res = DatabaseManager::get().emplaceMail(
         forward_path.GetString(),
         reverse_path.GetString(),
         mail_data.GetString()
     );
 
-    if (!res) {
+    if (!res)
+    {
         // TODO: log error
     }
 }
 
-bool SQLiteMailbox::IsMailboxAvailable(std::string const& localpart) {
+bool SQLiteMailbox::IsMailboxAvailable(std::string const& localpart)
+{
     auto res = DatabaseManager::get().checkMailboxAvailability(localpart);
-    if (!res) {
+    if (!res)
+    {
         // TODO: log error
         return false;
     }
@@ -104,9 +164,11 @@ bool SQLiteMailbox::IsMailboxAvailable(std::string const& localpart) {
     return res.unwrapUnchecked();
 }
 
-std::string SQLiteMailbox::SuggestAddress(std::string const& request) {
+std::string SQLiteMailbox::SuggestAddress(std::string const& request)
+{
     auto res = DatabaseManager::get().suggestAddress(request);
-    if (!res) {
+    if (!res)
+    {
         // TODO: log error
         return {};
     }

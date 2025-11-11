@@ -3,7 +3,7 @@ project(SMTP VERSION 0.1 DESCRIPTION "SMTP implementation")
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_library(SMTP 
+add_library(SMTP STATIC
 	 "source/Commands/DATACommand.cpp" 
 	 "source/Commands/EHLOCommand.cpp" 
 	 "source/Commands/HELOCommand.cpp"
