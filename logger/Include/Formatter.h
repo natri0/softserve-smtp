@@ -60,7 +60,6 @@ public:
 
     auto format(const LogData& obj, auto& context) const
     {
-        std::cout << "[DEBUG] formatter called\n";
 
         std::ostringstream formatted;
 
@@ -99,7 +98,6 @@ class std::formatter<ConsoleLog> : public std::formatter<LogData>
 public:
     auto format(const ConsoleLog& obj, auto& context) const
     {
-        std::cout << "[DEBUG] formatter called\n";
 
         std::ostringstream formatted;
 
