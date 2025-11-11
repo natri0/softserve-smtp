@@ -16,9 +16,6 @@ namespace smtp::ssl {
     std::vector<unsigned char> sessionKey;
 
     static std::vector<unsigned char> generateIV();
-
-    static std::vector<unsigned char> base64Encode(const std::vector<unsigned char> &data);
-    static std::vector<unsigned char> base64Decode(const std::vector<unsigned char> &encoded);
   };
 }
 

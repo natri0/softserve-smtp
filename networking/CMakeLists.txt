@@ -26,3 +26,6 @@ target_link_libraries(networking
 if (WIN32)
     target_link_libraries(networking PRIVATE ws2_32 mswsock)
 endif ()
+
+add_subdirectory(SSL)
+add_subdirectory(auth)
