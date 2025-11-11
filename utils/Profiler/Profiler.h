@@ -1,47 +1,22 @@
 #pragma once
 
-// In the future this file should be included to precompiled headers
-
 #include <chrono>
 #include <string>
 #include <thread>
 #include <fstream>
 
+#include "SpinLock.h"
+
+#define COMBINE_HELPER(X,Y) X##Y
+#define COMBINE(X,Y) COMBINE_HELPER(X,Y)
+
+#define PROFILE_SCOPE(name) utils::ProfileTimer COMBINE(timer, __LINE__)(name)
+#define PROFILE_FUNC() utils::ProfileTimer COMBINE(timer, __LINE__)(__FUNCSIG__)
+#define PROFILE_BEGIN(name) utils::Profiler::GetInstance().Begin(name)
+#define PROFILE_END() utils::Profiler::GetInstance().End()
+
 namespace utils
 {
-
-class SpinLock {
-public:
-	SpinLock() {}
-
-	void lock() {
-		retries = 0;
-		while (flag.test_and_set(std::memory_order_acquire)) {
-			// spin until the lock is released
-			backoff();
-			retries++;
-		}
-	}
-
-	void unlock() {
-		flag.clear(std::memory_order_release);
-	}
-
-private:
-	void backoff() {
-		const int max_retries = 8;
-		if (retries < max_retries) {
-			std::this_thread::yield();
-		}
-		else {
-			auto delay = std::chrono::microseconds(1 << (retries - max_retries));
-			std::this_thread::sleep_for(delay);
-		}
-	}
-
-	std::atomic_flag flag = ATOMIC_FLAG_INIT;
-	int retries{ 0 };
-};
 
 struct ProfileResult
 {
@@ -58,7 +33,7 @@ private:
 	std::ofstream m_output;
 	bool m_firstEntry;
 
-	SpinLock lock;
+	SpinLock m_lock;
 	
 public:
 	Profiler();
@@ -89,4 +64,3 @@ public:
 };
 
 }
-

@@ -19,10 +19,10 @@ void utils::Profiler::Begin(const std::string& session_name, const std::string& 
 	if (!m_output.is_open())
 	{
 		// log error
-		return;
+		//return;
 	}
 
-	m_output << "{\"otherData\": {},\"traceEvents\":[";
+	m_output << "{\"otherData\": {\"version\":\"Profiler v0.1\",\"session_name\":\"" << session_name << "\"},\"traceEvents\":[";
 }
 
 void utils::Profiler::End()
@@ -34,7 +34,7 @@ void utils::Profiler::End()
 
 void utils::Profiler::WriteProfile(const ProfileResult& result)
 {
-	lock.lock();
+	m_lock.lock();
 
 	if (!m_firstEntry)
 		m_output << ",";
@@ -51,7 +51,7 @@ void utils::Profiler::WriteProfile(const ProfileResult& result)
 
 	m_firstEntry = false;
 
-	lock.unlock();
+	m_lock.unlock();
 }
 
 utils::ProfileTimer::ProfileTimer(const std::string& name) 
