@@ -1,7 +1,8 @@
 #include "Profiler.h"
 
-utils::Profiler::Profiler() : m_sessionName("")
-, m_firstEntry(true)
+utils::Profiler::Profiler()
+	: m_sessionName("")
+	, m_firstEntry(true)
 {
 
 }
@@ -14,6 +15,7 @@ utils::Profiler& utils::Profiler::GetInstance()
 
 void utils::Profiler::Begin(const std::string& session_name, const std::string& filepath /*= "profiler_output.json"*/)
 {
+	m_firstEntry = true;
 	m_sessionName = session_name;
 	m_output.open(filepath);
 	if (!m_output.is_open())

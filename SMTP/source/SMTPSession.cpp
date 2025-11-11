@@ -10,6 +10,7 @@
 #include "Commands/HELOCommand.h"
 #include "SMTPConstants.h"
 #include "SMTPCommandParser.h"
+#include "Profiler.h"
 
 #include <iostream>
 
@@ -17,6 +18,7 @@ std::unordered_map<std::string, std::unique_ptr<ISXSMTP::SMTPCommandBase>> ISXSM
 
 ISXSMTP::SMTPSession::SMTPSession(const SMTPConfig& config /*= SMTPConfigBuilder::GetDefaultConfig()*/)
 {
+	PROFILE_FUNC();
 	ApplyConfig(config); // TODO log if apply config failed
 
 	if (s_commands.empty())
@@ -25,6 +27,7 @@ ISXSMTP::SMTPSession::SMTPSession(const SMTPConfig& config /*= SMTPConfigBuilder
 
 bool ISXSMTP::SMTPSession::IsFinished()
 {
+	PROFILE_FUNC();
 	if (m_context.state == ISXSMTP::SMTPStates::FINISH)
 		return true;
 	return false;
@@ -32,11 +35,13 @@ bool ISXSMTP::SMTPSession::IsFinished()
 
 std::string ISXSMTP::SMTPSession::OnConnect()
 {
+	PROFILE_FUNC();
 	return SMTPReply::ServiceReady(m_domain).ToString();
 }
 
 std::string ISXSMTP::SMTPSession::OnMessage(const std::string& message)
 {
+	PROFILE_FUNC();
 	if (IsFinished())
 		return SMTPReply::ServiceNotAvailable().ToString();
 
@@ -91,11 +96,13 @@ std::string ISXSMTP::SMTPSession::OnMessage(const std::string& message)
 
 ISXSMTP::SMTPContext ISXSMTP::SMTPSession::GetContext()
 {
+	PROFILE_FUNC();
 	return m_context;
 }
 
 bool ISXSMTP::SMTPSession::ApplyConfig(const SMTPConfig& config)
 {
+	PROFILE_FUNC();
 	if (checkConfig(config))
 	{
 		// bad config
@@ -125,11 +132,13 @@ bool ISXSMTP::SMTPSession::ApplyConfig(const SMTPConfig& config)
 
 std::string ISXSMTP::SMTPSession::GetDomain() const
 {
+	PROFILE_FUNC();
 	return m_domain;
 }
 
 bool ISXSMTP::SMTPSession::handleMailDataInput(const std::string& data)
 {
+	PROFILE_FUNC();
 	m_context.mail_data.Append(data);
 	if (IsDataEndingPresent(m_context.mail_data.GetString()))
 	{
@@ -141,6 +150,7 @@ bool ISXSMTP::SMTPSession::handleMailDataInput(const std::string& data)
 
 bool ISXSMTP::SMTPSession::checkConfig(const SMTPConfig& config)
 {
+	PROFILE_FUNC();
 	// later more checks may be added
 
 	if (config.domain.empty())
@@ -150,6 +160,7 @@ bool ISXSMTP::SMTPSession::checkConfig(const SMTPConfig& config)
 
 bool ISXSMTP::SMTPSession::IsDataEndingPresent(const std::string& data)
 {
+	PROFILE_FUNC();
 	if (data.size() >= 5)
 	{
 		if (data[data.size() - 1] == ISXSMTP::SMTPConstants::LF &&
@@ -167,6 +178,7 @@ bool ISXSMTP::SMTPSession::IsDataEndingPresent(const std::string& data)
 
 bool ISXSMTP::SMTPSession::IsLineEndingPresent(const std::string& data)
 {
+	PROFILE_FUNC();
 	if (data.size() >= 2)
 	{
 		if (data[data.size() - 1] == ISXSMTP::SMTPConstants::LF &&
@@ -181,6 +193,7 @@ bool ISXSMTP::SMTPSession::IsLineEndingPresent(const std::string& data)
 
 void ISXSMTP::SMTPSession::fillCommandMap()
 {
+	PROFILE_FUNC();
 	auto EHLO = std::make_unique<EHLOCommand>();
 	auto MAIL = std::make_unique<MAILCommand>();
 	auto RCPT = std::make_unique<RCPTCommand>();

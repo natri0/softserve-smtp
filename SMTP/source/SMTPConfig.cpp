@@ -1,5 +1,7 @@
 #include "SMTPConfig.h"
 
+#include "Profiler.h"
+
 ISXSMTP::SMTPConfig::SMTPConfig(
 		std::shared_ptr<SMTPIMailbox> mailbox /*= std::make_shared<SMTPIMailbox>()*/, 
 		const std::string& domain /*= "smtp.test"*/,
@@ -8,4 +10,5 @@ ISXSMTP::SMTPConfig::SMTPConfig(
 	, context(context)
 	, mailbox(mailbox)
 {
+	PROFILE_FUNC();
 }

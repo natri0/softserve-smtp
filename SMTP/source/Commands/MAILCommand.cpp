@@ -1,10 +1,12 @@
 #include "Commands/MAILCommand.h"
 #include "SMTPConstants.h"
+#include "Profiler.h"
 
 #include <regex>
 
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::MAILCommand::Invoke(SMTPCommandArguments arguments)
 {
+	PROFILE_FUNC();
 	if (arguments.context.state == SMTPStates::POST_RCPT || // mail command cannot be called when another transaction is in progress
 		arguments.context.state == SMTPStates::INITIAL   || // mail should be called after ehlo or helo command
 		arguments.context.state == SMTPStates::POST_DATA || // mail command cannot be called when another transaction is in progress
@@ -43,11 +45,13 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::MAILCommand::Invoke(SMTPCommandArgument
 
 std::string ISXSMTP::MAILCommand::GetName()
 {
+	PROFILE_FUNC();
 	return std::string("MAIL");
 }
 
 std::string ISXSMTP::MAILCommand::GetSyntax()
 {
+	PROFILE_FUNC();
 	// mail command should also accept mail params but since 
 	// I couldn't find a singe example what this params could mean or do
 	// I decided to omit them for now

@@ -1,10 +1,12 @@
 #include "Commands/RCPTCommand.h"
 #include "SMTPConstants.h"
+#include "Profiler.h"
 
 #include <regex>
 
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::RCPTCommand::Invoke(SMTPCommandArguments arguments)
 {
+	PROFILE_FUNC();
 	if (arguments.context.state != SMTPStates::POST_MAIL && arguments.context.state != SMTPStates::POST_RCPT)
 		return { SMTPReply::BadSequenceOfCommands() };
 
@@ -48,10 +50,12 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::RCPTCommand::Invoke(SMTPCommandArgument
 
 std::string ISXSMTP::RCPTCommand::GetName()
 {
+	PROFILE_FUNC();
 	return "RCPT";
 }
 
 std::string ISXSMTP::RCPTCommand::GetSyntax()
 {
+	PROFILE_FUNC();
 	return  std::string("RCPT TO:<!forward_path!>") + SMTPConstants::CR + SMTPConstants::LF;;
 }

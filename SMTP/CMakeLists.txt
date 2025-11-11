@@ -25,4 +25,6 @@ add_library(SMTP
 
 target_include_directories(SMTP PUBLIC "include")
 
+target_link_libraries(SMTP PRIVATE profiler)
+
 add_subdirectory(gtests)

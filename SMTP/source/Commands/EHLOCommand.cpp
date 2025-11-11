@@ -1,8 +1,10 @@
 #include "Commands/EHLOCommand.h"
 #include "SMTPConstants.h"
+#include "Profiler.h"
 
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::EHLOCommand::Invoke(SMTPCommandArguments arguments)
 {
+	PROFILE_FUNC();
 	if (arguments.context.state == SMTPStates::FINISH)
 		return { SMTPReply::BadSequenceOfCommands() };
 
@@ -26,10 +28,12 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::EHLOCommand::Invoke(SMTPCommandArgument
 
 std::string ISXSMTP::EHLOCommand::GetName()
 {
+	PROFILE_FUNC();
 	return "EHLO";
 }
 
 std::string ISXSMTP::EHLOCommand::GetSyntax()
 {
+	PROFILE_FUNC();
 	return std::string("EHLO !domain!") + SMTPConstants::CR + SMTPConstants::LF;
 }

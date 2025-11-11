@@ -1,5 +1,6 @@
 #include "SMTPCommandParser.h"
 #include "SMTPConstants.h"
+#include "Profiler.h"
 
 #include <iostream>
 #include <algorithm>
@@ -8,6 +9,8 @@ ISXSMTP::SMTPCommandParserResult ISXSMTP::SMTPCommandParser::Parse(
 		const std::string& command,
 		const std::unordered_map<std::string, std::unique_ptr<SMTPCommandBase>>& commands)
 {
+	PROFILE_FUNC();
+
 	/*
 	* 1. Find command verb
 	* 2. Get command syntax
@@ -70,6 +73,8 @@ ISXSMTP::SMTPCommandParserResult ISXSMTP::SMTPCommandParser::Parse(
 
 size_t ISXSMTP::SMTPCommandParser::findCommandVerbIndex(const std::string& command)
 {
+	PROFILE_FUNC();
+
 	size_t command_verb_index = command.find_first_of(SMTPConstants::SP);
 	if (command_verb_index == std::string::npos)
 	{
@@ -87,6 +92,8 @@ size_t ISXSMTP::SMTPCommandParser::findCommandVerbIndex(const std::string& comma
 
 std::string ISXSMTP::SMTPCommandParser::readArgName(const std::string& command_syntax, size_t& start)
 {
+	PROFILE_FUNC();
+
 	std::string arg_name;
 	std::uint8_t end_char = command_syntax[start];
 	if (end_char == '[')
@@ -108,6 +115,8 @@ std::string ISXSMTP::SMTPCommandParser::readArgName(const std::string& command_s
 
 std::string ISXSMTP::SMTPCommandParser::readArgValue(const std::string& command, size_t & start)
 {
+	PROFILE_FUNC();
+
 	std::string arg_value;
 	if (command[start] == '\"')
 	{
@@ -153,6 +162,8 @@ void ISXSMTP::SMTPCommandParser::handleMandatoryArgument(
 	size_t& syntax_index,
 	SMTPCommandParserResult& result)
 {
+	PROFILE_FUNC();
+
 	// this means next section inside '!'...'!' contains argument name
 	// and the next word in command should be written as value to that argument
 
@@ -183,6 +194,8 @@ void ISXSMTP::SMTPCommandParser::handleOptionalArgument(
 		size_t& syntax_index,
 		SMTPCommandParserResult& result)
 {
+	PROFILE_FUNC();
+
 	// this means next section inside '['...']' contains optional argument name
 	// and the next word in command may be written as value to that argument
 
@@ -211,6 +224,8 @@ void ISXSMTP::SMTPCommandParser::handleSyntaxDeviation(
 		size_t& syntax_index,
 		SMTPCommandParserResult& result)
 {
+	PROFILE_FUNC();
+
 	if (command[command_index] == SMTPConstants::SP && command_syntax[syntax_index] != SMTPConstants::CR)
 	{
 		// current implementation will not tolerate trailing <SP> between arguments

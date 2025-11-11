@@ -17,5 +17,5 @@ target_link_libraries(GTest::GTest INTERFACE gtest_main)
 
 add_executable(gtests_smtp "gtests.cpp")
 
-target_link_libraries(gtests_smtp SMTP gtest_main)
+target_link_libraries(gtests_smtp SMTP gtest_main profiler)
 

@@ -5,7 +5,16 @@
 #include "SMTPCommandsTests.h"
 #include "SMTPConfigBuilderTests.h"
 
+#include "Profiler.h"
+
 int main(int argc, char** argv) {
-	testing::InitGoogleTest(&argc, argv);
-	return RUN_ALL_TESTS();
+	PROFILE_BEGIN("gtest_profile");
+	int res = 0;
+	{
+		PROFILE_SCOPE("gtest_main");
+		testing::InitGoogleTest(&argc, argv);
+	    res = RUN_ALL_TESTS();
+	}
+	PROFILE_END();
+	return res;
 }
