@@ -8,6 +8,7 @@
 namespace smtp::ssl {
   class SSLContextFactory {
   public:
+
     using SSLContext = boost::asio::ssl::context;
 
     static std::shared_ptr<SSLContext> createServerContext();

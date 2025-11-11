@@ -25,6 +25,7 @@ target_link_libraries(ssl_support PUBLIC
         OpenSSL::SSL
         OpenSSL::Crypto
         Boost::asio
+        utils
 )
 
 add_subdirectory(tests)
