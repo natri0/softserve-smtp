@@ -9,12 +9,13 @@
 
 constexpr uint8_t RECONNECT_DELAY_TIME = 2;
 
-Client::Client(const std::string& host, const unsigned short port) :
-    server_endpoint(net::ip::make_address(host), port),
+Client::Client(const ClientSettings& settings) :
+    server_endpoint(net::ip::make_address(settings.server), settings.port),
     session(std::make_shared<SmartSession>(std::make_shared<net::ip::tcp::socket>(io), SmartSession::Type::CLIENT)),
     timer(io),
     sslContext(smtp::ssl::SSLContextFactory::createClientContext()),
-    m_recipientIndex(0)
+    m_recipientIndex(0),
+    m_settings(settings)
 {
 };
 
@@ -25,7 +26,7 @@ Client::~Client()
 
 bool Client::start()
 {
-    changeLogLevel("PROD");
+    changeLogLevel(m_settings.logLevel);
 
     init();
     connect();
@@ -43,16 +44,16 @@ void Client::init()
         auto keys = std::make_shared<std::pair<std::vector<unsigned char>, std::vector<unsigned char>>>(
             smtp::ssl::KeyExchange::generateKeyPair()
         );
-        session->setSMTPHandling([this](boost::asio::const_buffer msg) { SMTPHandling(msg); });
+        /*session->setSMTPHandling([this](boost::asio::const_buffer msg) { SMTPHandling(msg); });
         session->setConnection();
 
-        session->setOnMessage([this, clientPriv, clientPub](boost::asio::const_buffer msg)
+        session->net_session->setOnMessage([this, clientPriv, clientPub](boost::asio::const_buffer msg)
         {
             std::cout << "client private key size: " << clientPriv.size() << std::endl;
             std::cout << "client public key size: " << clientPub.size() << std::endl;
             std::cout << "Get msg: [Received " << msg.size() << " bytes of server public key]" << std::endl;
 
-            session->send(net::buffer(clientPub));
+            session->net_session->send(net::buffer(clientPub));
 
             std::vector serverPub(
                 static_cast<const unsigned char*>(msg.data()),
@@ -62,12 +63,12 @@ void Client::init()
             const auto sharedSecret = smtp::ssl::KeyExchange::performDHExchange(serverPub, clientPriv);
             const auto sessionKey = smtp::ssl::KeyExchange::deriveSessionKey(sharedSecret);
 
-            session->setKey(sessionKey);
+            session->net_session->setKey(sessionKey);
 
             std::cout << "Session key established" << std::endl;
             std::cout << sessionKey.size() << std::endl;
 
-            session->setOnMessage([this](boost::asio::const_buffer msg)
+            session->net_session->setOnMessage([this](boost::asio::const_buffer msg)
             {
                 std::string cmd(static_cast<const char*>(msg.data()), msg.size());
 
@@ -75,24 +76,24 @@ void Client::init()
 
                 if (cmd.starts_with("220"))
                 {
-                    session->send(net::buffer("HELO example.com\r\n"));
+                    session->net_session->send(net::buffer("HELO example.com\r\n"));
                 }
                 else if (cmd.starts_with("250") && cmd.find("Hello") != std::string::npos)
                 {
-                    session->send(net::buffer("MAIL FROM:<" + m_emailInfo.from + ">\r\n"));
+                    session->net_session->send(net::buffer("MAIL FROM:<" + m_emailInfo.from + ">\r\n"));
                 }
                 else if (cmd.starts_with("250 OK"))
                 {
                   m_recipientIndex = 0;
                   if (!m_emailInfo.to.empty())
                   {
-                    session->send(net::buffer("RCPT TO:<" + m_emailInfo.to[m_recipientIndex] + ">\r\n"));
+                    session->net_session->send(net::buffer("RCPT TO:<" + m_emailInfo.to[m_recipientIndex] + ">\r\n"));
                     m_recipientIndex++;
                   }
                   else
                   {
                     m_lastError = "Error: No recipients specified.";
-                    session->disconnect();
+                    session->net_session->disconnect();
                     io.stop();
                   }
                 }
@@ -100,12 +101,12 @@ void Client::init()
                 {
                   if (m_recipientIndex < m_emailInfo.to.size())
                   {
-                    session->send(net::buffer("RCPT TO:<" + m_emailInfo.to[m_recipientIndex] + ">\r\n"));
+                    session->net_session->send(net::buffer("RCPT TO:<" + m_emailInfo.to[m_recipientIndex] + ">\r\n"));
                     m_recipientIndex++;
                   }
                   else
                   {
-                    session->send(net::buffer("DATA\r\n"));
+                    session->net_session->send(net::buffer("DATA\r\n"));
                   }
                 }
                 else if (cmd.starts_with("354"))
@@ -116,17 +117,17 @@ void Client::init()
                   fullBody += "To: " + m_emailInfo.to[0] + "\r\n\r\n";
                   fullBody += m_emailInfo.body + "\r\n.\r\n";
 
-                  session->send(net::buffer(m_emailInfo.body));
+                  session->net_session->send(net::buffer(m_emailInfo.body));
                 }
                 else if (cmd.starts_with("250 Message"))
                 {
-                    session->send(net::buffer("QUIT\r\n"));
+                    session->net_session->send(net::buffer("QUIT\r\n"));
                 }
                 else if (cmd.starts_with("5") || cmd.starts_with("4"))
                 {
                   std::cerr << "SMTP Error: " << cmd << std::endl;
                   m_lastError = cmd;
-                  session->disconnect();
+                  session->net_session->disconnect();
                   io.stop();
                 }
                 else
@@ -134,7 +135,7 @@ void Client::init()
                     std::cout << "Want to proceed? Yes: 1\tNo: 0" << std::endl;
                 }
             });
-        });
+        });*/
         session->net_session->run();
     });
 }
@@ -154,19 +155,14 @@ void Client::reconnect()
         if (!ec)
         {
             connect();
-<<<<<<< HEAD:client/Client/Client.cpp
-            if (!session->isConnected()) reconnect();
-=======
             if (!session->net_session->isConnected()) reconnect();
             else run();
->>>>>>> origin/server:client/Client.cpp
         }
     });
 }
 
 bool Client::run()
 {
-<<<<<<< HEAD:client/Client/Client.cpp
   std::cout << "Client is running." << std::endl;
   try {
     io.run();
@@ -178,14 +174,6 @@ bool Client::run()
     m_lastError = e.what(); 
     return false; // Loop failed
   }
-=======
-    if (isRunning) return false;
-    LOG_INFO(PROD_LOG_LEVEL) << "Client is running";
-
-    io_thread = std::jthread([this]() { io.run(); });
-    isRunning = true;
-
-    return true;
 }
 
 void Client::SMTPHandling(boost::asio::const_buffer msg)
@@ -216,7 +204,6 @@ void Client::SMTPHandling(boost::asio::const_buffer msg)
     {
         session->net_session->send(net::buffer("test body\r\n.\r\n"));
     }
->>>>>>> origin/server:client/Client.cpp
 };
 
 bool Client::sendMail(EmailMessage e_msg)
@@ -229,31 +216,24 @@ bool Client::sendMail(EmailMessage e_msg)
 
     if (!session->net_session->isConnected())
     {
-<<<<<<< HEAD:client/Client/Client.cpp
-        std::cout << "Client is not connected" << std::endl;
+        LOG_WARNING(DEBUG_LOG_LEVEL) << "Client is not connected";
         m_lastError = "Client is not connected.";
         return false;
     }
 
     m_emailInfo = e_msg;
-    std::cout << "Email queued for sending..." << std::endl;
-=======
-        LOG_WARNING(DEBUG_LOG_LEVEL) << "Client is not connected";
-        return false;
-    }
+    LOG_INFO(PROD_LOG_LEVEL) << "Sending...";
 
-    email_info = e_msg;
     if (canSend)
     {
         session->net_session->send(net::buffer(sendInfo.front()));
         sendInfo.pop();
     }
-    LOG_INFO(PROD_LOG_LEVEL) << "Sending...";
->>>>>>> origin/server:client/Client.cpp
+
     return true;
 }
 
-// will be modified after GUI integration
+// Modified by passing settings that contain LogLevel
 void Client::changeLogLevel(const std::string& level) const
 {
     if (level == "NONE")
@@ -268,15 +248,10 @@ void Client::changeLogLevel(const std::string& level) const
 
 bool Client::stop()
 {
-<<<<<<< HEAD:client/Client/Client.cpp
-    session->disconnect();
-=======
-    if (!isRunning) return false;
-    isRunning = false;
+    LOG_WARNING(DEBUG_LOG_LEVEL) << "Client stopped";
 
     session->net_session->disconnect();
 
->>>>>>> origin/server:client/Client.cpp
     io.stop();
 
     return true;

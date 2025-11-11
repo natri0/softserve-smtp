@@ -10,6 +10,8 @@ find_package(OpenSSL REQUIRED)
 add_library(smtp_client_lib
     Client.cpp
     EmailMessage.cpp
+    ClientSettings.h
+    Client.h
 )
 
 add_custom_command(TARGET smtp_client_lib POST_BUILD

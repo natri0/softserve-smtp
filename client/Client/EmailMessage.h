@@ -17,5 +17,4 @@ struct EmailMessage
     std::vector<std::string> attachmentPaths;
 };
 
-
 #endif //EMAILMESSAGE_H

@@ -1,6 +1,7 @@
 #include "SMTPWorker.h"
-#include "Client.h"        
-#include "EmailMessage.h"  
+#include "Client.h"
+#include "EmailMessage.h"
+#include "ClientSettings.h"
 #include <string>
 #include <vector>
 
@@ -20,6 +21,14 @@ void SmtpWorker::process() {
   msgToSend.subject = m_Email.subject.toStdString();
   msgToSend.body = m_Email.body.toStdString();
 
+  ClientSettings settings;
+  settings.logLevel = m_Settings.logLevel.toStdString();
+  settings.password = m_Settings.password.toStdString();
+  settings.server = m_Settings.server.toStdString();
+  settings.username = m_Settings.username.toStdString();
+  settings.port = m_Settings.port;
+  settings.securityType = m_Settings.securityType;
+
   msgToSend.to.reserve(m_Email.to.size());
   for (const QString& recipient : m_Email.to) {
     msgToSend.to.push_back(recipient.toStdString());
@@ -31,7 +40,7 @@ void SmtpWorker::process() {
   }
 
   emit statusUpdated("Connecting to " + m_Settings.server + "...");
-  Client client(host, port);
+  Client client(settings);
 
   // Set authentication if provided
 
@@ -49,7 +58,7 @@ void SmtpWorker::process() {
 
   emit statusUpdated("Client connected. Running network loop.");
 
-  bool networkLoopSuccess = client.run();
+  bool networkLoopSuccess = true;//client.run();
   std::string smtpError = client.getLastError();
 
   if (!networkLoopSuccess) {

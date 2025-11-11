@@ -6,7 +6,9 @@ TODO: fill in readme once we start actually writing the project
 
 - C++23
 - Boost libraries
-- (we'll probably use more stuff as time goes on)
+- OpenSSL
+- Qt6
+- CMake
 
 ## Project structure
 
@@ -25,4 +27,14 @@ cd build
 cmake -G Ninja ..
 ninja smtp_server
 ./smtp_server
+```
+
+## Updates from UI
+
+Use vcpkg to install boost, qt and openSSL
+```bash
+vcpkg install boost-lockfree boost-beast
+vcpkg install openssl
+vcpkg install boost-asio boost-thread
+vcpkg install qtbase
 ```

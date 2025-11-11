@@ -15,6 +15,7 @@
 #include <string>
 #include <memory>
 
+#include "ClientSettings.h"
 #include "EmailMessage.h"
 #include "SmartSession.h"
 #include "../networking/SSL/SSLContextFactory.h"
@@ -39,7 +40,7 @@ public:
      * @param host Hostname or IP address of the SMTP server.
      * @param port Port number to connect to.
      */
-    Client(const std::string& host, unsigned short port);
+    Client(const ClientSettings& settings);
 
     /**
      * @brief Destroys the Client instance.
@@ -61,7 +62,6 @@ public:
      * @return True if the connection was successfully established.
      */
     bool start();
-    bool run();
 
     /**
      * @brief Sends an email message to the SMTP server.
@@ -73,16 +73,21 @@ public:
 
     std::string getLastError() const { return m_lastError; }
 private:
-    EmailMessage m_emailInfo;
-
-    std::string m_lastError;
-    size_t m_recipientIndex;
 
     void changeLogLevel(const std::string& level) const;
 
 private:
-    /// Stores the currently prepared email message.
-    EmailMessage email_info;
+    ///Client settings to get settings from gui
+    ClientSettings m_settings;
+
+    ///EmailMessage synced with gui
+    EmailMessage m_emailInfo;
+
+    ///Last error to send to gui
+    std::string m_lastError;
+
+    ///Allows sending mails to multiple messengers
+    size_t m_recipientIndex;
 
     /// Indicates whether the client is running.
     bool isRunning = false;

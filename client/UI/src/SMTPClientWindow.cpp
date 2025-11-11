@@ -16,6 +16,7 @@ SmtpClientWindow::SmtpClientWindow(QWidget *parent)
     m_Settings.server = "smtp.example.com";
     m_Settings.username = "user";
     m_Settings.password = "pass";
+    m_Settings.logLevel = "DEBUG";
 
     updateLog("Ready. Please configure server settings before sending.");
 }
@@ -183,6 +184,11 @@ void SmtpClientWindow::onConfigureServer()
     securityCombo->addItems({"None", "SSL/TLS"});
     securityCombo->setCurrentIndex(m_Settings.securityType);
     form.addRow("Security:", securityCombo);
+
+    QComboBox *loggerCombo = new QComboBox();
+    loggerCombo->addItems({"NONE", "PROD", "DEBUG", "TRACE"});
+    loggerCombo->setCurrentIndex(m_Settings.securityType);
+    form.addRow("Security:", loggerCombo);
 
     QLineEdit *userEdit = new QLineEdit(m_Settings.username);
     form.addRow( "Username:", userEdit);

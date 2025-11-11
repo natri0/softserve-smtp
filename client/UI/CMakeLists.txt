@@ -23,6 +23,7 @@ qt_add_executable(smtpUI
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         ${PROJECT_RESOURCES}
+        include/Structures.h
 )
 
 target_include_directories(smtpUI PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)

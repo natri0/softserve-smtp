@@ -9,6 +9,7 @@ struct SmtpSettings {
     quint16 port;
     QString username;
     QString password;
+    QString logLevel;
     quint16 securityType = 1; // 0: None, 1: SSL/TLS
 };
 
