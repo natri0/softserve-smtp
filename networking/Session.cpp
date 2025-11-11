@@ -82,9 +82,7 @@ bool Session::send(boost::asio::const_buffer data)
 void Session::write()
 {
     isWriting = true;
-
     boost::asio::const_buffer data = writeQueue.front();
-
     std::shared_ptr<std::vector<unsigned char>> encryptedData;
 
     if (cryptoManager.get())
@@ -92,9 +90,6 @@ void Session::write()
         std::string plain = std::string(static_cast<const char*>(writeQueue.front().data()),
                                         writeQueue.front().size());
         encryptedData = std::make_shared<std::vector<unsigned char>>(cryptoManager->encrypt(plain));
-
-        // std::cout << "write data size:" << encryptedData->size() << std::endl;
-        // std::cout << encryptedData->data() << std::endl;
         data = net::buffer(*encryptedData);
     }
 
@@ -135,12 +130,7 @@ void Session::read()
                                             const std::vector<unsigned char> data{
                                                 self->buffer.begin(), self->buffer.begin() + bytes_transferred
                                             };
-                                            // std::cout << "read data size:" << data.size() << std::endl;
-                                            // std::cout << data.data() << std::endl;
-                                            // std::cout << self->buffer.data() << std::endl;
-
                                             self->decrypted_data = self->cryptoManager->decrypt(data);
-
                                             self->onMessageReceived(
                                                 net::buffer(self->decrypted_data, self->decrypted_data.size()));
                                         }
