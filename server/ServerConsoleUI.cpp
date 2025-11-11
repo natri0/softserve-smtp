@@ -53,7 +53,7 @@ namespace Color
 void ServerConsoleUI::start(unsigned short port)
 {
     currentPort = port;
-    showBanner();
+    showBanner(clients_num);
 }
 
 void ServerConsoleUI::run()
@@ -69,11 +69,24 @@ void ServerConsoleUI::run()
     while (cmd != 0);
 }
 
-void ServerConsoleUI::showBanner()
+void ServerConsoleUI::updateOnConnected(int _clients_num)
 {
+    updateScreen(_clients_num);
+
+    if (menuType == Main) showMenu(ServerMenu);
+    else showMenu(modifyLoggerMenu());
+    std::cout << "Enter command: ";
+}
+
+void ServerConsoleUI::showBanner(int clients_num)
+{
+    std::string banner = MainBanner;
+    banner.replace(std::string(MainBanner).find("{CLIENTS_NUM}"), std::string("{CLIENTS_NUM}").length(),
+                   std::to_string(clients_num));
+
     std::lock_guard lock(consoleMutex);
     std::cout << Color::CYAN
-        << MainBanner
+        << banner
         << Color::RESET;
 
     auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
@@ -81,10 +94,11 @@ void ServerConsoleUI::showBanner()
     std::cout << "Listening on port: " << Color::GREEN << currentPort << Color::RESET << "\n";
 }
 
-void ServerConsoleUI::updateScreen()
+void ServerConsoleUI::updateScreen(int _clients_num)
 {
+    if (_clients_num != clients_num) clients_num = _clients_num;
     clearScreen();
-    showBanner();
+    showBanner(clients_num);
 }
 
 void ServerConsoleUI::logEvent(const std::string& msg)
@@ -143,13 +157,14 @@ bool ServerConsoleUI::handleCommand(int cmd)
     case 1:
         do
         {
-            updateScreen();
+            menuType = Logger;
+            updateScreen(clients_num);
             logger_run = runLoggerMenu();
         }
         while (logger_run);
         break;
     case 2:
-        updateScreen();
+        updateScreen(clients_num);
         break;
     default:
         std::cout << Color::YELLOW << "Unknown command." << Color::RESET << "\n";
@@ -176,7 +191,8 @@ bool ServerConsoleUI::runLoggerMenu()
     {
     case 0:
         {
-            updateScreen();
+            updateScreen(clients_num);
+            menuType = Main;
             return false;
         }
     case 1:

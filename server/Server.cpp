@@ -143,6 +143,7 @@ void Server::setConnection(std::shared_ptr<net::ip::tcp::socket> socket)
     {
         std::lock_guard lock(sessionMutex);
         sessions.push_back(session);
+        ui->updateOnConnected(sessions.size());
     }
 
     session->net_session->setOnDisconnect([this, session]()
@@ -153,8 +154,7 @@ void Server::setConnection(std::shared_ptr<net::ip::tcp::socket> socket)
         }
         LOG_INFO(PROD_LOG_LEVEL) << "Client disconnected";
 
-        // made this the menu option
-        std::cout << "Number of active clients: " << sessions.size() << std::endl;
+        ui->updateOnConnected(sessions.size());
     });
 
     session->setSMTPHandling([this, session](boost::asio::const_buffer msg) { SMTPHandling(msg, session); });

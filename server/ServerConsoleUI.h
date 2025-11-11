@@ -8,23 +8,32 @@
 #include <string>
 #include <vector>
 
-
 class ServerConsoleUI
 {
 public:
     void start(unsigned short port);
     void run();
+    void updateOnConnected(int _clients_num);
 
     // void logClientConnected(const std::string& addr);
     // void logClientDisconnected(const std::string& addr);
 
-    bool do_flush;
+    bool do_flush = false;
+    unsigned short clients_num = 0;
 
 private:
-    void showBanner();
+enum MenuType
+{
+    Main,
+    Logger
+} menuType = Main;
+
+    void showBanner(int clients_num);
+    void updateScreen(int _clients_num);
+    void showMenu(std::string_view menu);
+
     bool handleCommand(int cmd);
 
-    void updateScreen();
     inline void clearScreen()
     {
 #ifdef _WIN32
@@ -33,8 +42,6 @@ private:
         system("clear");
 #endif
     };
-
-    void showMenu(std::string_view menu);
 
     std::string_view modifyLoggerMenu();
     bool runLoggerMenu();
