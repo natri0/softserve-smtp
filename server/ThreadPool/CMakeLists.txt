@@ -9,7 +9,7 @@ include(ExternalProject)
 # =====================================================================
 # 🔹 Boost build (локально)
 # =====================================================================
-set(BOOST_ROOT "${CMAKE_SOURCE_DIR}/../../3rdparty/boost_1_89_0")
+set(BOOST_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../3rdparty/boost_1_89_0")
 
 if(WIN32)
     set(BOOST_BOOTSTRAP_CMD bootstrap.bat)
