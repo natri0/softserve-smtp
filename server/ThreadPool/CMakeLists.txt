@@ -7,9 +7,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include(ExternalProject)
 
 # =====================================================================
-# 🔹 Boost build (локально)
+# 🔹 Boost build (з виправленими шляхами)
 # =====================================================================
+# Використовуємо CMAKE_CURRENT_SOURCE_DIR замість CMAKE_SOURCE_DIR
 set(BOOST_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../3rdparty/boost_1_89_0")
+
+# Або можна використати абсолютний шлях від кореня проекту:
+# get_filename_component(PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../.." ABSOLUTE)
+# set(BOOST_ROOT "${PROJECT_ROOT}/3rdparty/boost_1_89_0")
 
 if(WIN32)
     set(BOOST_BOOTSTRAP_CMD bootstrap.bat)
@@ -32,16 +37,6 @@ ExternalProject_Add(
 
 set(BOOST_INCLUDEDIR "${BOOST_ROOT}")
 set(BOOST_LIBRARYDIR "${BOOST_ROOT}/stage/lib")
-
-# =====================================================================
-# 🔹 Include paths
-# =====================================================================
-include_directories(
-    ${BOOST_INCLUDEDIR}
-    ${CMAKE_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/includeForTest
-    ${CMAKE_SOURCE_DIR}/include
-)
 
 # 🔹 Find Threads (cross-platform)
 find_package(Threads REQUIRED)
@@ -75,6 +70,14 @@ add_executable(TestServer
 
 add_dependencies(TestServer Boost_Build)
 
+# Target-specific include directories
+target_include_directories(TestServer
+    PRIVATE
+        ${BOOST_INCLUDEDIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/includeForTest
+)
+
 # Лінкування Boost бібліотек
 if(WIN32)
     file(GLOB BOOST_LIBS "${BOOST_LIBRARYDIR}/*.lib")
@@ -97,6 +100,14 @@ add_executable(TestClient
 
 add_dependencies(TestClient Boost_Build)
 
+# Target-specific include directories
+target_include_directories(TestClient
+    PRIVATE
+        ${BOOST_INCLUDEDIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/includeForTest
+)
+
 target_link_libraries(TestClient 
     PRIVATE 
         Threads::Threads
@@ -113,6 +124,14 @@ add_executable(ThreadPoolIntegrationTest
 )
 
 add_dependencies(ThreadPoolIntegrationTest Boost_Build)
+
+# Target-specific include directories
+target_include_directories(ThreadPoolIntegrationTest
+    PRIVATE
+        ${BOOST_INCLUDEDIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/includeForTest
+)
 
 target_link_libraries(ThreadPoolIntegrationTest
     PRIVATE
