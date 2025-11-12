@@ -102,7 +102,7 @@ public:
         std::ostringstream formatted;
 
         if (thr_id) {
-            formatted << std::to_string(std::hash<std::thread::id>{}(obj.ref.thr_id));
+            formatted << "thread " << std::to_string(std::hash<std::thread::id>{}(obj.ref.thr_id));
         }
 
         if (time) {

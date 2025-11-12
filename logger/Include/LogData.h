@@ -41,12 +41,7 @@ struct LogData {
      */
 
     template<typename T>
-    LogData& operator<<(const T& value) {
-        std::ostringstream oss;
-        oss << value;
-        msg += oss.str();
-        return *this;
-    }
+    LogData& operator<<(const T& value);
 
     /**
      * @brief Returns a reference to the current object.
@@ -59,5 +54,12 @@ struct LogData {
 
 };
 
-#endif
+template<typename T>
+LogData& LogData::operator<<(const T& value) {
+    std::ostringstream oss;
+    oss << value;
+    msg += oss.str();
+    return *this;
+}
 
+#endif
