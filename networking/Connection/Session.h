@@ -19,7 +19,7 @@
 #include <deque>
 #include <array>
 
-#include "SSL/CryptoManager.h"
+#include "../SSL/CryptoManager.h"
 
 namespace net = boost::asio;
 
@@ -144,7 +144,7 @@ private:
 
     std::array<char, 1024> buffer;                       ///< Read buffer
     std::deque<net::const_buffer> writeQueue;            ///< Pending write operations
-    bool isWriting = false;                              ///< Indicates if a write is in progress
+    bool isWriting = false;                              ///< Indicates if writing is in progress
     bool isRunning = false;                              ///< Indicates if the session loop is active
     std::atomic<bool> connected = false;                 ///< Connection state
 

@@ -11,7 +11,7 @@
 #ifndef SMARTSESSION_H
 #define SMARTSESSION_H
 
-#include "Session.h"
+#include "Connection/Session.h"
 #include "../SMTP/include/SMTPSession.h"
 
 /**
@@ -32,8 +32,8 @@ public:
      */
     enum Type
     {
-        CLIENT,  ///< Represents an SMTP client connection.
-        SERVER   ///< Represents an SMTP server connection.
+        CLIENT, ///< Represents an SMTP client connection.
+        SERVER ///< Represents an SMTP server connection.
     };
 
     /**
@@ -60,10 +60,13 @@ public:
         SMTPHandling = std::move(cb);
     }
 
+    std::shared_ptr<Session> net() const { return net_session; };
+    std::shared_ptr<ISXSMTP::SMTPSession> smtp() const { return smtp_session; };
+
+private:
     std::shared_ptr<Session> net_session; ///< Underlying TCP session responsible for socket I/O.
     std::shared_ptr<ISXSMTP::SMTPSession> smtp_session; ///< Associated SMTP protocol handler.
 
-private:
     Type type; ///< Indicates whether this SmartSession represents a client or server.
 
     /**

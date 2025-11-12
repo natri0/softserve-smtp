@@ -154,7 +154,7 @@ void Server::setConnection(std::shared_ptr<net::ip::tcp::socket> socket)
         ui->updateOnConnected(sessions.size());
     }
 
-    session->net_session->setOnDisconnect([this, session]()
+    session->net()->setOnDisconnect([this, session]()
     {
         {
             std::lock_guard lock(sessionMutex);
@@ -174,10 +174,10 @@ void Server::SMTPHandling(boost::asio::const_buffer msg, std::shared_ptr<SmartSe
     const std::string cmd(
         std::string(static_cast<const char*>(msg.data()), msg.size()));
 
-    auto rpl = session->smtp_session->OnMessage(cmd.c_str());
-    session->net_session->send(net::buffer(rpl));
+    auto rpl = session->smtp()->OnMessage(cmd.c_str());
+    session->net()->send(net::buffer(rpl));
 
-    LOG_INFO(DEBUG_LOG_LEVEL) << "Received message from: " << session->net_session->getSocket()->
+    LOG_INFO(DEBUG_LOG_LEVEL) << "Received message from: " << session->net()->getSocket()->
                                                                        remote_endpoint();
     LOG_INFO(DEBUG_LOG_LEVEL) << "Message: " << cmd;
     LOG_INFO(DEBUG_LOG_LEVEL) << "Reply: " << rpl;

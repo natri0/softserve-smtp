@@ -35,9 +35,9 @@ bool Client::start()
 
 void Client::init()
 {
-    session->net_session->setOnDisconnect([this]() { reconnect(); });
+    session->net()->setOnDisconnect([this]() { reconnect(); });
 
-    session->net_session->setOnConnected([this]()
+    session->net()->setOnConnected([this]()
     {
         LOG_INFO(PROD_LOG_LEVEL) << "Client connected";
         auto keys = std::make_shared<std::pair<std::vector<unsigned char>, std::vector<unsigned char>>>(
@@ -46,14 +46,14 @@ void Client::init()
         session->setSMTPHandling([this](boost::asio::const_buffer msg) { SMTPHandling(msg); });
         session->setConnection();
 
-        session->net_session->run();
+        session->net()->run();
     });
 }
 
 void Client::connect()
 {
-    if (session->net_session->isConnected()) return;
-    session->net_session->connect(server_endpoint);
+    if (session->net()->isConnected()) return;
+    session->net()->connect(server_endpoint);
 }
 
 void Client::reconnect()
@@ -65,7 +65,7 @@ void Client::reconnect()
         if (!ec)
         {
             connect();
-            if (!session->net_session->isConnected()) reconnect();
+            if (!session->net()->isConnected()) reconnect();
             else run();
         }
     });
@@ -91,7 +91,7 @@ void Client::SMTPHandling(boost::asio::const_buffer msg)
     // temp; will integrate smtp logic in future
     if (cmd.starts_with("220"))
     {
-        session->net_session->send(net::buffer("EHLO example.com\r\n"));
+        session->net()->send(net::buffer("EHLO example.com\r\n"));
     }
     else if (cmd.find("250 HELP") != std::string::npos)
     {
@@ -102,13 +102,13 @@ void Client::SMTPHandling(boost::asio::const_buffer msg)
     {
         if (!sendInfo.empty())
         {
-            session->net_session->send(net::buffer(sendInfo.front()));
+            session->net()->send(net::buffer(sendInfo.front()));
             sendInfo.pop();
         }
     }
     else if (cmd.starts_with("354"))
     {
-        session->net_session->send(net::buffer("test body\r\n.\r\n"));
+        session->net()->send(net::buffer("test body\r\n.\r\n"));
     }
 };
 
@@ -120,7 +120,7 @@ bool Client::sendMail(EmailMessage e_msg)
     sendInfo.emplace("DATA\r\n");
     sendInfo.emplace("RSET\r\n");
 
-    if (!session->net_session->isConnected())
+    if (!session->net()->isConnected())
     {
         LOG_WARNING(DEBUG_LOG_LEVEL) << "Client is not connected";
         return false;
@@ -129,7 +129,7 @@ bool Client::sendMail(EmailMessage e_msg)
     email_info = e_msg;
     if (canSend)
     {
-        session->net_session->send(net::buffer(sendInfo.front()));
+        session->net()->send(net::buffer(sendInfo.front()));
         sendInfo.pop();
     }
     LOG_INFO(PROD_LOG_LEVEL) << "Sending...";
@@ -154,7 +154,7 @@ bool Client::stop()
     if (!isRunning) return false;
     isRunning = false;
 
-    session->net_session->disconnect();
+    session->net()->disconnect();
 
     io.stop();
 

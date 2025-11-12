@@ -10,7 +10,7 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include "../networking/Session.h"
+#include "../networking/Connection/Session.h"
 #include "../networking/SmartSession.h"
 #include "../networking/SSL/SSLContextFactory.h"
 #include "ServerConsoleUI.h"
