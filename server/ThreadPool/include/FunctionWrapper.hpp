@@ -1,21 +1,6 @@
 #include<memory>
 
 class FunctionWrapper{
-
-private:
-    struct impl_base {
-        virtual void call() = 0;
-        virtual ~impl_base() {}
-    };
-    std::unique_ptr<impl_base> impl;
-
-    template<typename F>
-    struct impl_type: impl_base
-    {
-        F f;
-        impl_type(F&& f_): f(std::move(f_)) {}
-        void call() { f(); }
-    };
     
 public:
     template<typename F>
@@ -34,4 +19,19 @@ public:
     }
     FunctionWrapper(const FunctionWrapper&)=delete;
     FunctionWrapper& operator=(const FunctionWrapper&)=delete;
+    
+private:
+    struct impl_base {
+        virtual void call() = 0;
+        virtual ~impl_base() {}
+    };
+    std::unique_ptr<impl_base> impl;
+
+    template<typename F>
+    struct impl_type: impl_base
+    {
+        F f;
+        impl_type(F&& f_): f(std::move(f_)) {}
+        void call() { f(); }
+    };
 };

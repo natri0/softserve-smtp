@@ -6,6 +6,7 @@
 
 
 class SmtpCommandProcessor {
+    
 public:
     void handle(std::shared_ptr<SmtpSession> session, const std::string& cmd) {
         using Status = SmtpSession::SessionStatus;

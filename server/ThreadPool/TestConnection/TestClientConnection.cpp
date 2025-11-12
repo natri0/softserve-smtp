@@ -17,11 +17,21 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netinet/tcp.h>
+#include <tuple>
+#include <expected>
 #include <fcntl.h>
 #include <poll.h>
 #include <map>
+#include <cstdint>
+#include <mutex>
 
 using namespace std::chrono;
+
+#ifdef TEST_DEBUG
+    #define LOG_DEBUG(msg) std::cout << "[DEBUG] " << msg << std::endl;
+#else
+    #define LOG_DEBUG(msg)
+#endif
 
 // ============================================================================
 // ANSI Color Codes
@@ -41,13 +51,11 @@ namespace Color {
 // Enhanced SMTP Client with error tracking
 // ============================================================================
 class SmtpClient {
-private:
-    std::string host;
-    int port;
-    bool debug = false;
-    
 public:
-    int sock = -1;
+    static constexpr int INVALID_SOCKET_FD = -1;
+    
+    int sock = INVALID_SOCKET_FD;
+    
     enum class Error {
         NONE,
         SOCKET_CREATE,
@@ -60,21 +68,21 @@ public:
     };
     
     Error last_error = Error::NONE;
-    std::string last_error_msg;
     
-    SmtpClient(const std::string& h = "127.0.0.1", int p = 2525, bool dbg = false) 
-        : host(h), port(p), debug(dbg) {}
+    using Result = std::tuple<Error, std::string>;
+    
+    SmtpClient(const std::string& h = "127.0.0.1", int p = 2525) 
+        : host(h), port(p) {}
     
     ~SmtpClient() {
         disconnect();
     }
     
-    bool connect(int timeout_ms = 5000) {
+    std::expected<void, Result> connect(int timeout_ms = 5000) {
         sock = socket(AF_INET, SOCK_STREAM, 0);
-        if (sock < 0) {
+        if (sock == INVALID_SOCKET_FD) {
             last_error = Error::SOCKET_CREATE;
-            last_error_msg = "Socket creation failed";
-            return false;
+            return std::unexpected(Result{Error::SOCKET_CREATE, "Socket creation failed"});
         }
         
         // Set socket options
@@ -95,11 +103,10 @@ public:
         server_addr.sin_port = htons(port);
         
         if (inet_pton(AF_INET, host.c_str(), &server_addr.sin_addr) <= 0) {
-            last_error = Error::CONNECT_FAILED;
-            last_error_msg = "Invalid address";
             close(sock);
-            sock = -1;
-            return false;
+            sock = INVALID_SOCKET_FD;
+            last_error = Error::CONNECT_FAILED;
+            return std::unexpected(Result{Error::CONNECT_FAILED, "Invalid address"});
         }
         
         ::connect(sock, (struct sockaddr*)&server_addr, sizeof(server_addr));
@@ -111,29 +118,34 @@ public:
         
         int ret = poll(&pfd, 1, timeout_ms);
         if (ret <= 0) {
-            last_error = Error::TIMEOUT;
-            last_error_msg = "Connect timeout";
             close(sock);
-            sock = -1;
-            return false;
+            sock = INVALID_SOCKET_FD;
+            last_error = Error::TIMEOUT;
+            return std::unexpected(Result{Error::TIMEOUT, "Connect timeout"});
         }
         
         // Back to blocking mode
         fcntl(sock, F_SETFL, flags);
         
         // Read greeting
-        std::string greeting = readResponse(5000);
-        if (greeting.empty() || greeting[0] != '2') {
+        auto greeting_result = readResponse(5000);
+        if (!greeting_result) {
             last_error = Error::PROTOCOL_ERROR;
-            last_error_msg = "Invalid greeting: " + greeting;
-            return false;
+            return std::unexpected(Result{Error::PROTOCOL_ERROR, "Failed to read greeting"});
         }
         
-        return true;
+        std::string greeting = *greeting_result;
+        if (greeting.empty() || greeting[0] != '2') {
+            last_error = Error::PROTOCOL_ERROR;
+            return std::unexpected(Result{Error::PROTOCOL_ERROR, "Invalid greeting: " + greeting});
+        }
+        
+        last_error = Error::NONE;
+        return {};
     }
     
     void disconnect() {
-        if (sock >= 0) {
+        if (sock != INVALID_SOCKET_FD) {
             struct linger sl;
             sl.l_onoff = 1;
             sl.l_linger = 0;
@@ -141,40 +153,39 @@ public:
             
             shutdown(sock, SHUT_RDWR);
             close(sock);
-            sock = -1;
+            sock = INVALID_SOCKET_FD;
         }
     }
     
-    std::string sendCommand(const std::string& cmd, int timeout_ms = 5000) {
-        if (sock < 0) {
+    std::expected<std::string, Result> sendCommand(const std::string& cmd, int timeout_ms = 5000) {
+        if (sock == INVALID_SOCKET_FD) {
             last_error = Error::SEND_FAILED;
-            return "";
+            return std::unexpected(Result{Error::SEND_FAILED, "Socket not connected"});
         }
         
         std::string full_cmd = cmd + "\r\n";
         
-        if (debug) {
-            std::cout << Color::CYAN << ">>> " << cmd << Color::RESET << "\n";
-        }
+        LOG_DEBUG(Color::CYAN << ">>> " << cmd << Color::RESET);
         
         ssize_t sent = send(sock, full_cmd.c_str(), full_cmd.size(), 0);
         if (sent != (ssize_t)full_cmd.size()) {
             last_error = Error::SEND_FAILED;
-            last_error_msg = "Send failed";
-            return "";
+            return std::unexpected(Result{Error::SEND_FAILED, "Send failed"});
         }
         
-        std::string response = readResponse(timeout_ms);
-        
-        if (debug && !response.empty()) {
-            std::cout << Color::MAGENTA << "<<< " << response.substr(0, 50) 
-                      << (response.size() > 50 ? "..." : "") << Color::RESET << "\n";
+        auto response = readResponse(timeout_ms);
+        if (!response) {
+            return std::unexpected(response.error());
         }
         
-        return response;
+        LOG_DEBUG(Color::MAGENTA << "<<< " << response->substr(0,50) 
+          << (response->size() > 50 ? "..." : "") << Color::RESET);
+        
+        last_error = Error::NONE;
+        return *response;
     }
     
-    std::string readResponse(int timeout_ms = 5000) {
+    std::expected<std::string, Result> readResponse(int timeout_ms = 5000) {
         char buffer[8192] = {0};
         
         struct pollfd pfd;
@@ -184,37 +195,63 @@ public:
         int ret = poll(&pfd, 1, timeout_ms);
         if (ret <= 0) {
             last_error = Error::TIMEOUT;
-            return "";
+            return std::unexpected(Result{Error::TIMEOUT, "Response timeout"});
         }
         
         int n = recv(sock, buffer, sizeof(buffer) - 1, 0);
-        if (n > 0) {
-            return std::string(buffer, n);
+        if (n <= 0) {
+            last_error = Error::RECV_FAILED;
+            return std::unexpected(Result{Error::RECV_FAILED, "Receive failed"});
         }
         
-        last_error = Error::RECV_FAILED;
-        return "";
+        last_error = Error::NONE;
+        return std::string(buffer, n);
     }
     
-    bool sendEmail(const std::string& from, const std::string& to, 
+    std::expected<void, Result> sendEmail(const std::string& from, const std::string& to, 
                    const std::string& subject, const std::string& body) {
-        if (!connect()) return false;
+        auto conn_result = connect();
+        if (!conn_result) {
+            return std::unexpected(conn_result.error());
+        }
         
-        if (sendCommand("HELO test.com")[0] != '2') return false;
-        if (sendCommand("MAIL FROM:<" + from + ">")[0] != '2') return false;
-        if (sendCommand("RCPT TO:<" + to + ">")[0] != '2') return false;
-        if (sendCommand("DATA")[0] != '3') return false;
+        auto helo = sendCommand("HELO test.com");
+        if (!helo || (*helo)[0] != '2') {
+            return std::unexpected(Result{Error::PROTOCOL_ERROR, "HELO failed"});
+        }
+        
+        auto mail_from = sendCommand("MAIL FROM:<" + from + ">");
+        if (!mail_from || (*mail_from)[0] != '2') {
+            return std::unexpected(Result{Error::PROTOCOL_ERROR, "MAIL FROM failed"});
+        }
+        
+        auto rcpt_to = sendCommand("RCPT TO:<" + to + ">");
+        if (!rcpt_to || (*rcpt_to)[0] != '2') {
+            return std::unexpected(Result{Error::PROTOCOL_ERROR, "RCPT TO failed"});
+        }
+        
+        auto data_cmd = sendCommand("DATA");
+        if (!data_cmd || (*data_cmd)[0] != '3') {
+            return std::unexpected(Result{Error::PROTOCOL_ERROR, "DATA failed"});
+        }
         
         std::string msg = "Subject: " + subject + "\r\n\r\n" + body + "\r\n";
         send(sock, msg.c_str(), msg.size(), 0);
         
-        if (sendCommand(".")[0] != '2') return false;
+        auto end_data = sendCommand(".");
+        if (!end_data || (*end_data)[0] != '2') {
+            return std::unexpected(Result{Error::PROTOCOL_ERROR, "End DATA failed"});
+        }
         
         sendCommand("QUIT");
         disconnect();
         
-        return true;
+        return {};
     }
+
+private:
+    std::string host;
+    std::uint16_t port;
 };
 
 // ============================================================================
@@ -276,19 +313,27 @@ struct TestStats {
         
         // Latency
         if (!latencies.empty()) {
-            std::sort(latencies.begin(), latencies.end());
+            std::vector<long long> sorted_latencies;
+            {
+                std::lock_guard<std::mutex> lock(data_mutex);
+                sorted_latencies = latencies;
+            }
+            std::sort(sorted_latencies.begin(), sorted_latencies.end());
             
             auto sum = 0LL;
-            for (auto l : latencies) sum += l;
+            for (auto l : sorted_latencies) sum += l;
             
             std::cout << Color::BOLD << "Latency (ms):" << Color::RESET << "\n";
-            std::cout << "  Min:    " << latencies.front() << "\n";
-            std::cout << "  Max:    " << latencies.back() << "\n";
-            std::cout << "  Avg:    " << (sum / latencies.size()) << "\n";
-            std::cout << "  Median: " << latencies[latencies.size() / 2] << "\n";
-            std::cout << "  P95:    " << latencies[latencies.size() * 95 / 100] << "\n";
-            std::cout << "  P99:    " << latencies[latencies.size() * 99 / 100] << "\n";
-            std::cout << "  P99.9:  " << latencies[latencies.size() * 999 / 1000] << "\n\n";
+            std::cout << "  Min:    " << sorted_latencies.front() << "\n";
+            std::cout << "  Max:    " << sorted_latencies.back() << "\n";
+            std::cout << "  Avg:    " << (sum / sorted_latencies.size()) << "\n";
+            std::cout << "  Median: " << sorted_latencies[sorted_latencies.size() / 2] << "\n";
+            std::cout << "  P95:    " << sorted_latencies[sorted_latencies.size() * 95 / 100] << "\n";
+            std::cout << "  P99:    " << sorted_latencies[sorted_latencies.size() * 99 / 100] << "\n";
+            if (sorted_latencies.size() >= 1000) {
+                std::cout << "  P99.9:  " << sorted_latencies[sorted_latencies.size() * 999 / 1000] << "\n";
+            }
+            std::cout << "\n";
         }
         
         // Error distribution
@@ -316,7 +361,7 @@ void basicThroughputTest(int client_id, TestStats& stats) {
     auto start = steady_clock::now();
     
     SmtpClient client;
-    bool success = client.sendEmail(
+    auto result = client.sendEmail(
         "user" + std::to_string(client_id) + "@test.com",
         "recipient@example.com",
         "Test " + std::to_string(client_id),
@@ -329,7 +374,7 @@ void basicThroughputTest(int client_id, TestStats& stats) {
     stats.total_attempts++;
     stats.total_commands += 6;
     
-    if (success) {
+    if (result) {
         stats.recordSuccess(latency);
     } else {
         stats.recordFailure(client.last_error);
@@ -415,25 +460,24 @@ void concurrentSessionTest(int client_id, int session_group, TestStats& stats) {
     std::string session_id = "session_" + std::to_string(session_group);
     
     bool success = true;
-    std::string resp;
     
-    resp = client.sendCommand("HELO " + session_id);
-    success &= (!resp.empty() && resp[0] == '2');
+    auto helo = client.sendCommand("HELO " + session_id);
+    success &= (helo && !helo->empty() && (*helo)[0] == '2');
     
-    resp = client.sendCommand("MAIL FROM:<" + session_id + "@test.com>");
-    success &= (!resp.empty() && resp[0] == '2');
+    auto mail_from = client.sendCommand("MAIL FROM:<" + session_id + "@test.com>");
+    success &= (mail_from && !mail_from->empty() && (*mail_from)[0] == '2');
     
-    resp = client.sendCommand("RCPT TO:<user@test.com>");
-    success &= (!resp.empty() && resp[0] == '2');
+    auto rcpt_to = client.sendCommand("RCPT TO:<user@test.com>");
+    success &= (rcpt_to && !rcpt_to->empty() && (*rcpt_to)[0] == '2');
     
-    resp = client.sendCommand("DATA");
-    success &= (!resp.empty() && resp[0] == '3');
+    auto data_cmd = client.sendCommand("DATA");
+    success &= (data_cmd && !data_cmd->empty() && (*data_cmd)[0] == '3');
     
     std::string msg = "Subject: Test\r\n\r\nBody\r\n";
     send(client.sock, msg.c_str(), msg.size(), 0);
     
-    resp = client.sendCommand(".");
-    success &= (!resp.empty() && resp[0] == '2');
+    auto end_data = client.sendCommand(".");
+    success &= (end_data && !end_data->empty() && (*end_data)[0] == '2');
     
     client.sendCommand("QUIT");
     client.disconnect();

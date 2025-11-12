@@ -103,6 +103,7 @@ target_link_libraries(TestClient
         ${BOOST_LIBS}
 )
 
+# target_compile_definitions(TestClient PRIVATE TEST_DEBUG)
 # =====================================================================
 # 🔸 Executable: ThreadPoolIntegrationTest
 # =====================================================================

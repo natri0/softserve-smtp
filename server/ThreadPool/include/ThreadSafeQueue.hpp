@@ -15,18 +15,6 @@
 */
 template<typename T>
 class ThreadSafeQueue {
-private:
-    /** @brief Mutex for protecting queue access */
-    mutable std::mutex queue_mutex;
-
-    /** @brief Condition variable for blocking pop operations */
-    std::condition_variable cv;
-
-    /** @brief Atomic flag indicating if queue is shut down */
-    std::atomic<bool> shutdown_flag{false};
-
-    /** @brief Underlying queue container */
-    std::queue<T> safe_queue;
 
 public:
 
@@ -164,4 +152,17 @@ public:
         cv.notify_all();
         return true;
     }
+    
+private:
+    /** @brief Mutex for protecting queue access */
+    mutable std::mutex queue_mutex;
+
+    /** @brief Condition variable for blocking pop operations */
+    std::condition_variable cv;
+
+    /** @brief Atomic flag indicating if queue is shut down */
+    std::atomic<bool> shutdown_flag{false};
+
+    /** @brief Underlying queue container */
+    std::queue<T> safe_queue;
 };
