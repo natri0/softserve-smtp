@@ -10,7 +10,7 @@ endif ()
 find_package(OpenSSL REQUIRED)
 
 add_executable(smtp_server main.cpp
-        ../networking/Connection/Session.cpp
+        ../networking/Connection/NetSession.cpp
         Server.cpp
         ThreadPool/src/ThreadPool.cpp
         ServerConsoleUI.cpp

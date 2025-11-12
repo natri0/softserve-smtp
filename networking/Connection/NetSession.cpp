@@ -2,20 +2,20 @@
 // Created by alkir on 10/3/2025.
 //
 
-#include "Session.h"
+#include "NetSession.h"
 #include "../../logger/Include/Logger.h"
 #include <iostream>
 
 constexpr std::size_t BUFFER_SIZE = 1024;
 constexpr int RECONNECT_DELAY_MS = 2000;
 
-Session::Session(std::shared_ptr<net::ip::tcp::socket> _socket) : socket(_socket)
+NetSession::NetSession(std::shared_ptr<net::ip::tcp::socket> _socket) : socket(_socket)
 {
 }
 
-Session::~Session() { disconnect(); }
+NetSession::~NetSession() { disconnect(); }
 
-void Session::connect(const net::ip::tcp::endpoint& endpoint)
+void NetSession::connect(const net::ip::tcp::endpoint& endpoint)
 {
     if (socket->is_open()) socket->close();
     socket->async_connect(endpoint, [this](const boost::system::error_code& ec)
@@ -35,7 +35,7 @@ void Session::connect(const net::ip::tcp::endpoint& endpoint)
     });
 }
 
-bool Session::disconnect()
+bool NetSession::disconnect()
 {
     if (!connected) return false;
     connected = false;
@@ -52,7 +52,7 @@ bool Session::disconnect()
     return true;
 }
 
-bool Session::run()
+bool NetSession::run()
 {
     if (isRunning) return false;
     isRunning = true;
@@ -70,7 +70,7 @@ bool Session::run()
     return true;
 }
 
-bool Session::send(boost::asio::const_buffer data)
+bool NetSession::send(boost::asio::const_buffer data)
 {
     if (!socket->is_open()) return false;
 
@@ -79,7 +79,7 @@ bool Session::send(boost::asio::const_buffer data)
     return true;
 }
 
-void Session::write()
+void NetSession::write()
 {
     isWriting = true;
     boost::asio::const_buffer data = writeQueue.front();
@@ -113,7 +113,7 @@ void Session::write()
                      });
 }
 
-void Session::read()
+void NetSession::read()
 {
     if (!socket || !socket->is_open()) return;
 

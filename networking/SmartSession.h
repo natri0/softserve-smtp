@@ -11,14 +11,14 @@
 #ifndef SMARTSESSION_H
 #define SMARTSESSION_H
 
-#include "Connection/Session.h"
+#include "Connection/NetSession.h"
 #include "../SMTP/include/SMTPSession.h"
 
 /**
  * @class SmartSession
  * @brief Combines TCP session management with SMTP logic.
  *
- * The SmartSession class serves as a bridge between the network layer (`Session`)
+ * The SmartSession class serves as a bridge between the network layer (`NetNetSession`)
  * and the SMTP protocol layer (`SMTPSession`).
  * It is capable of managing both **client** and **server** connections,
  * handling encryption setup, and providing callback hooks for incoming SMTP messages.
@@ -60,11 +60,11 @@ public:
         SMTPHandling = std::move(cb);
     }
 
-    std::shared_ptr<Session> net() const { return net_session; };
+    std::shared_ptr<NetSession> net() const { return net_session; };
     std::shared_ptr<ISXSMTP::SMTPSession> smtp() const { return smtp_session; };
 
 private:
-    std::shared_ptr<Session> net_session; ///< Underlying TCP session responsible for socket I/O.
+    std::shared_ptr<NetSession> net_session; ///< Underlying TCP session responsible for socket I/O.
     std::shared_ptr<ISXSMTP::SMTPSession> smtp_session; ///< Associated SMTP protocol handler.
 
     Type type; ///< Indicates whether this SmartSession represents a client or server.

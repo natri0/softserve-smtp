@@ -10,7 +10,7 @@ endif ()
 find_package(OpenSSL REQUIRED)
 
 add_executable(smtp_client main.cpp
-        ../networking/Connection/Session.cpp
+        ../networking/Connection/NetSession.cpp
         Client.cpp
         EmailMessage.cpp
 )
