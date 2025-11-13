@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(OpenSSL REQUIRED)
+find_package(Boost REQUIRED)
 
 add_library(ssl_support STATIC
         KeyExchanger.cpp

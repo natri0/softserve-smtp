@@ -1,7 +1,4 @@
-if (NOT UNIX)
-    find_package(Boost REQUIRED COMPONENTS system thread asio)
-endif ()
-
+find_package(Boost REQUIRED)
 find_package(OpenSSL REQUIRED)
 
 add_library(networking STATIC
@@ -12,7 +9,7 @@ add_library(networking STATIC
 target_include_directories(networking
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${boost_INLCUDE_DIRS}
+        ${Boost_INLCUDE_DIRS}
 )
 
 target_link_libraries(networking
