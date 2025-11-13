@@ -143,7 +143,7 @@ private:
     void write();
 
     std::array<char, 1024> buffer;                       ///< Read buffer
-    std::deque<net::const_buffer> writeQueue;            ///< Pending write operations
+    std::deque<std::vector<uint8_t>> writeQueue;         ///< Pending write operations
     bool isWriting = false;                              ///< Indicates if writing is in progress
     bool isRunning = false;                              ///< Indicates if the session loop is active
     std::atomic<bool> connected = false;                 ///< Connection state

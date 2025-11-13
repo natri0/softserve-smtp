@@ -21,6 +21,7 @@
 #include <condition_variable>
 #include <memory>
 #include "Database/Manager.hpp"
+#include "imap/IMAPSession.h"
 
 class ThreadPool;
 
@@ -94,14 +95,22 @@ private:
     /// TCP acceptor responsible for listening for new client connections.
     net::ip::tcp::acceptor acceptor;
 
+    net::ip::tcp::acceptor imapAcceptor;
+
     /// TCP port on which the server listens for incoming connections.
     unsigned short port = 12345;
+
+    unsigned short imapPort = 12346;
 
     /// List of active SmartSession connections.
     std::list<std::shared_ptr<SmartSession>> sessions;
 
+    std::list<std::shared_ptr<IMAPSession>> imapSessions;
+
     /// Mutex to synchronize access to the session list.
     std::mutex sessionMutex;
+
+    std::mutex imapSessionMutex;
 
     // --- Threading & Concurrency ---
 
@@ -129,7 +138,7 @@ private:
     /**
      * @brief Begins listening for new client connections asynchronously.
      */
-    void runAcceptor();
+    void runAcceptor(net::ip::tcp::acceptor &acceptor, std::function<void(std::shared_ptr<net::ip::tcp::socket>)> onAccept);
 
     /**
      * @brief Sets up the network acceptor (bind, listen, etc.).
@@ -142,6 +151,8 @@ private:
      * @param socket Shared pointer to the accepted TCP socket.
      */
     void setConnection(std::shared_ptr<net::ip::tcp::socket> socket);
+
+    void onIMAPAccept(std::shared_ptr<net::ip::tcp::socket> socket);
 
     /**
      * @brief Handles incoming SMTP data from a connected session.

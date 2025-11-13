@@ -16,6 +16,7 @@
 
 Server::Server() : io(std::make_shared<boost::asio::io_context>()),
                    work(io->get_executor()), acceptor(net::ip::tcp::acceptor(*io)),
+                   imapAcceptor(net::ip::tcp::acceptor(*io)),
                    sslContext(smtp::ssl::SSLContextFactory::createServerContext())
 {
 }
@@ -39,6 +40,7 @@ bool Server::init()
     }
 
     port = config.get_with_default<unsigned short>("port", 12345);
+    imapPort = config.get_with_default<unsigned short>("imap_port", 12346);
     thread_pool_size = config.get_with_default<unsigned short>("thread_pool_size", 4);
 
     // mailbox lifespan = server lifespan
@@ -85,7 +87,8 @@ bool Server::reset()
     threadPool->start();
 
     if (!init())return false;
-    runAcceptor();
+    runAcceptor(acceptor, std::bind(&Server::setConnection, this, std::placeholders::_1));
+    runAcceptor(imapAcceptor, std::bind(&Server::onIMAPAccept, this, std::placeholders::_1));
 
     return true;
 }
@@ -100,7 +103,8 @@ void Server::run()
             self->io->run();
         });
 
-    runAcceptor();
+    runAcceptor(acceptor, std::bind(&Server::setConnection, this, std::placeholders::_1));
+    runAcceptor(imapAcceptor, std::bind(&Server::onIMAPAccept, this, std::placeholders::_1));
 
     LOG_INFO(PROD_LOG_LEVEL) << "Server is running";
     ui->run();
@@ -109,17 +113,17 @@ void Server::run()
     stop();
 }
 
-void Server::runAcceptor()
+void Server::runAcceptor(net::ip::tcp::acceptor &acceptor, std::function<void(std::shared_ptr<net::ip::tcp::socket>)> onAccept)
 {
     auto socket = std::make_shared<net::ip::tcp::socket>(*io);
 
-    acceptor.async_accept(*socket, [this, socket](const boost::system::error_code& ec)
+    acceptor.async_accept(*socket, [this, &acceptor, onAccept, socket](const boost::system::error_code& ec)
     {
-        if (!ec) setConnection(socket);
+        if (!ec) onAccept(socket);
         else
             LOG_ERROR(PROD_LOG_LEVEL) << "Accept failed: " << ec.message();
 
-        runAcceptor();
+        runAcceptor(acceptor, onAccept);
     });
 }
 
@@ -140,6 +144,18 @@ bool Server::setUpAcceptor()
     }
 
     acceptor.listen();
+
+    imapAcceptor.open(net::ip::tcp::v6());
+    imapAcceptor.set_option(net::ip::v6_only(false));
+    imapAcceptor.set_option(net::ip::tcp::socket::reuse_address(true));
+    imapAcceptor.bind({net::ip::tcp::v6(), imapPort}, ec);
+    if (ec) {
+        LOG_ERROR(PROD_LOG_LEVEL) << "Bind failed: " << ec.message();
+        return false;
+    }
+
+    imapAcceptor.listen();
+
     return true;
 }
 
@@ -167,6 +183,25 @@ void Server::setConnection(std::shared_ptr<net::ip::tcp::socket> socket)
 
     session->setSMTPHandling([this, session](boost::asio::const_buffer msg) { SMTPHandling(msg, session); });
     session->setConnection();
+}
+
+void Server::onIMAPAccept(std::shared_ptr<net::ip::tcp::socket> socket) {
+    LOG_INFO(PROD_LOG_LEVEL) << "New connection from " << socket->remote_endpoint();
+    auto session = std::make_shared<IMAPSession>(socket);
+
+    {
+        std::lock_guard lock(imapSessionMutex);
+        imapSessions.push_back(session);
+    }
+
+    session->net()->setOnDisconnect([this, session] {
+        std::lock_guard lock(imapSessionMutex);
+        imapSessions.remove(session);
+
+        LOG_INFO(LogLevel::DEBUG) << "IMAP Client disconnected";
+    });
+
+    session->init();
 }
 
 void Server::SMTPHandling(boost::asio::const_buffer msg, std::shared_ptr<SmartSession> session)

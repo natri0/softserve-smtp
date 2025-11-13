@@ -74,7 +74,10 @@ bool Session::send(boost::asio::const_buffer data)
 {
     if (!socket->is_open()) return false;
 
-    writeQueue.push_back(data);
+    auto *begin = static_cast<const uint8_t *>(data.data());
+    auto *end = begin + data.size();
+
+    writeQueue.emplace_back( begin, end );
     if (!isWriting) write();
     return true;
 }
@@ -82,13 +85,14 @@ bool Session::send(boost::asio::const_buffer data)
 void Session::write()
 {
     isWriting = true;
-    boost::asio::const_buffer data = writeQueue.front();
+    auto data_container = writeQueue.front();
+
+    boost::asio::const_buffer data = net::buffer(data_container);
     std::shared_ptr<std::vector<unsigned char>> encryptedData;
 
     if (cryptoManager.get())
     {
-        std::string plain = std::string(static_cast<const char*>(writeQueue.front().data()),
-                                        writeQueue.front().size());
+        std::string plain(reinterpret_cast<const char *>(data_container.data()), data_container.size());
         encryptedData = std::make_shared<std::vector<unsigned char>>(cryptoManager->encrypt(plain));
         data = net::buffer(*encryptedData);
     }

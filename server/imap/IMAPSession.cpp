@@ -12,7 +12,7 @@
 
 static void handleCapability(IMAPSession &session, const std::string_view &);
 
-static constexpr std::unordered_map<std::string, std::function<void(IMAPSession &, const std::string_view &)>> HANDLERS = {
+static const std::unordered_map<std::string, std::function<void(IMAPSession &, const std::string_view &)>> HANDLERS = {
     { "CAPABILITY", handleCapability }
 };
 
@@ -25,6 +25,8 @@ void IMAPSession::init() {
 
     std::shared_ptr<IMAPSession> self = shared_from_this();
     net_session->setOnMessage([self](net::const_buffer msg) {
+        LOG_INFO(LogLevel::DEBUG) << "New message with size: " << msg.size();
+
         std::string_view input(static_cast<const char*>(msg.data()), msg.size());
 
         while (!input.empty() && std::isspace(static_cast<unsigned char>(input.back())))
@@ -71,6 +73,8 @@ void IMAPSession::init() {
             self->reply_tagged("BAD Command unrecognized");
         }
     });
+
+    net_session->run();
 }
 
 void IMAPSession::reply_tagged(const std::string &reply) {
