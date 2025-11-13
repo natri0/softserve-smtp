@@ -2,7 +2,7 @@
 
 #include "Connection/Session.h"
 
-class IMAPSession : std::enable_shared_from_this<IMAPSession> {
+class IMAPSession : public std::enable_shared_from_this<IMAPSession> {
 public:
     explicit IMAPSession(std::shared_ptr<boost::asio::ip::tcp::socket> socket);
 
@@ -15,4 +15,5 @@ public:
 private:
     std::shared_ptr<Session> net_session;
     std::string cur_tag;
+    std::string input_buffer;  // accumulate input across reads
 };

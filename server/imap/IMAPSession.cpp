@@ -27,10 +27,24 @@ void IMAPSession::init() {
     net_session->setOnMessage([self](net::const_buffer msg) {
         LOG_INFO(LogLevel::DEBUG) << "New message with size: " << msg.size();
 
-        std::string_view input(static_cast<const char*>(msg.data()), msg.size());
+        // Append to buffer
+        self->input_buffer.append(
+            static_cast<const char*>(msg.data()),
+            msg.size()
+        );
 
-        while (!input.empty() && std::isspace(static_cast<unsigned char>(input.back())))
-            input.remove_suffix(1);
+        // Check if we have a complete line (CRLF)
+        size_t crlf_pos = self->input_buffer.find("\r\n");
+        if (crlf_pos == std::string::npos) {
+            // Not a complete line yet, wait for more data
+            return;
+        }
+
+        // Extract the complete line (without CRLF)
+        std::string_view input(self->input_buffer.data(), crlf_pos);
+
+        // Remove the processed line from buffer
+        self->input_buffer.erase(0, crlf_pos + 2);
 
         auto tag_end = input.find(' ');
         if (tag_end == std::string_view::npos) {
@@ -38,7 +52,7 @@ void IMAPSession::init() {
             return;
         }
 
-        std::string_view tag = input.substr(0, tag_end);
+        std::string tag(input.substr(0, tag_end));
         if (tag.empty()) {
             self->reply_untagged("BAD Missing tag");
             return;

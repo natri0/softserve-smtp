@@ -117,13 +117,17 @@ void Server::runAcceptor(net::ip::tcp::acceptor &acceptor, std::function<void(st
 {
     auto socket = std::make_shared<net::ip::tcp::socket>(*io);
 
-    acceptor.async_accept(*socket, [this, &acceptor, onAccept, socket](const boost::system::error_code& ec)
+    // capture a stable pointer to the acceptor instead of a reference to a stack variable
+    auto *acceptorPtr = &acceptor;
+
+    acceptorPtr->async_accept(*socket, [this, acceptorPtr, onAccept, socket](const boost::system::error_code& ec)
     {
         if (!ec) onAccept(socket);
         else
             LOG_ERROR(PROD_LOG_LEVEL) << "Accept failed: " << ec.message();
 
-        runAcceptor(acceptor, onAccept);
+        // use the stored pointer so we don't touch a dangling reference
+        runAcceptor(*acceptorPtr, onAccept);
     });
 }
 
@@ -147,7 +151,8 @@ bool Server::setUpAcceptor()
 
     imapAcceptor.open(net::ip::tcp::v6());
     imapAcceptor.set_option(net::ip::v6_only(false));
-    imapAcceptor.set_option(net::ip::tcp::socket::reuse_address(true));
+    // use acceptor::reuse_address (not socket::) for the acceptor
+    imapAcceptor.set_option(net::ip::tcp::acceptor::reuse_address(true));
     imapAcceptor.bind({net::ip::tcp::v6(), imapPort}, ec);
     if (ec) {
         LOG_ERROR(PROD_LOG_LEVEL) << "Bind failed: " << ec.message();
