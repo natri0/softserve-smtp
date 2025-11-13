@@ -8,16 +8,20 @@
 #include <Macros.h>
 #include <unordered_map>
 
+#include "../Database/Manager.hpp"
+
 #define CRLF "\r\n"
 
 static void handleCapability(IMAPSession &session, const std::string_view &);
 static void handleList(IMAPSession &session, const std::string_view &);
 static void handleSelect(IMAPSession &session, const std::string_view &);
+static void handleLogin(IMAPSession &session, const std::string_view &);
 
 static const std::unordered_map<std::string, std::function<void(IMAPSession &, const std::string_view &)>> HANDLERS = {
     { "CAPABILITY", handleCapability },
     { "LIST", handleList },
     { "SELECT", handleSelect },
+    { "LOGIN", handleLogin }
 };
 
 IMAPSession::IMAPSession(std::shared_ptr<boost::asio::ip::tcp::socket> socket) :
@@ -113,12 +117,22 @@ void handleCapability(IMAPSession &session, const std::string_view &) {
 }
 
 void handleList(IMAPSession &session, const std::string_view &) {
+    if (session.localpart().empty()) {
+        session.reply_tagged("NO LIST failed: not logged in");
+        return;
+    }
+
     // TODO: implement real LIST handling with args parsing
     session.reply_untagged(R"(LIST (\HasNoChildren) "/" INBOX)");
     session.reply_tagged("OK LIST completed");
 }
 
 void handleSelect(IMAPSession &session, const std::string_view &args) {
+    if (session.localpart().empty()) {
+        session.reply_tagged("NO SELECT failed: not logged in");
+        return;
+    }
+
     // TODO: fetch real mailbox from db; possibly also multiple mailboxes?
     if (args.empty() || args != "INBOX") {
         session.reply_tagged("NO SELECT failed: unknown mailbox");
@@ -135,4 +149,26 @@ void handleSelect(IMAPSession &session, const std::string_view &args) {
     // TODO: return last unseen UID
 
     session.reply_tagged("OK [READ-WRITE] SELECT completed");
+}
+
+void handleLogin(IMAPSession &session, const std::string_view &args) {
+    // TODO: proper auth for imap LOGIN
+
+    if (args.empty()) {
+        session.reply_tagged("BAD LOGIN failed: missing arguments");
+        return;
+    }
+
+    if (auto exists = DatabaseManager::get().checkMailboxAvailability(args); exists.isErr() || !exists.unwrap()) {
+        session.reply_untagged("NO LOGIN failed: mailbox does not exist");
+
+        if (exists.isErr()) {
+            LOG_ERROR(LogLevel::DEBUG) << "Error fetching mailbox availability: " << exists.unwrapErr();
+        }
+
+        return;
+    }
+
+    session.localpart() = args;
+    session.reply_tagged("OK LOGIN completed");
 }
