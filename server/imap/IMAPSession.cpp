@@ -159,11 +159,11 @@ void handleLogin(IMAPSession &session, const std::string_view &args) {
         return;
     }
 
-    if (auto exists = DatabaseManager::get().checkMailboxAvailability(args); exists.isErr() || !exists.unwrap()) {
+    if (auto notExists = DatabaseManager::get().checkMailboxAvailability(args); notExists.isErr() || notExists.unwrap()) {
         session.reply_untagged("NO LOGIN failed: mailbox does not exist");
 
-        if (exists.isErr()) {
-            LOG_ERROR(LogLevel::DEBUG) << "Error fetching mailbox availability: " << exists.unwrapErr();
+        if (notExists.isErr()) {
+            LOG_ERROR(LogLevel::DEBUG) << "Error fetching mailbox availability: " << notExists.unwrapErr();
         }
 
         return;
