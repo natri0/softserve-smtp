@@ -28,4 +28,3 @@ if (WIN32)
 endif ()
 
 add_subdirectory(SSL)
-add_subdirectory(auth)

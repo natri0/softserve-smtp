@@ -27,5 +27,3 @@ target_link_libraries(ssl_support PUBLIC
         Boost::asio
         utils
 )
-
-add_subdirectory(tests)
