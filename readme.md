@@ -9,6 +9,7 @@ TODO: fill in readme once we start actually writing the project
 - OpenSSL
 - Qt6
 - CMake
+- SQLite
 
 ## Project structure
 
@@ -16,6 +17,8 @@ TODO: fill in readme once we start actually writing the project
 |------------|--------------------------------------------------------|
 | `server`   | the server code                                        |
 | `3rdparty` | third-party libraries we wish to include as submodules |
+| `client`   | client and UI                                          |
+| `logger`   | logger with examples and include                       |
 
 ## How to run
 
