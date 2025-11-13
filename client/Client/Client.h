@@ -15,6 +15,7 @@
 #include <string>
 #include <memory>
 
+//#include "../SMTP/include/SMTPClient.h"
 #include "ClientSettings.h"
 #include "EmailMessage.h"
 #include "SmartSession.h"
@@ -71,6 +72,13 @@ public:
      */
     bool sendMail(EmailMessage e_msg);
 
+
+    /**
+     * @brief Runs the main I/O loop for asynchronous operations.
+     * @return True if the client runs successfully.
+     */
+    bool run();
+
     std::string getLastError() const { return m_lastError; }
 private:
 
@@ -109,12 +117,6 @@ private:
      * @brief Establishes a TCP connection to the configured server endpoint.
      */
     void connect();
-
-    /**
-     * @brief Runs the main I/O loop for asynchronous operations.
-     * @return True if the client runs successfully.
-     */
-    bool run();
 
     // --- Networking Core ---
 

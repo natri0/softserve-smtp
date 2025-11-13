@@ -41,104 +41,13 @@ void Client::init()
     session->net_session->setOnConnected([this]()
     {
         LOG_INFO(PROD_LOG_LEVEL) << "Client connected";
-        auto keys = std::make_shared<std::pair<std::vector<unsigned char>, std::vector<unsigned char>>>(
-            smtp::ssl::KeyExchange::generateKeyPair()
-        );
-        /*session->setSMTPHandling([this](boost::asio::const_buffer msg) { SMTPHandling(msg); });
+
+        session->setSMTPHandling([this](boost::asio::const_buffer msg) {
+            SMTPHandling(msg);
+        });
         session->setConnection();
-
-        session->net_session->setOnMessage([this, clientPriv, clientPub](boost::asio::const_buffer msg)
-        {
-            std::cout << "client private key size: " << clientPriv.size() << std::endl;
-            std::cout << "client public key size: " << clientPub.size() << std::endl;
-            std::cout << "Get msg: [Received " << msg.size() << " bytes of server public key]" << std::endl;
-
-            session->net_session->send(net::buffer(clientPub));
-
-            std::vector serverPub(
-                static_cast<const unsigned char*>(msg.data()),
-                static_cast<const unsigned char*>(msg.data()) + msg.size()
-            );
-
-            const auto sharedSecret = smtp::ssl::KeyExchange::performDHExchange(serverPub, clientPriv);
-            const auto sessionKey = smtp::ssl::KeyExchange::deriveSessionKey(sharedSecret);
-
-            session->net_session->setKey(sessionKey);
-
-            std::cout << "Session key established" << std::endl;
-            std::cout << sessionKey.size() << std::endl;
-
-            session->net_session->setOnMessage([this](boost::asio::const_buffer msg)
-            {
-                std::string cmd(static_cast<const char*>(msg.data()), msg.size());
-
-                std::cout << "Received message: " << cmd << std::endl;
-
-                if (cmd.starts_with("220"))
-                {
-                    session->net_session->send(net::buffer("HELO example.com\r\n"));
-                }
-                else if (cmd.starts_with("250") && cmd.find("Hello") != std::string::npos)
-                {
-                    session->net_session->send(net::buffer("MAIL FROM:<" + m_emailInfo.from + ">\r\n"));
-                }
-                else if (cmd.starts_with("250 OK"))
-                {
-                  m_recipientIndex = 0;
-                  if (!m_emailInfo.to.empty())
-                  {
-                    session->net_session->send(net::buffer("RCPT TO:<" + m_emailInfo.to[m_recipientIndex] + ">\r\n"));
-                    m_recipientIndex++;
-                  }
-                  else
-                  {
-                    m_lastError = "Error: No recipients specified.";
-                    session->net_session->disconnect();
-                    io.stop();
-                  }
-                }
-                else if (cmd.starts_with("250 Accepted"))
-                {
-                  if (m_recipientIndex < m_emailInfo.to.size())
-                  {
-                    session->net_session->send(net::buffer("RCPT TO:<" + m_emailInfo.to[m_recipientIndex] + ">\r\n"));
-                    m_recipientIndex++;
-                  }
-                  else
-                  {
-                    session->net_session->send(net::buffer("DATA\r\n"));
-                  }
-                }
-                else if (cmd.starts_with("354"))
-                {
-                  std::string fullBody = "Subject: " + m_emailInfo.subject + "\r\n";
-                  fullBody += "From: " + m_emailInfo.from + "\r\n";
-
-                  fullBody += "To: " + m_emailInfo.to[0] + "\r\n\r\n";
-                  fullBody += m_emailInfo.body + "\r\n.\r\n";
-
-                  session->net_session->send(net::buffer(m_emailInfo.body));
-                }
-                else if (cmd.starts_with("250 Message"))
-                {
-                    session->net_session->send(net::buffer("QUIT\r\n"));
-                }
-                else if (cmd.starts_with("5") || cmd.starts_with("4"))
-                {
-                  std::cerr << "SMTP Error: " << cmd << std::endl;
-                  m_lastError = cmd;
-                  session->net_session->disconnect();
-                  io.stop();
-                }
-                else
-                {
-                    std::cout << "Want to proceed? Yes: 1\tNo: 0" << std::endl;
-                }
-            });
-        });*/
         session->net_session->run();
-    });
-}
+    });}
 
 void Client::connect()
 {

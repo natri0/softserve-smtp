@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.30)
 project(softserve_smtp)
 
 set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_AUTOMOC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets Core)
 find_package(Boost REQUIRED COMPONENTS system thread asio)

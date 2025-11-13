@@ -58,7 +58,7 @@ void SmtpWorker::process() {
 
   emit statusUpdated("Client connected. Running network loop.");
 
-  bool networkLoopSuccess = true;//client.run();
+  bool networkLoopSuccess = client.run();
   std::string smtpError = client.getLastError();
 
   if (!networkLoopSuccess) {

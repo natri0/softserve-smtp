@@ -168,6 +168,9 @@ bool ServerConsoleUI::runLoggerMenu()
     std::cin >> cmd_l;
     switch (cmd_l)
     {
+    default:
+        updateScreen();
+        return false;
     case 0:
         updateScreen();
         return false;
