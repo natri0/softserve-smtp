@@ -108,7 +108,7 @@ void Client::SMTPHandling(boost::asio::const_buffer msg)
     }
     else if (cmd.starts_with("354"))
     {
-        session->net()->send(net::buffer("test body\r\n.\r\n"));
+        session->net()->send(net::buffer(email_info.body = email_info.body + "\r\n.\r\n"));
     }
 };
 
