@@ -16,6 +16,7 @@
 #include "ServerConsoleUI.h"
 #include "config/config.h"
 
+#include <list>
 #include <mutex>
 #include <condition_variable>
 #include <memory>
