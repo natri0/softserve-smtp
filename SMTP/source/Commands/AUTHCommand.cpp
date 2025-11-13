@@ -16,6 +16,7 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::AUTHCommand::Invoke(SMTPCommandArgument
   std::string payload = payload_it != arguments.arguments.end() ? payload_it->second : "";
 
   if (arguments.auth_handler->Authenticate(payload)) {
+    arguments.context.is_authenticated = true;
     return { {235, "Authentication Succeeded"} };
   }
 

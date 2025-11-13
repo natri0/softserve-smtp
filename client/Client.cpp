@@ -122,17 +122,20 @@ bool Client::sendMail(EmailMessage e_msg) {
     // sendInfo.emplace("AUTH " + encodedStr + "\r\n");
 
     // ----------------- LOGIN
-    std::string usr = "testuser";
-    auto encoded = Base64::Encode({usr.begin(), usr.end()});
-    std::string encodedStr = {encoded.begin(), encoded.end()};
-    sendInfo.emplace("AUTH " + encodedStr + "\r\n");
+    // std::string usr = "testuser";
+    // auto encoded = Base64::Encode({usr.begin(), usr.end()});
+    // std::string encodedStr = {encoded.begin(), encoded.end()};
+    // sendInfo.emplace("AUTH " + encodedStr + "\r\n");
+    //
+    // std::string pass = "testpass";
+    // auto encoded2 = Base64::Encode({pass.begin(), pass.end()});
+    // std::string encodedStr2 = {encoded2.begin(), encoded2.end()};
+    // sendInfo.emplace("AUTH " + encodedStr2 + "\r\n");
 
-    std::string pass = "testpass";
-    auto encoded2 = Base64::Encode({pass.begin(), pass.end()});
-    std::string encodedStr2 = {encoded2.begin(), encoded2.end()};
-    sendInfo.emplace("AUTH " + encodedStr2 + "\r\n");
-
-
+    // ----------------------- TEST AUTH REQUIRED
+    // sendInfo.emplace("MAIL FROM:<reverse@smtp.test>\r\n");
+    // sendInfo.emplace("RCPT TO:<forward1@smtp.test>\r\n");
+    // sendInfo.emplace("DATA\r\n");
     sendInfo.emplace("RSET\r\n");
 
     if (!session->net_session->isConnected())

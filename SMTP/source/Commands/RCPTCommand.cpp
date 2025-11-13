@@ -5,6 +5,10 @@
 
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::RCPTCommand::Invoke(SMTPCommandArguments arguments)
 {
+	if (!arguments.context.is_authenticated)
+	{
+		return { SMTPReply(530, "Authentication required") };
+	}
 	if (arguments.context.state != SMTPStates::POST_MAIL && arguments.context.state != SMTPStates::POST_RCPT)
 		return { SMTPReply::BadSequenceOfCommands() };
 

@@ -5,6 +5,9 @@
 
 std::vector<ISXSMTP::SMTPReply> ISXSMTP::MAILCommand::Invoke(SMTPCommandArguments arguments)
 {
+	if (!arguments.context.is_authenticated) {
+		return { SMTPReply(530, "Authentication required") };
+	}
 	if (arguments.context.state == SMTPStates::POST_RCPT || // mail command cannot be called when another transaction is in progress
 		arguments.context.state == SMTPStates::INITIAL   || // mail should be called after ehlo or helo command
 		arguments.context.state == SMTPStates::POST_DATA || // mail command cannot be called when another transaction is in progress
