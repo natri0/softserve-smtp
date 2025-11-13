@@ -1,4 +1,5 @@
 #include "SMTPSession.h"
+#include "Commands/AUTHCommand.h"
 #include "Commands/EHLOCommand.h"
 #include "Commands/MAILCommand.h"
 #include "Commands/RCPTCommand.h"
@@ -74,11 +75,12 @@ std::string ISXSMTP::SMTPSession::OnMessage(const std::string& message)
 		m_context,
 		command_parser_result.parsed_arguments,
 		m_domain,
-		m_mailbox);
+		m_mailbox,
+		m_auth_handler);
 
 	// invoke command
 	auto command_result = s_commands[command_parser_result.command_verb]->Invoke(command_arguments);
-	
+
 	m_clientInputBuffer.clear();
 
 	std::string reply;
@@ -112,6 +114,7 @@ bool ISXSMTP::SMTPSession::ApplyConfig(const SMTPConfig& config)
 		m_context = default_config.context;
 		m_domain = default_config.domain;
 		m_mailbox = default_config.mailbox;
+		m_auth_handler = default_config.auth_handler;
 
 		return false;
 	}
@@ -119,6 +122,7 @@ bool ISXSMTP::SMTPSession::ApplyConfig(const SMTPConfig& config)
 	m_context = config.context;
 	m_domain = config.domain;
 	m_mailbox = config.mailbox;
+	m_auth_handler = config.auth_handler;
 
 	return true;
 }
@@ -190,6 +194,7 @@ void ISXSMTP::SMTPSession::fillCommandMap()
 	auto RSET = std::make_unique<RSETCommand>();
 	auto QUIT = std::make_unique<QUITCommand>();
 	auto NOOP = std::make_unique<NOOPCommand>();
+	auto AUTH = std::make_unique<AUTHCommand>();
 	s_commands[EHLO->GetName()] = std::move(EHLO);
 	s_commands[MAIL->GetName()] = std::move(MAIL);
 	s_commands[RCPT->GetName()] = std::move(RCPT);
@@ -199,6 +204,5 @@ void ISXSMTP::SMTPSession::fillCommandMap()
 	s_commands[RSET->GetName()] = std::move(RSET);
 	s_commands[QUIT->GetName()] = std::move(QUIT);
 	s_commands[NOOP->GetName()] = std::move(NOOP);
+	s_commands[AUTH->GetName()] = std::move(AUTH);
 }
-
-

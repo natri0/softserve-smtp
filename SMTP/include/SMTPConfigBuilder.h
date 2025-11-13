@@ -5,59 +5,66 @@
 namespace ISXSMTP
 {
 
-/**
- * @brief This class builds config for SMTP
- */
-class SMTPConfigBuilder
-{
-private:
-	static SMTPConfig s_defaultConfig;
-
-	SMTPConfig m_config;
-
-public:
 	/**
-	 * @brief Returns default config
-	 * @return SMTPConfig
+	 * @brief This class builds config for SMTP
 	 */
-	static SMTPConfig GetDefaultConfig();
-	/**
-	 * @brief Sets default config
-	 * @param config const SMTPConfig&
-	 */
-	static void SetDefaultConfig(const SMTPConfig& config);
+	class SMTPConfigBuilder
+	{
+	private:
+		static SMTPConfig s_defaultConfig;
 
-	/**
-	 * @brief Sets domain for the config
-	 * @param domain const std::string&
-	 * @return *this for chaining calls
-	 */
-	SMTPConfigBuilder& SetDomain(const std::string& domain);
+		SMTPConfig m_config;
 
-	/**
-	 * @brief Sets context for the config
-	 * @param context const SMTPContext&
-	 * @return *this for chaining calls
-	 */
-	SMTPConfigBuilder& SetContext(const SMTPContext& context);
+	public:
+		/**
+		 * @brief Returns default config
+		 * @return SMTPConfig
+		 */
+		static SMTPConfig GetDefaultConfig();
+		/**
+		 * @brief Sets default config
+		 * @param config const SMTPConfig&
+		 */
+		static void SetDefaultConfig(const SMTPConfig& config);
 
-	/**
-	 * @brief Sets mailbox for the config
-	 * @param mailbox std::shared_ptr<SMTPIMailbox>
-	 * @return *this for chaining calls
-	 */
-	SMTPConfigBuilder& SetMailbox(std::shared_ptr<SMTPIMailbox> mailbox);
+		/**
+		 * @brief Sets domain for the config
+		 * @param domain const std::string&
+		 * @return *this for chaining calls
+		 */
+		SMTPConfigBuilder& SetDomain(const std::string& domain);
 
-	/**
-	 * @brief Builds config
-	 * @return SMTPConfig
-	 */
-	SMTPConfig Build() const;
+		/**
+		 * @brief Sets context for the config
+		 * @param context const SMTPContext&
+		 * @return *this for chaining calls
+		 */
+		SMTPConfigBuilder& SetContext(const SMTPContext& context);
 
-	/**
-	 * @brief Sets current config as default
-	 */
-	void SetCurrentAsDefault();
-};
+		/**
+		 * @brief Sets mailbox for the config
+		 * @param mailbox std::shared_ptr<SMTPIMailbox>
+		 * @return *this for chaining calls
+		 */
+		SMTPConfigBuilder& SetMailbox(std::shared_ptr<SMTPIMailbox> mailbox);
+
+		/**
+		 * @brief Sets auth handler for the config
+		 * @param auth_handler std::shared_ptr<IAuthHandler>
+		 * @return *this for chaining calls
+		 */
+		SMTPConfigBuilder& SetAuthHandler(std::shared_ptr<IAuthHandler> auth_handler);
+
+		/**
+		 * @brief Builds config
+		 * @return SMTPConfig
+		 */
+		SMTPConfig Build() const;
+
+		/**
+		 * @brief Sets current config as default
+		 */
+		void SetCurrentAsDefault();
+	};
 
 }

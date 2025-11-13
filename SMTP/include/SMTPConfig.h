@@ -5,6 +5,7 @@
 
 #include "SMTPContext.h"
 #include "SMTPIMailbox.h"
+#include "IAuthHandler.h"
 
 namespace ISXSMTP
 {
@@ -18,8 +19,9 @@ public:
 	std::string domain;
 	SMTPContext context;
 	std::shared_ptr<SMTPIMailbox> mailbox;
+	std::shared_ptr<IAuthHandler> auth_handler;
 
-	SMTPConfig(std::shared_ptr<SMTPIMailbox> mailbox = nullptr, const std::string& domain = "smtp.test", const SMTPContext& context = {});
+	SMTPConfig(std::shared_ptr<SMTPIMailbox> mailbox = nullptr, std::shared_ptr<IAuthHandler> auth_handler = nullptr, const std::string& domain = "smtp.test", const SMTPContext& context = {});
 };
 
 }

@@ -3,7 +3,8 @@ project(SMTP VERSION 0.1 DESCRIPTION "SMTP implementation")
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_library(SMTP 
+add_library(SMTP
+	 "source/Commands/AUTHCommand.cpp"
 	 "source/Commands/DATACommand.cpp" 
 	 "source/Commands/EHLOCommand.cpp" 
 	 "source/Commands/HELOCommand.cpp"
@@ -18,8 +19,8 @@ add_library(SMTP
 	 "source/SMTPBuffer.cpp" 
 	 "source/SMTPState.cpp" 
 	 "source/SMTPReply.cpp" 
-	 "source/SMTPCommandParser.cpp" 
-	 
+	 "source/SMTPCommandParser.cpp"
+	 "source/PLAINAuthHandler.cpp"
 	 "source/SMTPConfig.cpp"
 	 "source/SMTPConfigBuilder.cpp" "include/SMTPIMailbox.h")
 

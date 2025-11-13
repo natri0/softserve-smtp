@@ -35,6 +35,12 @@ ISXSMTP::SMTPConfigBuilder& ISXSMTP::SMTPConfigBuilder::SetMailbox(std::shared_p
 	return *this;
 }
 
+ISXSMTP::SMTPConfigBuilder& ISXSMTP::SMTPConfigBuilder::SetAuthHandler(std::shared_ptr<IAuthHandler> auth_handler)
+{
+	m_config.auth_handler = auth_handler;
+	return *this;
+}
+
 ISXSMTP::SMTPConfig ISXSMTP::SMTPConfigBuilder::Build() const
 {
 	return m_config;
