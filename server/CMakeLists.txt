@@ -15,6 +15,8 @@ add_executable(smtp_server main.cpp
         ThreadPool/src/ThreadPool.cpp
         ServerConsoleUI.cpp
         Database/Manager.cpp
+        imap/IMAPSession.cpp
+        imap/IMAPSession.h
 )
 
 add_custom_command(TARGET smtp_server POST_BUILD
