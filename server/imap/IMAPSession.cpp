@@ -33,58 +33,62 @@ void IMAPSession::init() {
             msg.size()
         );
 
-        // Check if we have a complete line (CRLF)
-        size_t crlf_pos = self->input_buffer.find("\r\n");
-        if (crlf_pos == std::string::npos) {
-            // Not a complete line yet, wait for more data
-            return;
-        }
+        // Process all complete lines in the buffer
+        while (true) {
+            // Check if we have a complete line (CRLF)
+            size_t crlf_pos = self->input_buffer.find("\r\n");
+            if (crlf_pos == std::string::npos) {
+                // Not a complete line yet, wait for more data
+                break;
+            }
 
-        // Extract the complete line (without CRLF)
-        std::string_view input(self->input_buffer.data(), crlf_pos);
+            // Extract the complete line (without CRLF)
+            std::string input_str(std::string_view(self->input_buffer.data(), crlf_pos));
+            std::string_view input(input_str);
 
-        // Remove the processed line from buffer
-        self->input_buffer.erase(0, crlf_pos + 2);
+            // Remove the processed line from buffer
+            self->input_buffer.erase(0, crlf_pos + 2);
 
-        auto tag_end = input.find(' ');
-        if (tag_end == std::string_view::npos) {
-            self->reply_untagged("BAD Missing command");
-            return;
-        }
+            auto tag_end = input.find(' ');
+            if (tag_end == std::string_view::npos) {
+                self->reply_untagged("BAD Missing command");
+                return;
+            }
 
-        std::string tag(input.substr(0, tag_end));
-        if (tag.empty()) {
-            self->reply_untagged("BAD Missing tag");
-            return;
-        }
+            std::string tag(input.substr(0, tag_end));
+            if (tag.empty()) {
+                self->reply_untagged("BAD Missing tag");
+                return;
+            }
 
-        input.remove_prefix(tag_end + 1);
-        self->cur_tag.assign(tag);
+            input.remove_prefix(tag_end + 1);
+            self->cur_tag.assign(tag);
 
-        while (!input.empty() && std::isspace(static_cast<unsigned char>(input.front())))
-            input.remove_prefix(1);
+            while (!input.empty() && std::isspace(static_cast<unsigned char>(input.front())))
+                input.remove_prefix(1);
 
-        if (input.empty()) {
-            self->reply_untagged("BAD Missing command");
-            return;
-        }
+            if (input.empty()) {
+                self->reply_untagged("BAD Missing command");
+                return;
+            }
 
-        auto cmd_end = input.find(' ');
-        std::string_view command = (cmd_end == std::string_view::npos)
-                                     ? input
-                                     : input.substr(0, cmd_end);
-        std::string_view args = (cmd_end == std::string_view::npos)
-                                  ? std::string_view{}
-                                  : input.substr(cmd_end + 1);
+            auto cmd_end = input.find(' ');
+            std::string_view command = (cmd_end == std::string_view::npos)
+                                         ? input
+                                         : input.substr(0, cmd_end);
+            std::string_view args = (cmd_end == std::string_view::npos)
+                                      ? std::string_view{}
+                                      : input.substr(cmd_end + 1);
 
-        std::string cmd_upper(command);
-        for (auto& c : cmd_upper) c = std::toupper(static_cast<unsigned char>(c));
+            std::string cmd_upper(command);
+            for (auto& c : cmd_upper) c = std::toupper(static_cast<unsigned char>(c));
 
-        if (auto it = HANDLERS.find(cmd_upper); it != HANDLERS.end()) {
-            it->second(*self, args);
-        } else {
-            LOG_ERROR(LogLevel::DEBUG) << "Unknown command: " << command;
-            self->reply_tagged("BAD Command unrecognized");
+            if (auto it = HANDLERS.find(cmd_upper); it != HANDLERS.end()) {
+                it->second(*self, args);
+            } else {
+                LOG_ERROR(LogLevel::DEBUG) << "Unknown command: " << command;
+                self->reply_tagged("BAD Command unrecognized");
+            }
         }
     });
 
