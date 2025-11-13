@@ -11,9 +11,13 @@
 #define CRLF "\r\n"
 
 static void handleCapability(IMAPSession &session, const std::string_view &);
+static void handleList(IMAPSession &session, const std::string_view &);
+static void handleSelect(IMAPSession &session, const std::string_view &);
 
 static const std::unordered_map<std::string, std::function<void(IMAPSession &, const std::string_view &)>> HANDLERS = {
-    { "CAPABILITY", handleCapability }
+    { "CAPABILITY", handleCapability },
+    { "LIST", handleList },
+    { "SELECT", handleSelect },
 };
 
 IMAPSession::IMAPSession(std::shared_ptr<boost::asio::ip::tcp::socket> socket) :
@@ -106,4 +110,29 @@ void IMAPSession::reply_untagged(const std::string &reply) {
 void handleCapability(IMAPSession &session, const std::string_view &) {
     session.reply_untagged("CAPABILITY IMAP4rev1 LITERAL+ IDLE NAMESPACE");
     session.reply_tagged("OK CAPABILITY completed");
+}
+
+void handleList(IMAPSession &session, const std::string_view &) {
+    // TODO: implement real LIST handling with args parsing
+    session.reply_untagged(R"(LIST (\HasNoChildren) "/" INBOX)");
+    session.reply_tagged("OK LIST completed");
+}
+
+void handleSelect(IMAPSession &session, const std::string_view &args) {
+    // TODO: fetch real mailbox from db; possibly also multiple mailboxes?
+    if (args.empty() || args != "INBOX") {
+        session.reply_tagged("NO SELECT failed: unknown mailbox");
+        return;
+    }
+
+    session.mailbox() = "INBOX";
+    session.reply_untagged("FLAGS ()");
+
+    // TODO: return real values for EXISTS & RECENT
+    session.reply_untagged("0 EXISTS");
+    session.reply_untagged("0 RECENT");
+
+    // TODO: return last unseen UID
+
+    session.reply_tagged("OK [READ-WRITE] SELECT completed");
 }
