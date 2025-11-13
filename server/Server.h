@@ -12,7 +12,7 @@
 
 #include "../networking/Session.h"
 #include "../networking/SmartSession.h"
-#include "../networking/SSL/SSLContextFactory.h"
+#include "../networking/SSL/include/SSLContextFactory.h"
 #include "ServerConsoleUI.h"
 #include "config/config.h"
 

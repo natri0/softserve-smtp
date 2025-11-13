@@ -16,7 +16,7 @@
 
 #include "EmailMessage.h"
 #include "SmartSession.h"
-#include "../networking/SSL/SSLContextFactory.h"
+#include "../networking/SSL/include/SSLContextFactory.h"
 
 /**
  * @class Client

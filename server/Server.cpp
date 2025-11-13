@@ -7,8 +7,9 @@
 #include <cmath>
 
 #include "ThreadPool/include/ThreadPool.hpp"
-#include "../networking/SSL/KeyExchanger.h"
+#include "../networking/SSL/include/KeyExchanger.h"
 #include "SMTPSession.h"
+#include "PLAINAuthHandler.h"
 
 // temp till we don't have parser
 
@@ -139,6 +140,13 @@ void Server::setConnection(std::shared_ptr<net::ip::tcp::socket> socket)
 {
     std::cout << "New connection from " << socket->remote_endpoint() << std::endl;
     auto session = std::make_shared<SmartSession>(socket, SmartSession::Type::SERVER);
+
+    auto config = ISXSMTP::SMTPConfigBuilder()
+        .SetAuthHandler(std::make_shared<ISXSMTP::PLAINAuthHandler>())
+        .SetDomain("smtp.test")
+        .Build();
+
+    session->smtp_session = std::make_shared<ISXSMTP::SMTPSession>(config);
 
     {
         std::lock_guard lock(sessionMutex);

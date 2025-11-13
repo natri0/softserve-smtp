@@ -5,7 +5,9 @@
 #include "Client.h"
 #include <iostream>
 
-#include "../networking/SSL/KeyExchanger.h"
+#include "../networking/SSL/include/KeyExchanger.h"
+#include "../networking/SSL/include/SSLContextFactory.h"
+#include "../utils/Base64.h"
 
 constexpr uint8_t RECONNECT_DELAY_TIME = 2;
 
@@ -113,6 +115,11 @@ void Client::SMTPHandling(boost::asio::const_buffer msg)
 bool Client::sendMail(EmailMessage e_msg)
 {
     // temp
+    const char raw_creds[] = "\0testuser\0testpass";
+    std::string creds(raw_creds, sizeof(raw_creds) - 1);
+    auto encoded = Base64::Encode({creds.begin(), creds.end()});
+    std::string encodedStr = {encoded.begin(), encoded.end()};
+    sendInfo.emplace("AUTH " + encodedStr + "\r\n");
     sendInfo.emplace("MAIL FROM:<reverse@smtp.test>\r\n");
     sendInfo.emplace("RCPT TO:<forward1@smtp.test>\r\n");
     sendInfo.emplace("DATA\r\n");
