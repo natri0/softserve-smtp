@@ -32,20 +32,20 @@ bool Server::init()
     Logger::getInstance().setFlush(false);
     ui->do_flush = false;
 
-    // initialization from config
-    if (Config config; !config.load_from_file("server/config/config.json"))
+    Config config;
+    if (!config.load_from_file("server/config/config.json")) {
         LOG_ERROR(LogLevel::PROD) << "Couldn't load config.json";
-    else
-    {
-        if (config.has_key("port")) port = config.get<unsigned short>("port");
-        if (config.has_key("thread_pool_size")) thread_pool_size = config.get<unsigned short>("thread_pool_size");
+        return false;
     }
+
+    port = config.get_with_default<unsigned short>("port", 12345);
+    thread_pool_size = config.get_with_default<unsigned short>("thread_pool_size", 4);
 
     // mailbox lifespan = server lifespan
     static std::shared_ptr<ISXSMTP::SMTPIMailbox> mailbox = std::make_shared<SQLiteMailbox>();
     ISXSMTP::SMTPConfigBuilder builder;
     builder.SetMailbox(mailbox);
-    builder.SetDomain("smtp.test");
+    builder.SetDomain(config.get_with_default<std::string>("smtp.domain", "smtp.test"));
     builder.SetCurrentAsDefault();
 
     threadPool = std::make_unique<ThreadPool>(thread_pool_size);

@@ -1,7 +1,7 @@
 #include "Manager.hpp"
 
 #include <iostream>
-#include <fmt/format.h>
+#include <format>
 
 // constexpr std::string_view CREATE_TABLES = R"(
 // CREATE TABLE IF NOT EXISTS domains (
@@ -100,7 +100,7 @@ Result<> DatabaseManager::emplaceMail(
 
     if (!res)
     {
-        return Err(fmt::format("Failed to insert mail: {}", res.unwrapErrUnchecked()));
+        return Err(std::format("Failed to insert mail: {}", res.unwrapErrUnchecked()));
     }
 
     return Ok();
@@ -114,7 +114,7 @@ Result<bool> DatabaseManager::checkMailboxAvailability(std::string_view localpar
     );
     if (!res)
     {
-        return Err(fmt::format("Failed to check mailbox availability: {}", res.unwrapErrUnchecked()));
+        return Err(std::format("Failed to check mailbox availability: {}", res.unwrapErrUnchecked()));
     }
 
     auto [count] = std::move(res).unwrapUnchecked();
@@ -125,11 +125,11 @@ Result<std::string> DatabaseManager::suggestAddress(std::string_view request)
 {
     auto res = m_connection.fetchOne<std::string>(
         "SELECT localpart FROM users WHERE localpart LIKE ? LIMIT 1;",
-        fmt::format("%{}%", request)
+        std::format("%{}%", request)
     );
     if (!res)
     {
-        return Err(fmt::format("Failed to suggest address: {}", res.unwrapErrUnchecked()));
+        return Err(std::format("Failed to suggest address: {}", res.unwrapErrUnchecked()));
     }
 
     auto [localpart] = std::move(res).unwrapUnchecked();

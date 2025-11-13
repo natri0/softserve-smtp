@@ -1,6 +1,8 @@
 find_package(Boost REQUIRED)
 find_package(Threads REQUIRED)
 
+set(CMAKE_CXX_STANDARD 23)
+
 add_library(logger STATIC
     Include/Logger.cpp)
 
