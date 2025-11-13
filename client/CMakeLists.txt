@@ -4,9 +4,12 @@ project(smtp_client)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build/client/bin")
 
-if (NOT UNIX)
-    find_package(Boost REQUIRED COMPONENTS system thread asio)
-endif ()
+if(APPLE)
+    # macOS Clang doesn't support std::jthread without this flag :/
+    set(CMAKE_CXX_FLAGS "-fexperimental-library ${CMAKE_CXX_FLAGS}")
+endif()
+
+find_package(Boost REQUIRED)
 find_package(OpenSSL REQUIRED)
 
 add_executable(smtp_client main.cpp
