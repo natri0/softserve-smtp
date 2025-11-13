@@ -8,6 +8,7 @@ namespace ISXSMTP {
   public:
     virtual ~IAuthHandler() = default;
     virtual bool Authenticate(std::string& credentials) = 0;
+    virtual std::string GetName() const = 0;
   };
 }
 

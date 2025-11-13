@@ -21,6 +21,7 @@ add_library(SMTP
 	 "source/SMTPReply.cpp" 
 	 "source/SMTPCommandParser.cpp"
 	 "source/PLAINAuthHandler.cpp"
+	 "source/LOGINAuthHandler.cpp"
 	 "source/SMTPConfig.cpp"
 	 "source/SMTPConfigBuilder.cpp" "include/SMTPIMailbox.h")
 

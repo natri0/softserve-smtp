@@ -112,17 +112,27 @@ void Client::SMTPHandling(boost::asio::const_buffer msg)
     }
 };
 
-bool Client::sendMail(EmailMessage e_msg)
-{
-    // temp
-    const char raw_creds[] = "\0testuser\0testpass";
-    std::string creds(raw_creds, sizeof(raw_creds) - 1);
-    auto encoded = Base64::Encode({creds.begin(), creds.end()});
+bool Client::sendMail(EmailMessage e_msg) {
+    // ----------------- PLAIN
+
+    // const char raw_creds[] = "\0testuser\0testpass";
+    // std::string creds(raw_creds, sizeof(raw_creds) - 1);
+    // auto encoded = Base64::Encode({creds.begin(), creds.end()});
+    // std::string encodedStr = {encoded.begin(), encoded.end()};
+    // sendInfo.emplace("AUTH " + encodedStr + "\r\n");
+
+    // ----------------- LOGIN
+    std::string usr = "testuser";
+    auto encoded = Base64::Encode({usr.begin(), usr.end()});
     std::string encodedStr = {encoded.begin(), encoded.end()};
     sendInfo.emplace("AUTH " + encodedStr + "\r\n");
-    sendInfo.emplace("MAIL FROM:<reverse@smtp.test>\r\n");
-    sendInfo.emplace("RCPT TO:<forward1@smtp.test>\r\n");
-    sendInfo.emplace("DATA\r\n");
+
+    std::string pass = "testpass";
+    auto encoded2 = Base64::Encode({pass.begin(), pass.end()});
+    std::string encodedStr2 = {encoded2.begin(), encoded2.end()};
+    sendInfo.emplace("AUTH " + encodedStr2 + "\r\n");
+
+
     sendInfo.emplace("RSET\r\n");
 
     if (!session->net_session->isConnected())

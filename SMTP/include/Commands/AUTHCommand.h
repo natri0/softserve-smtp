@@ -9,6 +9,8 @@ namespace ISXSMTP {
     std::vector<SMTPReply> Invoke(SMTPCommandArguments arguments) override;
     std::string GetName() override;
     std::string GetSyntax() override;
+
+    bool isUsernameSet = false;
   };
 }
 

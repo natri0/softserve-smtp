@@ -9,6 +9,7 @@ namespace ISXSMTP {
   class PLAINAuthHandler final : public IAuthHandler {
   public:
     bool Authenticate(std::string& credentials) override;
+    std::string GetName() const override;
 
   private:
     static std::pair<std::string, std::string> parseCredentials(const std::vector<unsigned char>& decoded);

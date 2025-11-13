@@ -19,6 +19,11 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::AUTHCommand::Invoke(SMTPCommandArgument
     return { {235, "Authentication Succeeded"} };
   }
 
+  if (arguments.auth_handler->GetName() == "LOGIN" && !isUsernameSet) {
+    isUsernameSet = true;
+    return { {324, "UGFzc3dvcmQ6"} }; // Decodes to: "Password:"
+  }
+
   return {{535, "Authentication credentials invalid"}};
 }
 

@@ -42,3 +42,7 @@ bool ISXSMTP::PLAINAuthHandler::verifyCredentials(const std::string& username, c
     // TODO: Replace with actual database lookup
     return username == "testuser" && password == "testpass";
 }
+
+std::string ISXSMTP::PLAINAuthHandler::GetName() const {
+    return "PLAIN";
+}

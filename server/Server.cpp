@@ -6,6 +6,7 @@
 
 #include <cmath>
 
+#include "LOGINAuthHandler.h"
 #include "ThreadPool/include/ThreadPool.hpp"
 #include "../networking/SSL/include/KeyExchanger.h"
 #include "SMTPSession.h"
@@ -141,8 +142,9 @@ void Server::setConnection(std::shared_ptr<net::ip::tcp::socket> socket)
     std::cout << "New connection from " << socket->remote_endpoint() << std::endl;
     auto session = std::make_shared<SmartSession>(socket, SmartSession::Type::SERVER);
 
+    // !@#
     auto config = ISXSMTP::SMTPConfigBuilder()
-        .SetAuthHandler(std::make_shared<ISXSMTP::PLAINAuthHandler>())
+        .SetAuthHandler(std::make_shared<ISXSMTP::LOGINAuthHandler>())
         .SetDomain("smtp.test")
         .Build();
 
