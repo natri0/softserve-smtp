@@ -45,13 +45,11 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::MAILCommand::Invoke(SMTPCommandArgument
 
 std::string ISXSMTP::MAILCommand::GetName()
 {
-	PROFILE_FUNC();
 	return std::string("MAIL");
 }
 
 std::string ISXSMTP::MAILCommand::GetSyntax()
 {
-	PROFILE_FUNC();
 	// mail command should also accept mail params but since 
 	// I couldn't find a singe example what this params could mean or do
 	// I decided to omit them for now

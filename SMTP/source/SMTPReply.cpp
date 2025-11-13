@@ -7,7 +7,6 @@ ISXSMTP::SMTPReply::SMTPReply(std::uint16_t code, const std::string& comment, bo
 	, m_comment(comment)
 	, m_multiLine(multi_line)
 {
-	PROFILE_FUNC();
 }
 
 ISXSMTP::SMTPReply::SMTPReply(std::uint16_t code, const std::string& comment)
@@ -15,18 +14,15 @@ ISXSMTP::SMTPReply::SMTPReply(std::uint16_t code, const std::string& comment)
 	, m_comment(comment)
 	, m_multiLine(false)
 {
-	PROFILE_FUNC();
 }
 
 std::string ISXSMTP::SMTPReply::GetComment() const
 {
-	PROFILE_FUNC();
 	return m_comment;
 }
 
 std::uint16_t ISXSMTP::SMTPReply::GetCode() const
 {
-	PROFILE_FUNC();
 	return m_code;
 }
 
@@ -46,7 +42,6 @@ std::string ISXSMTP::SMTPReply::ToString() const
 
 void ISXSMTP::SMTPReply::SetMultiLine(bool value)
 {
-	PROFILE_FUNC();
 	m_multiLine = value;
 }
 
@@ -162,12 +157,10 @@ ISXSMTP::SMTPReply ISXSMTP::SMTPReply::MailboxSyntaxIncorrect()
 
 bool ISXSMTP::SMTPReply::operator!=(const SMTPReply& other)
 {
-	PROFILE_FUNC();
 	return !(*this == other);
 }
 
 bool ISXSMTP::SMTPReply::operator==(const SMTPReply& other)
 {
-	PROFILE_FUNC();
 	return this->m_code == other.m_code;
 }

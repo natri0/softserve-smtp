@@ -28,12 +28,10 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::EHLOCommand::Invoke(SMTPCommandArgument
 
 std::string ISXSMTP::EHLOCommand::GetName()
 {
-	PROFILE_FUNC();
 	return "EHLO";
 }
 
 std::string ISXSMTP::EHLOCommand::GetSyntax()
 {
-	PROFILE_FUNC();
 	return std::string("EHLO !domain!") + SMTPConstants::CR + SMTPConstants::LF;
 }

@@ -10,12 +10,10 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::NOOPCommand::Invoke(SMTPCommandArgument
 
 std::string ISXSMTP::NOOPCommand::GetName()
 {
-	PROFILE_FUNC();
 	return "NOOP";
 }
 
 std::string ISXSMTP::NOOPCommand::GetSyntax()
 {
-	PROFILE_FUNC();
 	return  std::string("NOOP [string]") + SMTPConstants::CR + SMTPConstants::LF;
 }

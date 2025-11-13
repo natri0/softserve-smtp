@@ -10,5 +10,4 @@ ISXSMTP::SMTPConfig::SMTPConfig(
 	, context(context)
 	, mailbox(mailbox)
 {
-	PROFILE_FUNC();
 }

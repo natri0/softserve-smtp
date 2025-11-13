@@ -50,12 +50,10 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::RCPTCommand::Invoke(SMTPCommandArgument
 
 std::string ISXSMTP::RCPTCommand::GetName()
 {
-	PROFILE_FUNC();
 	return "RCPT";
 }
 
 std::string ISXSMTP::RCPTCommand::GetSyntax()
 {
-	PROFILE_FUNC();
 	return  std::string("RCPT TO:<!forward_path!>") + SMTPConstants::CR + SMTPConstants::LF;;
 }

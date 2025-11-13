@@ -13,12 +13,10 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::DATACommand::Invoke(SMTPCommandArgument
 
 std::string ISXSMTP::DATACommand::GetName()
 {
-	PROFILE_FUNC();
 	return "DATA";
 }
 
 std::string ISXSMTP::DATACommand::GetSyntax()
 {
-	PROFILE_FUNC();
 	return std::string("DATA") + SMTPConstants::CR + SMTPConstants::LF;
 }

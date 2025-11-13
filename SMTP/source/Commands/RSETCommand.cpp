@@ -15,12 +15,10 @@ std::vector<ISXSMTP::SMTPReply> ISXSMTP::RSETCommand::Invoke(SMTPCommandArgument
 
 std::string ISXSMTP::RSETCommand::GetName()
 {
-	PROFILE_FUNC();
 	return "RSET";
 }
 
 std::string ISXSMTP::RSETCommand::GetSyntax()
 {
-	PROFILE_FUNC();
 	return  std::string("RSET") + SMTPConstants::CR + SMTPConstants::LF;
 }

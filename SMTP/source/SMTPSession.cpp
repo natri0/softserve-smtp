@@ -96,7 +96,6 @@ std::string ISXSMTP::SMTPSession::OnMessage(const std::string& message)
 
 ISXSMTP::SMTPContext ISXSMTP::SMTPSession::GetContext()
 {
-	PROFILE_FUNC();
 	return m_context;
 }
 
@@ -132,7 +131,6 @@ bool ISXSMTP::SMTPSession::ApplyConfig(const SMTPConfig& config)
 
 std::string ISXSMTP::SMTPSession::GetDomain() const
 {
-	PROFILE_FUNC();
 	return m_domain;
 }
 

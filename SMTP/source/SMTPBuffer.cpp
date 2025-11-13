@@ -4,15 +4,11 @@
 
 std::string& ISXSMTP::SMTPBuffer::GetString()
 {
-	PROFILE_FUNC();
-
 	return m_data;
 }
 
 void ISXSMTP::SMTPBuffer::Clear()
 {
-	PROFILE_FUNC();
-
 	m_data.clear();
 }
 
