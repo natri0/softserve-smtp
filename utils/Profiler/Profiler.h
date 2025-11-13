@@ -39,11 +39,9 @@ class Profiler
 {
 private:
 	std::string m_sessionName;
-	std::ofstream m_output;
-	bool m_firstEntry = true;
+	std::vector<ProfileResult> m_results;
+	std::string m_defaultSaveDir;
 
-	SpinLock m_lock;
-	
 public:
 	Profiler();
 
@@ -54,6 +52,10 @@ public:
 	void End();
 
 	void WriteProfile(const ProfileResult& result);
+	void SaveProfile(const std::string& filepath);
+
+	void SetDefaultSaveDir(const std::string& safe_dir);
+
 };
 
 class ProfileTimer
@@ -69,7 +71,6 @@ public:
 	~ProfileTimer();
 
 	void Stop();
-
 };
 
 }

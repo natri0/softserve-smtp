@@ -8,18 +8,17 @@ private:
 	std::atomic_flag m_flag = ATOMIC_FLAG_INIT;
 
 public:
-	SpinLock() {}
-
-	void lock() {
+	SpinLock() 
+	{
 		while (m_flag.test_and_set(std::memory_order_acquire)) {
 			// spin until the lock is released
 		}
 	}
 
-	void unlock() {
+	~SpinLock()
+	{
 		m_flag.clear(std::memory_order_release);
 	}
-
 };
 
 }

@@ -1,8 +1,11 @@
 #include "Profiler.h"
 
+#include <iostream>
+#include <filesystem>
+
 utils::Profiler::Profiler()
 	: m_sessionName("")
-	, m_firstEntry(true)
+	, m_defaultSaveDir("profiles")
 {
 
 }
@@ -15,45 +18,69 @@ utils::Profiler& utils::Profiler::GetInstance()
 
 void utils::Profiler::Begin(const std::string& session_name, const std::string& filepath /*= "profiler_output.json"*/)
 {
-	m_firstEntry = true;
 	m_sessionName = session_name;
-	m_output.open(filepath);
-	if (!m_output.is_open())
-	{
-		// log error
-		//return;
-	}
-
-	m_output << "{\"otherData\": {\"version\":\"Profiler v0.1\",\"session_name\":\"" << session_name << "\"},\"traceEvents\":[";
 }
 
 void utils::Profiler::End()
 {
-	m_output << "]}";
-	m_output.close();
-	m_firstEntry = true;
+	auto current_time = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+
+	SaveProfile(m_sessionName + '_' + std::to_string(current_time) + ".json");
 }
 
 void utils::Profiler::WriteProfile(const ProfileResult& result)
 {
-	m_lock.lock();
+	SpinLock lock;
 
-	if (!m_firstEntry)
-		m_output << ",";
+	m_results.push_back(result);
+}
 
-	m_output << "{";
-	m_output << "\"cat\":\"function\",";
-	m_output << "\"dur\":" << result.end - result.start << ',';
-	m_output << "\"name\":\"" << result.name << "\",";
-	m_output << "\"ph\":\"X\",";
-	m_output << "\"pid\":0,";
-	m_output << "\"tid\":" << result.thread_id << ",";
-	m_output << "\"ts\":" << result.start;
-	m_output << "}";
+void utils::Profiler::SaveProfile(const std::string& filepath)
+{
+	SpinLock lock;
 
-	m_firstEntry = false;
+	if (!std::filesystem::exists(m_defaultSaveDir) || !std::filesystem::is_directory(m_defaultSaveDir))
+	{
+		std::filesystem::create_directory(m_defaultSaveDir);
+	}
 
-	m_lock.unlock();
+	std::fstream output_file;
+	output_file.open(m_defaultSaveDir + '/' + filepath, std::ios::out);
+	if (!output_file.is_open())
+	{
+		std::cout << "Failed to open file in utils::Profiler::SaveProfile\n";
+		return;
+	}
+
+	output_file << "{\"otherData\": {\"version\":\"Profiler v0.1\",\"session_name\":\"" << m_sessionName << "\"},\"traceEvents\":[";
+
+	bool first_entry = true;
+	for (auto& item : m_results)
+	{
+		if (!first_entry)
+		{
+			output_file << ",";
+		}
+		first_entry = false;
+
+		output_file << "{";
+		output_file << "\"cat\":\"function\",";
+		output_file << "\"dur\":" << item.end - item.start << ',';
+		output_file << "\"name\":\"" << item.name << "\",";
+		output_file << "\"ph\":\"X\",";
+		output_file << "\"pid\":0,";
+		output_file << "\"tid\":" << item.thread_id << ",";
+		output_file << "\"ts\":" << item.start;
+		output_file << "}";
+	}
+
+	output_file << "]}";
+	output_file.close();
+}
+
+void utils::Profiler::SetDefaultSaveDir(const std::string& safe_dir)
+{
+	m_defaultSaveDir = safe_dir;
 }
 
 utils::ProfileTimer::ProfileTimer(const std::string& name) 
