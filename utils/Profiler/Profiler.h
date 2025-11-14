@@ -13,6 +13,7 @@
 #include <string>
 #include <thread>
 #include <fstream>
+#include <vector>
 
 #include "SpinLock.h"
 
@@ -47,8 +48,7 @@ public:
 
 	static Profiler& GetInstance();
 
-	void Begin(const std::string& session_name, const std::string& filepath = "profiler_output.json");
-
+	void Begin(const std::string& session_name);
 	void End();
 
 	void WriteProfile(const ProfileResult& result);

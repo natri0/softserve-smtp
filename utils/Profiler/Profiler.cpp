@@ -16,7 +16,7 @@ utils::Profiler& utils::Profiler::GetInstance()
 	return profiler;
 }
 
-void utils::Profiler::Begin(const std::string& session_name, const std::string& filepath /*= "profiler_output.json"*/)
+void utils::Profiler::Begin(const std::string& session_name)
 {
 	m_sessionName = session_name;
 }
