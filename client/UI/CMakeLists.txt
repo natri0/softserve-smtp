@@ -2,9 +2,6 @@ cmake_minimum_required(VERSION 3.30)
 project(smtp_client)
 
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Network)
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
