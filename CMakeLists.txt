@@ -4,6 +4,9 @@ project(softserve_smtp)
 set(CMAKE_CXX_STANDARD 23)
 set(BOOST_ENABLE_CMAKE_TARGETS ON)
 
+set(CMAKE_TOOLCHAIN_FILE "D:/vcpkg/scripts/buildsystems/vcpkg.cmake")
+set(CMAKE_PREFIX_PATH "E:/Qt/6.8.3/msvc2022_64" CACHE PATH "Qt installation path")
+
 find_package(Qt6 REQUIRED COMPONENTS Widgets Core)
 find_package(Boost REQUIRED COMPONENTS system thread asio)
 find_package(OpenSSL REQUIRED)

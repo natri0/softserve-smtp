@@ -4,7 +4,9 @@ project(smtp_client)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+find_package(Qt6 REQUIRED COMPONENTS Core Network)
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
@@ -15,6 +17,7 @@ set(PROJECT_SOURCES
         include/SMTPClientWindow.h
         include/SMTPController.h
         include/SMTPWorker.h
+	include/Structures.h
 )
 
 qt_add_resources(PROJECT_RESOURCES "resources.qrc")
@@ -28,16 +31,11 @@ qt_add_executable(smtpUI
 target_include_directories(smtpUI PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(smtpUI PRIVATE
-        Qt::Widgets
-        smtp_client_lib
+        Qt6::Core
+   	Qt6::Widgets
+    	Qt6::Network
+	smtp_client_lib
 )
-
-if(WIN32)
-    add_custom_command(TARGET smtpUI POST_BUILD
-            COMMAND "${Qt6_DIR}/../../../bin/windeployqt.exe" "$<TARGET_FILE:smtpUI>"
-            COMMENT "Deploying Qt runtime..."
-    )
-endif()
 
 include(GNUInstallDirs)
 install(TARGETS smtpUI
