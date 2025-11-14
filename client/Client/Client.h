@@ -35,13 +35,15 @@
 class Client
 {
 public:
+    using StatusCallback = std::function<void(const std::string&)>;
+
     /**
      * @brief Constructs a new Client instance.
      *
      * @param host Hostname or IP address of the SMTP server.
      * @param port Port number to connect to.
      */
-    Client(const ClientSettings& settings);
+    Client(const ClientSettings& settings, StatusCallback statusCallback);
 
     /**
      * @brief Destroys the Client instance.
@@ -72,7 +74,6 @@ public:
      */
     bool sendMail(EmailMessage e_msg);
 
-
     /**
      * @brief Runs the main I/O loop for asynchronous operations.
      * @return True if the client runs successfully.
@@ -85,6 +86,9 @@ private:
     void changeLogLevel(const std::string& level) const;
 
 private:
+    ///Status callback to send relevant info to ui
+    StatusCallback m_statusCallback;
+
     ///Client settings to get settings from gui
     ClientSettings m_settings;
 

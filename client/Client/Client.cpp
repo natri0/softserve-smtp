@@ -9,17 +9,19 @@
 
 constexpr uint8_t RECONNECT_DELAY_TIME = 2;
 
-Client::Client(const ClientSettings& settings) :
+Client::Client(const ClientSettings& settings, StatusCallback statusCallback) :
     //server_endpoint(net::ip::make_address(settings.server), settings.port),
     session(std::make_shared<SmartSession>(std::make_shared<net::ip::tcp::socket>(io), SmartSession::Type::CLIENT)),
     timer(io),
     m_recipientIndex(0),
-    m_settings(settings)
+    m_settings(settings),
+    m_statusCallback(statusCallback)
 {
     if (m_settings.securityType == 1)
     {
         try
         {
+            if (m_statusCallback) m_statusCallback("SSL/TLS enabled. Creating SSL context.");
             LOG_INFO(DEBUG_LOG_LEVEL) << "SSL/TLS enabled. Creating SSL context.";
             sslContext = smtp::ssl::SSLContextFactory::createClientContext();
         }
@@ -30,6 +32,7 @@ Client::Client(const ClientSettings& settings) :
     }
     else
     {
+        if (m_statusCallback) m_statusCallback("SSL/TLS disabled. Skipping SSL context creation.");
         LOG_INFO(DEBUG_LOG_LEVEL) << "SSL/TLS disabled. Skipping SSL context creation.";
     }
 };
@@ -56,6 +59,7 @@ void Client::init()
     session->net_session->setOnConnected([this]()
     {
         LOG_INFO(PROD_LOG_LEVEL) << "Client connected";
+        if (m_statusCallback) m_statusCallback("Client connected.");
 
         session->setSMTPHandling([this](boost::asio::const_buffer msg) {
             SMTPHandling(msg);
@@ -84,6 +88,8 @@ void Client::connect()
         LOG_WARNING(PROD_LOG_LEVEL) << "Failed to resolve or connect to "
                                     << m_settings.server << ": " << e.what();
 
+
+        if (m_statusCallback) m_statusCallback("Failed to resolve or connect: " + std::string(e.what()));
         m_lastError = "Failed to resolve hostname: " + std::string(e.what());
 
         reconnect();
@@ -96,12 +102,7 @@ void Client::reconnect()
     timer.expires_after(std::chrono::seconds(RECONNECT_DELAY_TIME));
     timer.async_wait([this](boost::system::error_code ec)
     {
-        if (!ec)
-        {
-            connect();
-            if (!session->net_session->isConnected()) reconnect();
-            else run();
-        }
+        if (!ec) connect();
     });
 }
 
@@ -157,13 +158,6 @@ bool Client::sendMail(EmailMessage e_msg)
     sendInfo.emplace("RCPT TO:<forward1@smtp.test>\r\n");
     sendInfo.emplace("DATA\r\n");
     sendInfo.emplace("RSET\r\n");
-
-    if (!session->net_session->isConnected())
-    {
-        LOG_WARNING(DEBUG_LOG_LEVEL) << "Client is not connected";
-        m_lastError = "Client is not connected.";
-        return false;
-    }
 
     m_emailInfo = e_msg;
     LOG_INFO(PROD_LOG_LEVEL) << "Sending...";

@@ -22,7 +22,15 @@ SmtpClientWindow::SmtpClientWindow(QWidget *parent)
 
     m_lastFromAddress = m_Settings.username;
 
+    addMockSentEmails();
+    addMockInboxEmails();
+
     updateLog("Ready. Please configure server settings before sending.");
+
+    if (!m_receivedEmails.isEmpty()) {
+        displayEmail(m_receivedEmails.first());
+        inboxListWidget->setCurrentRow(0);
+    }
 }
 
 SmtpClientWindow::~SmtpClientWindow()
@@ -66,31 +74,52 @@ void SmtpClientWindow::createToolBar()
 
 QWidget* SmtpClientWindow::createMainLayout()
 {
-    QSplitter *hSplitter = new QSplitter(Qt::Horizontal);
+    // Create a container widget and a horizontal layout
+    QWidget *mainWidget = new QWidget;
+    QHBoxLayout *mainLayout = new QHBoxLayout(mainWidget);
+    mainLayout->setContentsMargins(0, 0, 0, 0); // Remove spacing around the edge
+    mainLayout->setSpacing(0); // Remove spacing between widgets (no gray line)
 
+    // 1. Navigation Panel (Left)
     navigationListWidget = new QListWidget;
     navigationListWidget->addItem(new QListWidgetItem(QIcon::fromTheme("mail-send"), "Sent"));
-    navigationListWidget->addItem(new QListWidgetItem(QIcon::fromTheme("mail-receive"), "Inbox (nyi)"));    navigationListWidget->setMaximumWidth(150);
-    hSplitter->addWidget(navigationListWidget);
+    navigationListWidget->addItem(new QListWidgetItem(QIcon::fromTheme("mail-receive"), "Inbox")); // <-- Renamed
+    navigationListWidget->setMaximumWidth(150);
+    mainLayout->addWidget(navigationListWidget); // Add to layout
 
-    mainContentStack = new QStackedWidget;
+    // 2. Main Content (Right) - Now a Splitter
+
+    // 2a. List Stack (Left side of splitter)
+    listStack = new QStackedWidget;
 
     sentItemsListWidget = new QListWidget;
-    mainContentStack->addWidget(sentItemsListWidget);
+    listStack->addWidget(sentItemsListWidget);
 
-    QLabel* inboxPlaceholder = new QLabel("Inbox functionality is not implemented.");
-    inboxPlaceholder->setAlignment(Qt::AlignCenter);
-    mainContentStack->addWidget(inboxPlaceholder);
+    inboxListWidget = new QListWidget;
+    listStack->addWidget(inboxListWidget);
 
-    hSplitter->addWidget(mainContentStack);
-    hSplitter->setStretchFactor(1, 1);
+    emailDetailWidget = createEmailDetailWidget();
+
+    QSplitter *contentSplitter = new QSplitter(Qt::Horizontal);
+    contentSplitter->addWidget(listStack);
+    contentSplitter->addWidget(emailDetailWidget);
+    contentSplitter->setStretchFactor(0, 1);
+    contentSplitter->setStretchFactor(1, 2);
+
+    mainLayout->addWidget(contentSplitter, 1);
 
     connect(navigationListWidget, &QListWidget::currentRowChanged,
             this, &SmtpClientWindow::onNavigationChanged);
 
-    navigationListWidget->setCurrentRow(0);
+    connect(sentItemsListWidget, &QListWidget::itemClicked,
+            this, &SmtpClientWindow::onSentItemClicked);
 
-    return hSplitter;
+    connect(inboxListWidget, &QListWidget::itemClicked,
+            this, &SmtpClientWindow::onInboxItemClicked);
+
+    navigationListWidget->setCurrentRow(1);
+
+    return mainWidget;
 }
 
 QWidget* SmtpClientWindow::createLogPanel()
@@ -107,7 +136,8 @@ QWidget* SmtpClientWindow::createLogPanel()
 
 void SmtpClientWindow::onNavigationChanged(int index)
 {
-    mainContentStack->setCurrentIndex(index);
+    listStack->setCurrentIndex(index);
+    displayEmail(Email());
 }
 
 void SmtpClientWindow::onCompose()
@@ -151,7 +181,6 @@ void SmtpClientWindow::onConfigureServer()
 
     QComboBox *loggerCombo = new QComboBox();
     loggerCombo->addItems({"NONE", "PROD", "DEBUG", "TRACE"});
-    loggerCombo->setCurrentIndex(m_Settings.securityType);
     int logIndex = loggerCombo->findText(m_Settings.logLevel);
     loggerCombo->setCurrentIndex(logIndex > -1 ? logIndex : 2);
     form.addRow("Logger level:", loggerCombo);
@@ -192,24 +221,9 @@ void SmtpClientWindow::onSendSuccess()
     statusBar()->showMessage("Message sent successfully!", 3000);
     sendButton->setEnabled(true);
 
-    // ** Add the sent email to our list **
-    if (!m_pendingEmail.subject.isEmpty() || !m_pendingEmail.to.isEmpty())
-    {
-        // Add to our internal data list
-        m_sentEmails.prepend(m_pendingEmail);
+    addEmailToSentList(m_pendingEmail);
 
-        // Create a display string for the list widget
-        QString to = m_pendingEmail.to.join(", ");
-        QString subject = m_pendingEmail.subject.isEmpty() ? "(No Subject)" : m_pendingEmail.subject;
-        QString itemText = QString("To: %1  |  %2").arg(to, subject);
-
-        // Add to the top of the visible list
-        QListWidgetItem *item = new QListWidgetItem(itemText);
-        item->setToolTip(m_pendingEmail.body); // Show body on hover
-        sentItemsListWidget->insertItem(0, item);
-    }
-
-    m_pendingEmail = Email(); // Clear the pending email
+    m_pendingEmail = Email();
 }
 
 void SmtpClientWindow::onSendFailed(const QString &error)
@@ -219,4 +233,132 @@ void SmtpClientWindow::onSendFailed(const QString &error)
     sendButton->setEnabled(true);
     m_pendingEmail = Email();
     QMessageBox::critical(this, "Send Error",  tr("Could not send the email. Reason: %1").arg(error));
+}
+
+void SmtpClientWindow::onSentItemClicked(QListWidgetItem *item)
+{
+    int row = sentItemsListWidget->row(item);
+    if (row >= 0 && row < m_sentEmails.count()) {
+        displayEmail(m_sentEmails.at(row));
+    }
+}
+
+void SmtpClientWindow::onInboxItemClicked(QListWidgetItem *item)
+{
+    int row = inboxListWidget->row(item);
+    if (row >= 0 && row < m_receivedEmails.count()) {
+        displayEmail(m_receivedEmails.at(row));
+    }
+}
+
+QWidget* SmtpClientWindow::createEmailDetailWidget()
+{
+    QFrame *detailFrame = new QFrame;
+    detailFrame->setFrameShape(QFrame::StyledPanel);
+
+    QVBoxLayout *mainLayout = new QVBoxLayout(detailFrame);
+
+    QFormLayout *headerLayout = new QFormLayout;
+    headerLayout->setContentsMargins(5, 5, 5, 5);
+
+    detailFromLineEdit = new QLineEdit;
+    detailFromLineEdit->setReadOnly(true);
+    detailFromLineEdit->setFrame(false);
+
+    detailToLineEdit = new QLineEdit;
+    detailToLineEdit->setReadOnly(true);
+    detailToLineEdit->setFrame(false);
+
+    detailSubjectLineEdit = new QLineEdit;
+    detailSubjectLineEdit->setReadOnly(true);
+    detailSubjectLineEdit->setFrame(false);
+
+    QFont subjectFont = detailSubjectLineEdit->font();
+    subjectFont.setBold(true);
+    detailSubjectLineEdit->setFont(subjectFont);
+
+    headerLayout->addRow("From:", detailFromLineEdit);
+    headerLayout->addRow("To:", detailToLineEdit);
+    headerLayout->addRow("Subject:", detailSubjectLineEdit);
+
+    detailBodyTextEdit = new QTextEdit;
+    detailBodyTextEdit->setReadOnly(true);
+
+    mainLayout->addLayout(headerLayout);
+    mainLayout->addWidget(detailBodyTextEdit, 1);
+
+    return detailFrame;
+}
+
+void SmtpClientWindow::displayEmail(const Email& email)
+{
+    detailFromLineEdit->setText(email.from);
+    detailToLineEdit->setText(email.to.join(", "));
+    detailSubjectLineEdit->setText(email.subject);
+    detailBodyTextEdit->setPlainText(email.body);
+}
+
+void SmtpClientWindow::addEmailToSentList(const Email& email)
+{
+    m_sentEmails.prepend(email);
+
+    QString to = email.to.join(", ");
+    QString subject = email.subject;
+    QString itemText = QString("To: %1  |  %2").arg(to, subject);
+
+    QListWidgetItem *item = new QListWidgetItem(itemText);
+    sentItemsListWidget->insertItem(0, item);
+}
+
+void SmtpClientWindow::addEmailToInboxList(const Email& email)
+{
+    m_receivedEmails.prepend(email);
+
+    QString from = email.from;
+    QString subject = email.subject;
+    QString itemText = QString("From: %1  |  %2").arg(from, subject);
+
+    QListWidgetItem *item = new QListWidgetItem(itemText);
+    inboxListWidget->insertItem(0, item);
+}
+
+void SmtpClientWindow::addMockSentEmails()
+{
+    Email email1;
+    email1.from = m_lastFromAddress;
+    email1.to = {"test@tester.com"};
+    email1.subject = "Mock Sent Email 1";
+    email1.body = "Mock email1 set.1";
+    addEmailToSentList(email1);
+
+    Email email2;
+    email2.from = m_lastFromAddress;
+    email2.to = {"greattest@tester.com", "notgreattest@tester.com"};
+    email2.subject = "Mock Sent Email 2";
+    email2.body = "Mock email1 set.2";
+    addEmailToSentList(email2);
+}
+
+void SmtpClientWindow::addMockInboxEmails()
+{
+    Email email1;
+    email1.from = "support@tester.io";
+    email1.to = {m_lastFromAddress};
+    email1.subject = "Mock Received Email 1";
+    email1.body = "Mock email received 1";
+    addEmailToInboxList(email1);
+
+    Email email2;
+    email2.from = "support@example.com";
+    email2.to = {m_lastFromAddress};
+    email2.subject = "Mock Received Email 2";
+    email2.body = "Mock email received 2";
+    addEmailToInboxList(email2);
+
+    Email email3;
+    email3.from = "noreply@github.com";
+    email3.to = {m_lastFromAddress};
+    email3.subject = "Mock Received Email 3";
+    email3.body = "Mock email received 3";
+    addEmailToInboxList(email3);
 }

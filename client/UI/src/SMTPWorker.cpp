@@ -14,9 +14,6 @@ void SmtpWorker::process() {
     try{
         emit statusUpdated("Worker process started!");
 
-        std::string host = m_Settings.server.toStdString();
-        unsigned short int port = m_Settings.port;
-
         EmailMessage msgToSend;
         msgToSend.from = m_Email.from.toStdString();
         msgToSend.subject = m_Email.subject.toStdString();
@@ -41,7 +38,12 @@ void SmtpWorker::process() {
         }
 
         emit statusUpdated("Connecting to " + m_Settings.server + "...");
-        Client client(settings);
+
+        auto onStatus = [this](const std::string& msg) {
+            emit statusUpdated(QString::fromStdString(msg));
+        };
+
+        Client client(settings, onStatus);
 
         // Set authentication if provided
 
@@ -56,8 +58,7 @@ void SmtpWorker::process() {
             emit finished();
             return;
         }
-
-        emit statusUpdated("Client connected. Running network loop.");
+        emit statusUpdated("Running network loop.");
 
         bool networkLoopSuccess = client.run();
         std::string smtpError = client.getLastError();
