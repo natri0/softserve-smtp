@@ -188,7 +188,7 @@ void SmtpClientWindow::onConfigureServer()
     QComboBox *loggerCombo = new QComboBox();
     loggerCombo->addItems({"NONE", "PROD", "DEBUG", "TRACE"});
     loggerCombo->setCurrentIndex(m_Settings.securityType);
-    form.addRow("Security:", loggerCombo);
+    form.addRow("Logger level:", loggerCombo);
 
     QLineEdit *userEdit = new QLineEdit(m_Settings.username);
     form.addRow( "Username:", userEdit);
