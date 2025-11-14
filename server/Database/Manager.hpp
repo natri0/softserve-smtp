@@ -3,6 +3,14 @@
 #include <SMTPIMailbox.h>
 #include <DB/Connection.hpp>
 
+#include <vector>
+
+struct DbMail {
+    std::string content;
+    std::string from;
+    unsigned int uid;
+};
+
 /// @brief Class that manages database operations
 class DatabaseManager {
 public:
@@ -20,6 +28,10 @@ public:
     /// @brief Suggests addresses based on the provided request string
     Result<std::string> suggestAddress(std::string_view request);
 
+    Result<std::vector<DbMail>> fetchMailsForUser(std::string_view localpart, int since_uid);
+
+    static constexpr int ALL_MAILS = -1;
+    static constexpr int RECENT_MAILS = 0;
 private:
     DB::SQLiteConnection m_connection;
 };

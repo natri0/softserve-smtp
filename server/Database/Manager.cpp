@@ -1,5 +1,8 @@
 #include "Manager.hpp"
 
+#include <Logger.h>
+#include <Macros.h>
+
 #include <iostream>
 #include <format>
 
@@ -92,13 +95,28 @@ Result<> DatabaseManager::emplaceMail(
     std::string_view forwardPath, std::string_view reversePath, std::string_view mailData
 )
 {
+    int localpartEnd = forwardPath.find('@');
+    std::string_view localpart = forwardPath.substr(0, localpartEnd);
+
+    auto userRes = m_connection.fetchOne<int>("select user_id from users where localpart = ?;", localpart);
+    if (userRes.isErr()) {
+        return Err(std::format("Failed to fetch user ID: {}", userRes.unwrapErrUnchecked()));
+    }
+
+    auto [userId] = std::move(userRes).unwrapUnchecked();
+
     auto res = m_connection.execute(
         "INSERT INTO mail (reverse_path, data) VALUES (?, ?);",
         reversePath,
         mailData
     );
 
-    if (!res)
+    auto res2 = m_connection.execute(
+        "INSERT INTO mail_recipients (mail_id, user_id) VALUES (last_insert_rowid(), ?);",
+        userId
+    );
+
+    if (!res || !res2)
     {
         return Err(std::format("Failed to insert mail: {}", res.unwrapErrUnchecked()));
     }
@@ -136,6 +154,43 @@ Result<std::string> DatabaseManager::suggestAddress(std::string_view request)
     return Ok(localpart);
 }
 
+Result<std::vector<DbMail>> DatabaseManager::fetchMailsForUser(std::string_view localpart, int since_uid) {
+    int userid;
+
+    if (auto idres = m_connection.fetchOne<int>("select user_id from users where localpart = ?;", localpart); idres.isErr()) {
+        return Err(std::format("Failed to find user '{}': {}", localpart, idres.unwrapErrUnchecked()));
+    } else {
+        std::tie(userid) = idres.unwrapUnchecked();
+    }
+
+    DB::SQLiteConnection::PreparedStatement st;
+    if (auto stres = m_connection.prepareStatement("select m.data, m.reverse_path, m.mail_id from mail as m left join mail_recipients as r "
+                          "on m.mail_id = r.mail_id where r.user_id = ? "
+                          "and m.mail_id > ?"); stres.isErr()) {
+        return Err(std::format("Failed to find mail: {}", stres.unwrapErrUnchecked()));
+    } else {
+        st = std::move(stres).asOk().unwrap();
+    }
+
+    std::vector<DbMail> mails;
+
+    if (auto res = st.bindInt(1, userid); res.isErr())
+        return Err(std::format("Failed to bind user id: {}", res.unwrapErrUnchecked()));
+    if (auto res = st.bindInt(2, since_uid); res.isErr())
+        return Err(std::format("Failed to bind since_uid: {}", res.unwrapErrUnchecked()));
+
+    if (auto res = st.fetchAll(); res.isErr()) {
+        return Err(std::format("Failed to fetch mails: {}", res.unwrapErrUnchecked()));
+    } else {
+        auto mailsIt = std::move(res.unwrapUnchecked());
+        for (auto row : mailsIt) {
+            mails.emplace_back(row.getString(0).unwrap(), row.getString(1).unwrap(), row.getInt(2).unwrap());
+        }
+    }
+
+    return Ok(std::move(mails));
+}
+
 void SQLiteMailbox::DepositMail(
     ISXSMTP::SMTPBuffer forward_path, ISXSMTP::SMTPBuffer reverse_path, ISXSMTP::SMTPBuffer mail_data
 )
@@ -148,7 +203,7 @@ void SQLiteMailbox::DepositMail(
 
     if (!res)
     {
-        // TODO: log error
+        LOG_ERROR(LogLevel::DEBUG) << "Error depositing mail: " << res.unwrapErr();
     }
 }
 
