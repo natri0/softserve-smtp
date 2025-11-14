@@ -155,6 +155,19 @@ void IMAPHandlers::handleSelect(IMAPSession &session, const std::string_view &ar
     session.cur_mailbox = "INBOX";
     session.reply_untagged("FLAGS ()");
 
+    if (auto res = DatabaseManager::get().fetchMailsForUser(session.cur_localpart, DatabaseManager::ALL_MAILS); res.isErr()) {
+        session.reply_tagged("NO SELECT failed: error fetching mails");
+        LOG_ERROR(LogLevel::DEBUG) << "Error fetching mails for user '" << session.cur_localpart << "': " << res.unwrapErr();
+        return;
+    } else {
+        auto mails = res.unwrapUnchecked();
+        session.mails.reserve(mails.size());
+        for (auto &mail : mails) {
+            session.mails.push_back(std::make_unique<DbMail>(std::move(mail)));
+        }
+        // std::ranges::transform(mails, session.mails.begin(), [](auto mail){ return std::move(std::make_unique<DbMail>(std::move(mail))); });
+    }
+
     // TODO: return real values for EXISTS & RECENT
     session.reply_untagged(std::format("{} EXISTS", session.mails.size()));
     session.reply_untagged(std::format("{} RECENT", session.mails.size()));

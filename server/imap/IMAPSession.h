@@ -2,6 +2,8 @@
 
 #include "Connection/Session.h"
 
+class DbMail;
+
 class IMAPSession : public std::enable_shared_from_this<IMAPSession> {
 public:
     explicit IMAPSession(std::shared_ptr<boost::asio::ip::tcp::socket> socket);
@@ -22,6 +24,7 @@ private:
 
     std::shared_ptr<Session> net_session;
 
+    std::vector<std::unique_ptr<DbMail>> mails;
     std::string cur_localpart;
     std::string cur_mailbox;
     std::string cur_tag;
