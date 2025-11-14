@@ -16,16 +16,34 @@ SmartSession::SmartSession(std::shared_ptr<net::ip::tcp::socket> socket, Type se
 {
 }
 
-void SmartSession::setConnection()
+void SmartSession::setConnection(bool enableEncryption)
 {
-    auto keys = std::make_shared<std::pair<std::vector<unsigned char>, std::vector<unsigned char>>>(
-        smtp::ssl::KeyExchange::generateKeyPair()
-    );
+    if (enableEncryption)
+    {
+        auto keys = std::make_shared<std::pair<std::vector<unsigned char>, std::vector<unsigned char>>>(
+            smtp::ssl::KeyExchange::generateKeyPair()
+        );
 
-    net_session->setOnMessage([this, keys](boost::asio::const_buffer msg) { setKeys(msg, keys); });
+        net_session->setOnMessage([this, keys](boost::asio::const_buffer msg) { setKeys(msg, keys); });
 
-    if (type == SERVER) net_session->send(net::buffer(keys->second));
-    LOG_INFO(DEBUG_LOG_LEVEL) << "Sent public key";
+        if (type == SERVER) net_session->send(net::buffer(keys->second));
+        LOG_INFO(DEBUG_LOG_LEVEL) << "Sent public key";
+    }
+    else
+    {
+        LOG_INFO(DEBUG_LOG_LEVEL) << "Encryption disabled. Setting plaintext message handler.";
+
+        net_session->setOnMessage([this](boost::asio::const_buffer msg) {
+            if (SMTPHandling)
+            {
+                SMTPHandling(msg);
+            }
+            else
+            {
+                LOG_WARNING(DEBUG_LOG_LEVEL) << "Received message, but no SMTPHandling callback is set!";
+            }
+        });
+    }
     net_session->run();
 }
 

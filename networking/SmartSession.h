@@ -49,7 +49,7 @@ public:
      * This method binds the low-level session to the appropriate SMTP handler
      * and sets up necessary event callbacks.
      */
-    void setConnection();
+    void setConnection(bool enableEncryption = true);
 
     /**
      * @brief Sets a callback to handle incoming SMTP messages.
@@ -66,6 +66,7 @@ public:
 private:
     Type type; ///< Indicates whether this SmartSession represents a client or server.
 
+    bool m_encryptionEnabled;
     /**
      * @brief Optional callback for custom SMTP message handling.
      */

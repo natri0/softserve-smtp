@@ -15,11 +15,11 @@
 #include <string>
 #include <memory>
 
-//#include "../SMTP/include/SMTPClient.h"
 #include "ClientSettings.h"
 #include "EmailMessage.h"
 #include "SmartSession.h"
 #include "../networking/SSL/SSLContextFactory.h"
+#include "../SMTP/include/SMTPClient.h"
 
 /**
  * @class Client
@@ -86,8 +86,6 @@ private:
     void changeLogLevel(const std::string& level) const;
 
 private:
-    ///Status callback to send relevant info to ui
-    StatusCallback m_statusCallback;
 
     ///Client settings to get settings from gui
     ClientSettings m_settings;
@@ -122,6 +120,12 @@ private:
      */
     void connect();
 
+    // --- SMTP ---
+
+    std::unique_ptr<ISXSMTP::SMTPClient> m_SMTPLogic;
+
+    std::queue<std::string> m_commandQueue;
+
     // --- Networking Core ---
 
     /// Boost.Asio I/O context for managing asynchronous networking.
@@ -145,6 +149,7 @@ private:
 
     /// SSL context used for secure communication setup.
     std::shared_ptr<smtp::ssl::SSLContextFactory::SSLContext> sslContext = nullptr;
+    bool m_useEncryption = false;
 
     // --- Message Queue ---
 
@@ -158,6 +163,9 @@ private:
      * @param msg Received message buffer.
      */
     void SMTPHandling(boost::asio::const_buffer msg);
+
+    ///Status callback to send relevant info to ui
+    StatusCallback m_statusCallback;
 };
 
 #endif // CLIENT_H

@@ -1,6 +1,7 @@
 #ifndef CLIENTSETTINGS_H
 #define CLIENTSETTINGS_H
 
+#include <cstdint>
 #include <string>
 
 struct ClientSettings{
