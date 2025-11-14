@@ -198,3 +198,97 @@ void IMAPHandlers::handleLogin(IMAPSession &session, const std::string_view &arg
     session.cur_localpart = args;
     session.reply_tagged("OK LOGIN completed");
 }
+
+void IMAPHandlers::handleFetch(IMAPSession &session, const std::string_view &args) {
+    using FetchAttrHandler = std::function<std::string(IMAPSession &, DbMail &)>;
+
+    static const std::unordered_map<std::string_view, FetchAttrHandler> FETCH_ATTR_HANDLERS = {
+        { "FLAGS", [](IMAPSession &, DbMail &mail) {
+            return "()";
+        } },
+        { "BODY[]", [](IMAPSession &, DbMail &mail) {
+            return std::format("{{{}}}\r\n{}", mail.content.size(), mail.content);
+        } },
+        { "BODY[HEADER]", [](IMAPSession &session, DbMail &mail) {
+            return std::format("From: {}\r\nTo: {}\r\n", mail.from, session.cur_localpart);
+        } },
+        { "RFC822.SIZE", [](IMAPSession &, DbMail &mail) {
+            return std::to_string(mail.content.size());
+        } },
+        { "UID", [](IMAPSession &, DbMail &mail) {
+            return std::to_string(mail.uid);
+        } },
+    };
+
+    if (args.empty() || args.find(' ') == std::string_view::npos) {
+        session.reply_tagged("BAD FETCH failed: missing arguments");
+        return;
+    }
+
+    std::string_view msg_set(args.begin(), args.begin() + args.find(' '));
+    std::string_view fetch_attrs(args.begin() + args.find(' ') + 1, args.end());
+
+    std::vector<DbMail *> mails_to_fetch;
+    std::vector<std::pair<std::string, FetchAttrHandler>> parsed_fetch_attrs;
+
+    for (int i = 0; i < fetch_attrs.length(); i = fetch_attrs.find_first_not_of(' ', i)) {
+        if (i == std::string_view::npos) break;
+
+        std::cout << "Parsing fetch_attrs at position " << i << ": " << fetch_attrs.substr(i) << std::endl;
+
+        auto attr_end = fetch_attrs.find_first_of(" \n", i);
+        std::string_view attr(fetch_attrs.begin() + i, attr_end == std::string_view::npos ? fetch_attrs.end() : fetch_attrs.begin() + attr_end);
+        if (!FETCH_ATTR_HANDLERS.contains(attr)) continue;
+
+        parsed_fetch_attrs.emplace_back(attr, FETCH_ATTR_HANDLERS.at(attr));
+        i += attr.length();
+    }
+
+    for (int i = 0; i < msg_set.length(); i = msg_set.find_first_not_of(',', i)) {
+        if (i == std::string_view::npos) break;
+
+        std::cout << "Parsing msg_set at position " << i << ": " << msg_set.substr(i) << std::endl;
+
+        if (!isdigit(msg_set[i])) {
+            session.reply_tagged("BAD FETCH failed: invalid message set");
+            return;
+        }
+
+        int start = msg_set[i++] - '0';
+        while (isdigit(msg_set[i])) start = start * 10 + (msg_set[i++] - '0');
+
+        int end = start + 1;
+        if (msg_set[i++] == '*') {
+            end = msg_set[i++] - '0';
+            while (isdigit(msg_set[i+1])) end = end * 10 + (msg_set[i++] - '0');
+        }
+
+        for (int j = start; j < end; j++) {
+            if (j == 0 || j > static_cast<int>(session.mails.size())) {
+                session.reply_tagged("BAD FETCH failed: message number out of range");
+                return;
+            }
+            mails_to_fetch.push_back(&*session.mails[j - 1]);
+        }
+    }
+
+    int i = 1;
+    for (DbMail *mail : mails_to_fetch) {
+        std::string response = std::to_string(i++) + " FETCH (";
+        for (size_t j = 0; j < parsed_fetch_attrs.size(); j++) {
+            const auto &[attr_name, handler] = parsed_fetch_attrs[j];
+            response += attr_name;
+            response += " ";
+            response += handler(session, *mail);
+            if (j < parsed_fetch_attrs.size() - 1) {
+                response += " ";
+            }
+        }
+
+        response += ")";
+        session.reply_untagged(response);
+    }
+
+    session.reply_tagged("OK FETCH completed");
+}
+
