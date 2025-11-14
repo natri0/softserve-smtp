@@ -21,7 +21,7 @@ namespace smtp::ssl {
     );
 
   private:
-    static bool assignKey(std::vector<unsigned char>& keyContainer, EVP_PKEY* pkey, bool isPublic);
+    static bool assignKey(std::vector<unsigned char>& keyContainer, const EVP_PKEY* pkey, bool isPublic);
   };
 }
 

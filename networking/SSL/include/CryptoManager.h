@@ -14,8 +14,7 @@ namespace smtp::ssl {
 
   private:
     std::vector<unsigned char> sessionKey;
-
-    static std::vector<unsigned char> generateIV();
+    std::vector<unsigned char> generateIV();
   };
 }
 
