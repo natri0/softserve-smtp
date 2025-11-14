@@ -13,6 +13,8 @@ public:
     std::string &mailbox() { return cur_mailbox; }
     std::string &localpart() { return cur_localpart; }
 
+    void clearUserData();
+
     void reply_tagged(const std::string &reply);
     void reply_untagged(const std::string &reply);
 private:

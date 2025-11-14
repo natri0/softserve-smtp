@@ -200,6 +200,7 @@ void Server::onIMAPAccept(std::shared_ptr<net::ip::tcp::socket> socket) {
     }
 
     session->net()->setOnDisconnect([this, session] {
+        session->clearUserData();
         std::lock_guard lock(imapSessionMutex);
         imapSessions.remove(session);
 

@@ -109,6 +109,13 @@ void IMAPSession::init() {
     net_session->run();
 }
 
+void IMAPSession::clearUserData() {
+    cur_localpart = "";
+    cur_mailbox = "";
+    cur_tag = "";
+    mails.clear();
+}
+
 void IMAPSession::reply_tagged(const std::string &reply) {
     net_session->send(net::buffer(cur_tag + " " + std::string(reply) + CRLF));
 }
