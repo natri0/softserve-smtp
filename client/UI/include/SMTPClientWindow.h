@@ -2,14 +2,15 @@
 #define SMTPCLIENTWINDOW_H
 
 #include <QMainWindow>
+#include <QList>
 #include "Structures.h"
 
 class QLineEdit;
-class QTextEdit;
 class QPlainTextEdit;
 class QPushButton;
 class QListWidget;
 class QSplitter;
+class QStackedWidget;
 class SmtpController;
 
 class SmtpClientWindow : public QMainWindow
@@ -21,9 +22,8 @@ public:
     ~SmtpClientWindow();
 
 private slots:
-    void onSend();
-    void onAddAttachment();
-    void onRemoveAttachment();
+    void onCompose();
+    void onNavigationChanged(int index);
     void onConfigureServer();
 
     void updateLog(const QString &message);
@@ -33,26 +33,23 @@ private slots:
 private:
     void setupUi();
     void createToolBar();
-    QWidget* createComposerWidget();
+    QWidget* createMainLayout();
     QWidget* createLogPanel();
 
 private:
     SmtpSettings m_Settings;
     SmtpController *m_Controller;
 
-    QLineEdit *fromLineEdit;
-    QLineEdit *toLineEdit;
-    //QLineEdit *ccLineEdit;
-    QLineEdit *subjectLineEdit;
-    QTextEdit *bodyTextEdit;
-
-    QListWidget *attachmentsListWidget;
-    QPushButton *addAttachmentButton;
-    QPushButton *removeAttachmentButton;
+    QListWidget *navigationListWidget;
+    QStackedWidget *mainContentStack;
+    QListWidget *sentItemsListWidget;
 
     QPushButton *sendButton;
-
     QPlainTextEdit *logTextEdit;
+
+    Email m_pendingEmail;
+    QList<Email> m_sentEmails;
+    QString m_lastFromAddress;
 };
 
 #endif // SMTPCLIENTWINDOW_H

@@ -123,9 +123,6 @@ private:
     /// Boost.Asio I/O context for managing asynchronous networking.
     net::io_context io;
 
-    /// Server endpoint (IP + port).
-    net::ip::tcp::endpoint server_endpoint;
-
     /// Manages the connection and SMTP protocol logic.
     std::shared_ptr<SmartSession> session;
 
@@ -143,7 +140,7 @@ private:
     // --- Security ---
 
     /// SSL context used for secure communication setup.
-    std::shared_ptr<smtp::ssl::SSLContextFactory::SSLContext> sslContext;
+    std::shared_ptr<smtp::ssl::SSLContextFactory::SSLContext> sslContext = nullptr;
 
     // --- Message Queue ---
 

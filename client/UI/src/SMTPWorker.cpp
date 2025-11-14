@@ -11,68 +11,78 @@ SmtpWorker::SmtpWorker(const Email& email, const SmtpSettings& settings, QObject
 };
 
 void SmtpWorker::process() {
-  emit statusUpdated("Worker process started!");
+    try{
+        emit statusUpdated("Worker process started!");
 
-  std::string host = m_Settings.server.toStdString();
-  unsigned short int port = m_Settings.port;
+        std::string host = m_Settings.server.toStdString();
+        unsigned short int port = m_Settings.port;
 
-  EmailMessage msgToSend;
-  msgToSend.from = m_Email.from.toStdString();
-  msgToSend.subject = m_Email.subject.toStdString();
-  msgToSend.body = m_Email.body.toStdString();
+        EmailMessage msgToSend;
+        msgToSend.from = m_Email.from.toStdString();
+        msgToSend.subject = m_Email.subject.toStdString();
+        msgToSend.body = m_Email.body.toStdString();
 
-  ClientSettings settings;
-  settings.logLevel = m_Settings.logLevel.toStdString();
-  settings.password = m_Settings.password.toStdString();
-  settings.server = m_Settings.server.toStdString();
-  settings.username = m_Settings.username.toStdString();
-  settings.port = m_Settings.port;
-  settings.securityType = m_Settings.securityType;
+        ClientSettings settings;
+        settings.logLevel = m_Settings.logLevel.toStdString();
+        settings.password = m_Settings.password.toStdString();
+        settings.server = m_Settings.server.toStdString();
+        settings.username = m_Settings.username.toStdString();
+        settings.port = m_Settings.port;
+        settings.securityType = m_Settings.securityType;
 
-  msgToSend.to.reserve(m_Email.to.size());
-  for (const QString& recipient : m_Email.to) {
-    msgToSend.to.push_back(recipient.toStdString());
-  }
+        msgToSend.to.reserve(m_Email.to.size());
+        for (const QString& recipient : m_Email.to) {
+            msgToSend.to.push_back(recipient.toStdString());
+        }
 
-  msgToSend.attachmentPaths.reserve(m_Email.attachmentPaths.size());
-  for (const QString& path : m_Email.attachmentPaths) {
-    msgToSend.attachmentPaths.push_back(path.toStdString());
-  }
+        msgToSend.attachmentPaths.reserve(m_Email.attachmentPaths.size());
+        for (const QString& path : m_Email.attachmentPaths) {
+            msgToSend.attachmentPaths.push_back(path.toStdString());
+        }
 
-  emit statusUpdated("Connecting to " + m_Settings.server + "...");
-  Client client(settings);
+        emit statusUpdated("Connecting to " + m_Settings.server + "...");
+        Client client(settings);
 
-  // Set authentication if provided
+        // Set authentication if provided
 
-  if (!client.start()) {
-    emit error("Failed to initialize client (client.start())");
+        if (!client.start()) {
+            emit error("Failed to initialize client (client.start())");
+            emit finished();
+            return;
+        }
+
+        if (!client.sendMail(msgToSend)) {
+            emit error("Failed to queue email " + QString::fromStdString(client.getLastError()));
+            emit finished();
+            return;
+        }
+
+        emit statusUpdated("Client connected. Running network loop.");
+
+        bool networkLoopSuccess = client.run();
+        std::string smtpError = client.getLastError();
+
+        if (!networkLoopSuccess) {
+            emit error("Client network loop failed (client.run())" + QString::fromStdString(smtpError));
+        }
+        else if (!smtpError.empty())
+        {
+            emit error("SMTP Error: " + QString::fromStdString(smtpError));
+        }
+        else
+        {
+            emit statusUpdated("Network loop finished. Email sent successfully.");
+        }
+
+        client.stop();
+
+    }catch (std::exception &e)
+    {
+        emit error(QString("An unhandled exception occurred: %1").arg(e.what()));
+    }
+    catch (...)
+    {
+        emit error("An unknown, non-standard exception occurred.");
+    }
     emit finished();
-    return;
-  }
-
-  if (!client.sendMail(msgToSend)) {
-    emit error("Failed to queue email " + QString::fromStdString(client.getLastError()));
-    emit finished();
-    return;
-  }
-
-  emit statusUpdated("Client connected. Running network loop.");
-
-  bool networkLoopSuccess = client.run();
-  std::string smtpError = client.getLastError();
-
-  if (!networkLoopSuccess) {
-    emit error("Client network loop failed (client.run())" + QString::fromStdString(smtpError));
-  }
-  else if (!smtpError.empty())
-  {
-    emit error("SMTP Error: " + QString::fromStdString(smtpError));
-  }
-  else
-  {
-    emit statusUpdated("Network loop finished. Email sent successfully.");
-  }
-
-  client.stop(); 
-  emit finished();
 }

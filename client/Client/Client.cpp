@@ -10,13 +10,28 @@
 constexpr uint8_t RECONNECT_DELAY_TIME = 2;
 
 Client::Client(const ClientSettings& settings) :
-    server_endpoint(net::ip::make_address(settings.server), settings.port),
+    //server_endpoint(net::ip::make_address(settings.server), settings.port),
     session(std::make_shared<SmartSession>(std::make_shared<net::ip::tcp::socket>(io), SmartSession::Type::CLIENT)),
     timer(io),
-    sslContext(smtp::ssl::SSLContextFactory::createClientContext()),
     m_recipientIndex(0),
     m_settings(settings)
 {
+    if (m_settings.securityType == 1)
+    {
+        try
+        {
+            LOG_INFO(DEBUG_LOG_LEVEL) << "SSL/TLS enabled. Creating SSL context.";
+            sslContext = smtp::ssl::SSLContextFactory::createClientContext();
+        }
+        catch (std::exception& e)
+        {
+            throw std::runtime_error(std::string("Failed to create SSL context: ") + e.what());
+        }
+    }
+    else
+    {
+        LOG_INFO(DEBUG_LOG_LEVEL) << "SSL/TLS disabled. Skipping SSL context creation.";
+    }
 };
 
 Client::~Client()
@@ -52,7 +67,27 @@ void Client::init()
 void Client::connect()
 {
     if (session->net_session->isConnected()) return;
-    session->net_session->connect(server_endpoint);
+
+    try
+    {
+        // Resolver to make both IP and hostnames work
+        net::ip::tcp::resolver resolver(io);
+
+        auto endpoints = resolver.resolve(m_settings.server, std::to_string(m_settings.port));
+
+        LOG_INFO(DEBUG_LOG_LEVEL) << "Hostname resolved.";
+
+        session->net_session->connect(*endpoints.begin());
+    }
+    catch (std::exception &e)
+    {
+        LOG_WARNING(PROD_LOG_LEVEL) << "Failed to resolve or connect to "
+                                    << m_settings.server << ": " << e.what();
+
+        m_lastError = "Failed to resolve hostname: " + std::string(e.what());
+
+        reconnect();
+    }
 }
 
 void Client::reconnect()

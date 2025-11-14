@@ -1,5 +1,6 @@
 #include "SMTPClientWindow.h"
 #include "SMTPController.h"
+#include "ComposeDialog.h"
 
 #include <QtWidgets>
 
@@ -16,7 +17,10 @@ SmtpClientWindow::SmtpClientWindow(QWidget *parent)
     m_Settings.server = "smtp.example.com";
     m_Settings.username = "user";
     m_Settings.password = "pass";
+    m_Settings.port = 587;
     m_Settings.logLevel = "DEBUG";
+
+    m_lastFromAddress = m_Settings.username;
 
     updateLog("Ready. Please configure server settings before sending.");
 }
@@ -32,11 +36,11 @@ void SmtpClientWindow::setupUi()
 
     createToolBar();
 
-    QWidget *composerWidget = createComposerWidget();
+    QWidget *mainLayout = createMainLayout();
     QWidget *logPanel = createLogPanel();
 
     QSplitter *mainSplitter = new QSplitter(Qt::Vertical, this);
-    mainSplitter->addWidget(composerWidget);
+    mainSplitter->addWidget(mainLayout);
     mainSplitter->addWidget(logPanel);
     mainSplitter->setStretchFactor(0, 3);
     mainSplitter->setStretchFactor(1, 1);
@@ -50,7 +54,7 @@ void SmtpClientWindow::createToolBar()
     sendButton = new QPushButton(QIcon::fromTheme("mail-send"), " Send");
     sendButton->setObjectName("PrimaryButton");
     sendButton->setShortcut(QKeySequence::Save);
-    connect(sendButton, &QPushButton::clicked, this, &SmtpClientWindow::onSend);
+    connect(sendButton, &QPushButton::clicked, this, &SmtpClientWindow::onCompose);
 
     QPushButton *settingsButton = new QPushButton(QIcon::fromTheme("configure"), " Settings");
     connect(settingsButton, &QPushButton::clicked, this, &SmtpClientWindow::onConfigureServer);
@@ -60,49 +64,33 @@ void SmtpClientWindow::createToolBar()
 }
 
 
-QWidget* SmtpClientWindow::createComposerWidget()
+QWidget* SmtpClientWindow::createMainLayout()
 {
-    QWidget *composerContainer = new QWidget;
-    QVBoxLayout *composerLayout = new QVBoxLayout(composerContainer);
+    QSplitter *hSplitter = new QSplitter(Qt::Horizontal);
 
-    QFormLayout *headerLayout = new QFormLayout;
-    fromLineEdit = new QLineEdit;
-    fromLineEdit->setPlaceholderText("your_email@example.com");
-    toLineEdit = new QLineEdit;
-    toLineEdit->setPlaceholderText("recipient@example.com; another@example.com");
-    //ccLineEdit = new QLineEdit;
-    subjectLineEdit = new QLineEdit;
+    navigationListWidget = new QListWidget;
+    navigationListWidget->addItem(new QListWidgetItem(QIcon::fromTheme("mail-send"), "Sent"));
+    navigationListWidget->addItem(new QListWidgetItem(QIcon::fromTheme("mail-receive"), "Inbox (nyi)"));    navigationListWidget->setMaximumWidth(150);
+    hSplitter->addWidget(navigationListWidget);
 
-    headerLayout->addRow("From:", fromLineEdit);
-    headerLayout->addRow("To:", toLineEdit);
-    //headerLayout->addRow("Cc:", ccLineEdit);
-    headerLayout->addRow("Subject:", subjectLineEdit);
+    mainContentStack = new QStackedWidget;
 
-    bodyTextEdit = new QTextEdit;
+    sentItemsListWidget = new QListWidget;
+    mainContentStack->addWidget(sentItemsListWidget);
 
-    QGroupBox *attachmentsGroup = new QGroupBox("Attachments");
-    QVBoxLayout *attachmentsLayout = new QVBoxLayout(attachmentsGroup);
-    attachmentsListWidget = new QListWidget;
-    attachmentsListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    QLabel* inboxPlaceholder = new QLabel("Inbox functionality is not implemented.");
+    inboxPlaceholder->setAlignment(Qt::AlignCenter);
+    mainContentStack->addWidget(inboxPlaceholder);
 
-    QHBoxLayout *attachmentButtonsLayout = new QHBoxLayout;
-    addAttachmentButton = new QPushButton("Add...");
-    removeAttachmentButton = new QPushButton("Remove");
-    attachmentButtonsLayout->addStretch();
-    attachmentButtonsLayout->addWidget(addAttachmentButton);
-    attachmentButtonsLayout->addWidget(removeAttachmentButton);
+    hSplitter->addWidget(mainContentStack);
+    hSplitter->setStretchFactor(1, 1);
 
-    attachmentsLayout->addWidget(attachmentsListWidget);
-    attachmentsLayout->addLayout(attachmentButtonsLayout);
+    connect(navigationListWidget, &QListWidget::currentRowChanged,
+            this, &SmtpClientWindow::onNavigationChanged);
 
-    connect(addAttachmentButton, &QPushButton::clicked, this, &SmtpClientWindow::onAddAttachment);
-    connect(removeAttachmentButton, &QPushButton::clicked, this, &SmtpClientWindow::onRemoveAttachment);
+    navigationListWidget->setCurrentRow(0);
 
-    composerLayout->addLayout(headerLayout);
-    composerLayout->addWidget(bodyTextEdit, 1);
-    composerLayout->addWidget(attachmentsGroup);
-
-    return composerContainer;
+    return hSplitter;
 }
 
 QWidget* SmtpClientWindow::createLogPanel()
@@ -117,53 +105,29 @@ QWidget* SmtpClientWindow::createLogPanel()
     return logGroup;
 }
 
-
-void SmtpClientWindow::onSend()
+void SmtpClientWindow::onNavigationChanged(int index)
 {
-    QStringList errors;
-    if (fromLineEdit->text().trimmed().isEmpty()) {
-        errors.append("'From' field cannot be empty.");
-    }
-    if (toLineEdit->text().trimmed().isEmpty()) {
-        errors.append("'To' field cannot be empty.");
-    }
-    if (bodyTextEdit->toPlainText().trimmed().isEmpty()) {
-        errors.append("The email body cannot be empty.");
-    }
-
-    if (!errors.isEmpty()) {
-        QMessageBox::warning(this, "Invalid Input", errors.join("\n"));
-        return;
-    }
-
-    Email email;
-    email.from = fromLineEdit->text();
-    email.to = toLineEdit->text().split(';', Qt::SkipEmptyParts);
-    //email.cc = ccLineEdit->text().split(';', Qt::SkipEmptyParts);
-    email.subject = subjectLineEdit->text();
-    email.body = bodyTextEdit->toPlainText();
-
-    for(int i = 0; i < attachmentsListWidget->count(); ++i) {
-        email.attachmentPaths.append(attachmentsListWidget->item(i)->text());
-    }
-
-    sendButton->setEnabled(false);
-    statusBar()->showMessage("Sending...");
-    m_Controller->sendEmail(email, m_Settings);
+    mainContentStack->setCurrentIndex(index);
 }
 
-void SmtpClientWindow::onAddAttachment()
+void SmtpClientWindow::onCompose()
 {
-    QStringList filePaths = QFileDialog::getOpenFileNames(this, "Select files to attach");
-    if (!filePaths.isEmpty()) {
-        attachmentsListWidget->addItems(filePaths);
+    ComposeDialog dialog(this);
+    dialog.setFrom(m_lastFromAddress);
+
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        Email email = dialog.getEmail();
+
+        m_pendingEmail = email;
+        m_lastFromAddress = email.from;
+
+        sendButton->setEnabled(false); // Disable "Send" button while sending
+        statusBar()->showMessage("Sending...");
+        m_Controller->sendEmail(email, m_Settings);
     }
 }
 
-void SmtpClientWindow::onRemoveAttachment()
-{
-    qDeleteAll(attachmentsListWidget->selectedItems());
-}
 
 void SmtpClientWindow::onConfigureServer()
 {
@@ -188,6 +152,8 @@ void SmtpClientWindow::onConfigureServer()
     QComboBox *loggerCombo = new QComboBox();
     loggerCombo->addItems({"NONE", "PROD", "DEBUG", "TRACE"});
     loggerCombo->setCurrentIndex(m_Settings.securityType);
+    int logIndex = loggerCombo->findText(m_Settings.logLevel);
+    loggerCombo->setCurrentIndex(logIndex > -1 ? logIndex : 2);
     form.addRow("Logger level:", loggerCombo);
 
     QLineEdit *userEdit = new QLineEdit(m_Settings.username);
@@ -208,6 +174,9 @@ void SmtpClientWindow::onConfigureServer()
         m_Settings.securityType = securityCombo->currentIndex();
         m_Settings.username = userEdit->text();
         m_Settings.password = passEdit->text();
+        m_Settings.logLevel = loggerCombo->currentText();
+
+        m_lastFromAddress = m_Settings.username;
         updateLog("Server configuration updated.");
     }
 }
@@ -222,6 +191,25 @@ void SmtpClientWindow::onSendSuccess()
     updateLog("Message sent successfully");
     statusBar()->showMessage("Message sent successfully!", 3000);
     sendButton->setEnabled(true);
+
+    // ** Add the sent email to our list **
+    if (!m_pendingEmail.subject.isEmpty() || !m_pendingEmail.to.isEmpty())
+    {
+        // Add to our internal data list
+        m_sentEmails.prepend(m_pendingEmail);
+
+        // Create a display string for the list widget
+        QString to = m_pendingEmail.to.join(", ");
+        QString subject = m_pendingEmail.subject.isEmpty() ? "(No Subject)" : m_pendingEmail.subject;
+        QString itemText = QString("To: %1  |  %2").arg(to, subject);
+
+        // Add to the top of the visible list
+        QListWidgetItem *item = new QListWidgetItem(itemText);
+        item->setToolTip(m_pendingEmail.body); // Show body on hover
+        sentItemsListWidget->insertItem(0, item);
+    }
+
+    m_pendingEmail = Email(); // Clear the pending email
 }
 
 void SmtpClientWindow::onSendFailed(const QString &error)
@@ -229,5 +217,6 @@ void SmtpClientWindow::onSendFailed(const QString &error)
     updateLog(tr("Failed to send message! Reason: %1").arg(error));
     statusBar()->showMessage("Failed to send message!", 5000);
     sendButton->setEnabled(true);
+    m_pendingEmail = Email();
     QMessageBox::critical(this, "Send Error",  tr("Could not send the email. Reason: %1").arg(error));
 }

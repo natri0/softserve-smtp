@@ -23,6 +23,8 @@ qt_add_executable(smtpUI
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         ${PROJECT_RESOURCES}
+        src/ComposeDialog.cpp
+        include/ComposeDialog.h
 )
 
 target_include_directories(smtpUI PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
