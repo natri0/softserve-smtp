@@ -11,17 +11,23 @@
 #include "../Database/Manager.hpp"
 
 #define CRLF "\r\n"
+#define HANDLER(name) ([](IMAPSession &s, const std::string_view &args){ IMAPHandlers().name(s, args); })
 
-static void handleCapability(IMAPSession &session, const std::string_view &);
-static void handleList(IMAPSession &session, const std::string_view &);
-static void handleSelect(IMAPSession &session, const std::string_view &);
-static void handleLogin(IMAPSession &session, const std::string_view &);
+class IMAPHandlers {
+public:
+    void handleCapability(IMAPSession &session, const std::string_view &);
+    void handleList(IMAPSession &session, const std::string_view &);
+    void handleSelect(IMAPSession &session, const std::string_view &);
+    void handleLogin(IMAPSession &session, const std::string_view &);
+    void handleFetch(IMAPSession &session, const std::string_view &);
+};
 
 static const std::unordered_map<std::string, std::function<void(IMAPSession &, const std::string_view &)>> HANDLERS = {
-    { "CAPABILITY", handleCapability },
-    { "LIST", handleList },
-    { "SELECT", handleSelect },
-    { "LOGIN", handleLogin }
+    { "CAPABILITY", HANDLER(handleCapability) },
+    { "LIST", HANDLER(handleList) },
+    { "SELECT", HANDLER(handleSelect) },
+    { "LOGIN", HANDLER(handleLogin) },
+    { "FETCH", HANDLER(handleFetch) },
 };
 
 IMAPSession::IMAPSession(std::shared_ptr<boost::asio::ip::tcp::socket> socket) :
@@ -111,13 +117,13 @@ void IMAPSession::reply_untagged(const std::string &reply) {
     net_session->send(net::buffer("* " + std::string(reply) + CRLF));
 }
 
-void handleCapability(IMAPSession &session, const std::string_view &) {
+void IMAPHandlers::handleCapability(IMAPSession &session, const std::string_view &) {
     session.reply_untagged("CAPABILITY IMAP4rev1 LITERAL+ IDLE NAMESPACE");
     session.reply_tagged("OK CAPABILITY completed");
 }
 
-void handleList(IMAPSession &session, const std::string_view &) {
-    if (session.localpart().empty()) {
+void IMAPHandlers::handleList(IMAPSession &session, const std::string_view &) {
+    if (session.cur_localpart.empty()) {
         session.reply_tagged("NO LIST failed: not logged in");
         return;
     }
@@ -127,8 +133,8 @@ void handleList(IMAPSession &session, const std::string_view &) {
     session.reply_tagged("OK LIST completed");
 }
 
-void handleSelect(IMAPSession &session, const std::string_view &args) {
-    if (session.localpart().empty()) {
+void IMAPHandlers::handleSelect(IMAPSession &session, const std::string_view &args) {
+    if (session.cur_localpart.empty()) {
         session.reply_tagged("NO SELECT failed: not logged in");
         return;
     }
@@ -139,19 +145,19 @@ void handleSelect(IMAPSession &session, const std::string_view &args) {
         return;
     }
 
-    session.mailbox() = "INBOX";
+    session.cur_mailbox = "INBOX";
     session.reply_untagged("FLAGS ()");
 
     // TODO: return real values for EXISTS & RECENT
-    session.reply_untagged("0 EXISTS");
-    session.reply_untagged("0 RECENT");
+    session.reply_untagged(std::format("{} EXISTS", session.mails.size()));
+    session.reply_untagged(std::format("{} RECENT", session.mails.size()));
 
     // TODO: return last unseen UID
 
     session.reply_tagged("OK [READ-WRITE] SELECT completed");
 }
 
-void handleLogin(IMAPSession &session, const std::string_view &args) {
+void IMAPHandlers::handleLogin(IMAPSession &session, const std::string_view &args) {
     // TODO: proper auth for imap LOGIN
 
     if (args.empty()) {
@@ -160,7 +166,7 @@ void handleLogin(IMAPSession &session, const std::string_view &args) {
     }
 
     if (auto notExists = DatabaseManager::get().checkMailboxAvailability(args); notExists.isErr() || notExists.unwrap()) {
-        session.reply_untagged("NO LOGIN failed: mailbox does not exist");
+        session.reply_tagged("NO LOGIN failed: mailbox does not exist");
 
         if (notExists.isErr()) {
             LOG_ERROR(LogLevel::DEBUG) << "Error fetching mailbox availability: " << notExists.unwrapErr();
@@ -169,6 +175,6 @@ void handleLogin(IMAPSession &session, const std::string_view &args) {
         return;
     }
 
-    session.localpart() = args;
+    session.cur_localpart = args;
     session.reply_tagged("OK LOGIN completed");
 }

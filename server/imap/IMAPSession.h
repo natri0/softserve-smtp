@@ -16,6 +16,8 @@ public:
     void reply_tagged(const std::string &reply);
     void reply_untagged(const std::string &reply);
 private:
+    friend class IMAPHandlers;
+
     std::shared_ptr<Session> net_session;
 
     std::string cur_localpart;
