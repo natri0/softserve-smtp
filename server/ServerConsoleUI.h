@@ -2,40 +2,56 @@
 // Created by alkir on 10/20/2025.
 //
 
-#ifndef SERVERCONCOLEUI_H
-#define SERVERCONCOLEUI_H
+#ifndef SERVERCONSOLEUI_H
+#define SERVERCONSOLEUI_H
 #include <mutex>
 #include <string>
 #include <vector>
 
-
-class ServerConsoleUI {
+class ServerConsoleUI
+{
 public:
     void start(unsigned short port);
     void run();
+    void updateOnConnected(int _clients_num);
 
-    void logClientConnected(const std::string& addr);
-    void logClientDisconnected(const std::string& addr);
-    void logError(const std::string& msg);
+    // void logClientConnected(const std::string& addr);
+    // void logClientDisconnected(const std::string& addr);
+
+    bool do_flush = false;
+    unsigned short clients_num = 0;
 
 private:
-    unsigned short currentPort = 0;
+enum MenuType
+{
+    Main,
+    Logger
+} menuType = Main;
 
-    void showBanner();
-    void updateScreen();
-
+    void showBanner(int clients_num);
+    void updateScreen(int _clients_num);
     void showMenu(std::string_view menu);
-    std::string_view modifyLoggerMenu();
 
     bool handleCommand(int cmd);
+
+    inline void clearScreen()
+    {
+#ifdef _WIN32
+        system("cls");
+#else
+        system("clear");
+#endif
+    };
+
+    std::string_view modifyLoggerMenu();
     bool runLoggerMenu();
 
     void logEvent(const std::string& msg);
 
+    unsigned short currentPort = 0;
     std::mutex consoleMutex;
     std::vector<std::string> logBuffer;
 };
 
 
-
-#endif //SERVERCONCOLEUI_H
+#endif //SERVERCONSOLEUI_H

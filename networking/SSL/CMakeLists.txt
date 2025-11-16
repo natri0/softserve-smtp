@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(OpenSSL REQUIRED)
 
-add_library(ssl_support
+add_library(ssl_support STATIC
         KeyExchanger.cpp
         SSLContextFactory.cpp
         CryptoManager.cpp
@@ -15,11 +15,13 @@ add_library(ssl_support
 target_include_directories(ssl_support PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${OPENSSL_INCLUDE_DIR}
+        ${Boost_INCLUDE_DIRS}
 )
 
 target_link_libraries(ssl_support PUBLIC
         OpenSSL::SSL
         OpenSSL::Crypto
+        ${Boost_LIBRARIES}
 )
 
 if (WIN32)

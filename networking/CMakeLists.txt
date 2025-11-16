@@ -4,8 +4,8 @@ endif ()
 
 find_package(OpenSSL REQUIRED)
 
-add_library(networking
-        Session.cpp
+add_library(networking STATIC
+        Connection/NetSession.cpp
         SmartSession.cpp
 )
 

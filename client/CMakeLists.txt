@@ -6,4 +6,3 @@ set(CMAKE_CXX_STANDARD 23)
 add_subdirectory(Client)
 add_subdirectory(UI)
 
-qt_finalize_executable(smtpUI)

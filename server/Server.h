@@ -10,15 +10,17 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include "../networking/Session.h"
+#include "../networking/Connection/NetSession.h"
 #include "../networking/SmartSession.h"
 #include "../networking/SSL/SSLContextFactory.h"
 #include "ServerConsoleUI.h"
 #include "config/config.h"
 
+#include <list>
 #include <mutex>
 #include <condition_variable>
 #include <memory>
+#include "Database/Manager.hpp"
 
 class ThreadPool;
 
@@ -67,10 +69,10 @@ public:
     bool stop();
 
     /**
-     * @brief Restarts the server by stopping and reinitializing all components.
+     * @brief Restarts the server by reinitializing all components.
      * @return True if restart succeeded.
      */
-    bool restart();
+    bool reset();
 
     /**
      * @brief Runs the main server loop.

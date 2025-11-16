@@ -2,20 +2,20 @@
 // Created by alkir on 10/3/2025.
 //
 
-#include "Session.h"
-#include "../logger/Include/Logger.h"
+#include "NetSession.h"
+#include "../../logger/Include/Logger.h"
 #include <iostream>
 
 constexpr std::size_t BUFFER_SIZE = 1024;
 constexpr int RECONNECT_DELAY_MS = 2000;
 
-Session::Session(std::shared_ptr<net::ip::tcp::socket> _socket) : socket(_socket)
+NetSession::NetSession(std::shared_ptr<net::ip::tcp::socket> _socket) : socket(_socket)
 {
 }
 
-Session::~Session() { disconnect(); }
+NetSession::~NetSession() { disconnect(); }
 
-void Session::connect(const net::ip::tcp::endpoint& endpoint)
+void NetSession::connect(const net::ip::tcp::endpoint& endpoint)
 {
     if (socket->is_open()) socket->close();
     socket->async_connect(endpoint, [this](const boost::system::error_code& ec)
@@ -35,7 +35,7 @@ void Session::connect(const net::ip::tcp::endpoint& endpoint)
     });
 }
 
-bool Session::disconnect()
+bool NetSession::disconnect()
 {
     if (!connected) return false;
     connected = false;
@@ -52,7 +52,7 @@ bool Session::disconnect()
     return true;
 }
 
-bool Session::run()
+bool NetSession::run()
 {
     if (isRunning) return false;
     isRunning = true;
@@ -70,7 +70,7 @@ bool Session::run()
     return true;
 }
 
-bool Session::send(boost::asio::const_buffer data)
+bool NetSession::send(boost::asio::const_buffer data)
 {
     if (!socket->is_open()) return false;
 
@@ -79,12 +79,10 @@ bool Session::send(boost::asio::const_buffer data)
     return true;
 }
 
-void Session::write()
+void NetSession::write()
 {
     isWriting = true;
-
     boost::asio::const_buffer data = writeQueue.front();
-
     std::shared_ptr<std::vector<unsigned char>> encryptedData;
 
     if (cryptoManager.get())
@@ -92,9 +90,6 @@ void Session::write()
         std::string plain = std::string(static_cast<const char*>(writeQueue.front().data()),
                                         writeQueue.front().size());
         encryptedData = std::make_shared<std::vector<unsigned char>>(cryptoManager->encrypt(plain));
-
-        // std::cout << "write data size:" << encryptedData->size() << std::endl;
-        // std::cout << encryptedData->data() << std::endl;
         data = net::buffer(*encryptedData);
     }
 
@@ -118,7 +113,7 @@ void Session::write()
                      });
 }
 
-void Session::read()
+void NetSession::read()
 {
     if (!socket || !socket->is_open()) return;
 
@@ -135,12 +130,7 @@ void Session::read()
                                             const std::vector<unsigned char> data{
                                                 self->buffer.begin(), self->buffer.begin() + bytes_transferred
                                             };
-                                            // std::cout << "read data size:" << data.size() << std::endl;
-                                            // std::cout << data.data() << std::endl;
-                                            // std::cout << self->buffer.data() << std::endl;
-
                                             self->decrypted_data = self->cryptoManager->decrypt(data);
-
                                             self->onMessageReceived(
                                                 net::buffer(self->decrypted_data, self->decrypted_data.size()));
                                         }

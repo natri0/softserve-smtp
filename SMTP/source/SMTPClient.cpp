@@ -3,10 +3,10 @@
 #include <format>
 
 ISXSMTP::SMTPClient::SMTPClient(
-	const std::string& domain,
-	const std::string& from,
-	const std::vector<std::string>& to,
-	bool quit_after_data)
+		const std::string& domain,
+		const std::string& from,
+		const std::vector<std::string>& to,
+		bool quit_after_data)
 	: m_from(from)
 	, m_to(to)
 	, m_quitOnFinish(quit_after_data)
@@ -50,12 +50,12 @@ std::vector<std::string> ISXSMTP::SMTPClient::GenCommands()
 	for (const auto& i : m_to)
 		commands.push_back(GenRCPTCommand(i));
 	commands.push_back(GenDATACommand());
-
+	
 	if (m_quitOnFinish)
 		commands.push_back(GenQUITCommand());
 	else
 		commands.push_back(GenRSETCommand());
-
+	
 	return commands;
 }
 
@@ -72,7 +72,7 @@ ISXSMTP::SMTPTransactionStatus ISXSMTP::SMTPClient::OnReply(const std::string& r
 		return SMTPTransactionStatus::RETRY_LATER;
 	if (parsed_reply->GetCode() >= 300)
 		return SMTPTransactionStatus::SEND_DATA;
-
+	
 	return SMTPTransactionStatus::SEND_NEXT_COMMAND;
 }
 
@@ -98,7 +98,7 @@ std::optional<ISXSMTP::SMTPReply> ISXSMTP::SMTPClient::ParseReply(const std::str
 	{
 		return {};
 	}
-
+	
 	if (chars_read != 3)
 		return {};
 

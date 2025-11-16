@@ -11,7 +11,7 @@
 
 SmartSession::SmartSession(std::shared_ptr<net::ip::tcp::socket> socket, Type sessionType) :
     type(sessionType),
-    net_session(std::make_shared<Session>(socket)),
+    net_session(std::make_shared<NetSession>(socket)),
     smtp_session(std::make_shared<ISXSMTP::SMTPSession>())
 {
 }
@@ -67,7 +67,7 @@ void SmartSession::setKeys(boost::asio::const_buffer msg,
     const auto sessionKey = smtp::ssl::KeyExchange::deriveSessionKey(sharedSecret);
 
     net_session->setKey(sessionKey);
-    LOG_INFO(DEBUG_LOG_LEVEL) << "Session key established successfully";
+    LOG_INFO(DEBUG_LOG_LEVEL) << "NetSession key established successfully";
 
     boost::asio::post(net_session->getSocket()->get_executor(), [this]()
     {

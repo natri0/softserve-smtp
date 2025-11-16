@@ -10,6 +10,7 @@
 #include "../networking/SSL/KeyExchanger.h"
 #include "SMTPSession.h"
 #include "../logger/Include/Logger.h"
+#include "config/config.h"
 
 // temp till we don't have parser
 
@@ -26,20 +27,35 @@ Server::~Server()
 
 bool Server::init()
 {
-    // initialization from config
-    if (Config config; !config.load_from_file("server/config/config.json"))
+    // setting logger
+    Logger::getInstance().setLevel(DEBUG_LOG_LEVEL);
+    Logger::getInstance().setFlush(false);
+    ui->do_flush = false;
+
+    Config config;
+    if (!config.load_from_file("server/config/config.json")) {
         LOG_ERROR(LogLevel::PROD) << "Couldn't load config.json";
-    else
-    {
-        if (config.has_key("port")) port = config.get<unsigned short>("port");
-        if (config.has_key("thread_pool_size")) thread_pool_size = config.get<unsigned short>("thread_pool_size");
+        return false;
     }
+
+    port = config.get_with_default<unsigned short>("port", 12345);
+    thread_pool_size = config.get_with_default<unsigned short>("thread_pool_size", 4);
+
+    // mailbox lifespan = server lifespan
+    static std::shared_ptr<ISXSMTP::SMTPIMailbox> mailbox = std::make_shared<SQLiteMailbox>();
+    ISXSMTP::SMTPConfigBuilder builder;
+    builder.SetMailbox(mailbox);
+    builder.SetDomain(config.get_with_default<std::string>("smtp.domain", "smtp.test"));
+    builder.SetCurrentAsDefault();
 
     threadPool = std::make_unique<ThreadPool>(thread_pool_size);
 
+    // net
     if (!setUpAcceptor()) return false;
+
     threadPool->start();
 
+    // starting the console UI
     ui->start(port);
 
     return true;
@@ -61,16 +77,14 @@ bool Server::stop()
     return true;
 }
 
-bool Server::restart()
+bool Server::reset()
 {
     stop();
-
     isStopping = false;
     io->restart();
     threadPool->start();
 
     if (!init())return false;
-
     runAcceptor();
 
     return true;
@@ -89,11 +103,9 @@ void Server::run()
     runAcceptor();
 
     LOG_INFO(PROD_LOG_LEVEL) << "Server is running";
-
     ui->run();
 
     LOG_INFO(PROD_LOG_LEVEL) << "Server shut down";
-
     stop();
 }
 
@@ -139,9 +151,10 @@ void Server::setConnection(std::shared_ptr<net::ip::tcp::socket> socket)
     {
         std::lock_guard lock(sessionMutex);
         sessions.push_back(session);
+        ui->updateOnConnected(sessions.size());
     }
 
-    session->net_session->setOnDisconnect([this, session]()
+    session->net()->setOnDisconnect([this, session]()
     {
         {
             std::lock_guard lock(sessionMutex);
@@ -149,8 +162,7 @@ void Server::setConnection(std::shared_ptr<net::ip::tcp::socket> socket)
         }
         LOG_INFO(PROD_LOG_LEVEL) << "Client disconnected";
 
-        // made this the menu option
-        std::cout << "Number of active clients: " << sessions.size() << std::endl;
+        ui->updateOnConnected(sessions.size());
     });
 
     session->setSMTPHandling([this, session](boost::asio::const_buffer msg) { SMTPHandling(msg, session); });
@@ -162,10 +174,10 @@ void Server::SMTPHandling(boost::asio::const_buffer msg, std::shared_ptr<SmartSe
     const std::string cmd(
         std::string(static_cast<const char*>(msg.data()), msg.size()));
 
-    auto rpl = session->smtp_session->OnMessage(cmd.c_str());
-    session->net_session->send(net::buffer(rpl));
+    auto rpl = session->smtp()->OnMessage(cmd.c_str());
+    session->net()->send(net::buffer(rpl));
 
-    LOG_INFO(DEBUG_LOG_LEVEL) << "Received message from: " << session->net_session->getSocket()->
+    LOG_INFO(DEBUG_LOG_LEVEL) << "Received message from: " << session->net()->getSocket()->
                                                                        remote_endpoint();
     LOG_INFO(DEBUG_LOG_LEVEL) << "Message: " << cmd;
     LOG_INFO(DEBUG_LOG_LEVEL) << "Reply: " << rpl;

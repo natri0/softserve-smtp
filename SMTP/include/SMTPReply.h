@@ -56,34 +56,32 @@ namespace ISXSMTP
 		 */
 		void SetMultiLine(bool value);
 
-		bool IsMultiLine() const;
-
-	public:
-		static SMTPReply CommandUnrecognized();
-		static SMTPReply SyntaxError();
-		static SMTPReply CommandNotImplemented();
-		static SMTPReply BadSequenceOfCommands();
-		static SMTPReply CommandParameterNotImplemented();
-		static SMTPReply HelpReply();
-		static SMTPReply HelpMessage();
-		static SMTPReply ServiceReady(const std::string& domain);
-		static SMTPReply ServiceClosing(const std::string& domain);
-		static SMTPReply ServiceNotAvailable();
-		static SMTPReply OK();
-		static SMTPReply UserNotLocal251();
-		static SMTPReply UserNotLocal551();
-		static SMTPReply CannotVerifyUser();
-		static SMTPReply MailboxUnavailable450();
-		static SMTPReply MailboxUnavailable550();
-		static SMTPReply ProcessingError();
-		static SMTPReply InsufficientSystemStorage();
-		static SMTPReply ExceededStorageAllocation();
-		static SMTPReply StartMailInput();
-		static SMTPReply TransactionFailed();
-		static SMTPReply MailboxSyntaxIncorrect();
-
-		bool operator==(const SMTPReply& other);
-		bool operator!=(const SMTPReply& other);
-	};
+public:
+	static SMTPReply CommandUnrecognized();
+	static SMTPReply SyntaxError();
+	static SMTPReply CommandNotImplemented();
+	static SMTPReply BadSequenceOfCommands();
+	static SMTPReply CommandParameterNotImplemented();
+	static SMTPReply HelpReply();
+	static SMTPReply HelpMessage();
+	static SMTPReply ServiceReady(const std::string& domain);
+	static SMTPReply ServiceClosing(const std::string& domain);
+	static SMTPReply ServiceNotAvailable();
+	static SMTPReply OK();
+	static SMTPReply UserNotLocal251(); 
+	static SMTPReply UserNotLocal551(); 
+	static SMTPReply CannotVerifyUser();
+	static SMTPReply MailboxUnavailable450();
+	static SMTPReply MailboxUnavailable550();
+	static SMTPReply ProcessingError();
+	static SMTPReply InsufficientSystemStorage();
+	static SMTPReply ExceededStorageAllocation();
+	static SMTPReply StartMailInput();
+	static SMTPReply TransactionFailed();
+	static SMTPReply MailboxSyntaxIncorrect();
+	
+	bool operator==(const SMTPReply& other);
+	bool operator!=(const SMTPReply& other);
+};
 
 }

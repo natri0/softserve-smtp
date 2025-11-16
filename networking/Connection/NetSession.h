@@ -1,7 +1,7 @@
 //
 // Created by alkir on 10/3/2025.
 //
-// Session.h
+// NetSession.h
 // ----------------------
 // Represents an asynchronous TCP session
 // Handles reading and writing using Boost.Asio, provides callbacks
@@ -9,8 +9,8 @@
 // Supports encryption through CryptoManager.
 //
 
-#ifndef SESSION_H
-#define SESSION_H
+#ifndef NETSESSION_H
+#define NETSESSION_H
 
 #include <boost/asio.hpp>
 #include <boost/beast/core.hpp>
@@ -19,12 +19,12 @@
 #include <deque>
 #include <array>
 
-#include "SSL/CryptoManager.h"
+#include "../SSL/CryptoManager.h"
 
 namespace net = boost::asio;
 
 /**
- * @class Session
+ * @class NetSession
  * @brief Represents an asynchronous TCP session (connection).
  *
  * Manages communication over a TCP socket using Boost.Asio.
@@ -35,7 +35,7 @@ namespace net = boost::asio;
  * - Disconnection
  *
  */
-class Session : public std::enable_shared_from_this<Session>
+class NetSession : public std::enable_shared_from_this<NetSession>
 {
 public:
     /**
@@ -58,12 +58,12 @@ public:
      * @brief Constructs a server-side session.
      * @param _socket Shared pointer to a TCP socket.
      */
-    explicit Session(std::shared_ptr<net::ip::tcp::socket> _socket);
+    explicit NetSession(std::shared_ptr<net::ip::tcp::socket> _socket);
 
     /**
      * @brief Destroys the session and releases resources.
      */
-    ~Session();
+    ~NetSession();
 
     /**
      * @brief Connects to a remote endpoint (client-side).
@@ -144,7 +144,7 @@ private:
 
     std::array<char, 1024> buffer;                       ///< Read buffer
     std::deque<net::const_buffer> writeQueue;            ///< Pending write operations
-    bool isWriting = false;                              ///< Indicates if a write is in progress
+    bool isWriting = false;                              ///< Indicates if writing is in progress
     bool isRunning = false;                              ///< Indicates if the session loop is active
     std::atomic<bool> connected = false;                 ///< Connection state
 
@@ -160,4 +160,4 @@ private:
     std::string decrypted_data;                               ///< Stores last decrypted message
 };
 
-#endif // SESSION_H
+#endif // NETSESSION_H
