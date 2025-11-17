@@ -1,10 +1,10 @@
 #include "Macros.h"
 #include "Logger.h"
+#include "LogData.h"
+#include "Formatter.h"
 
-//std::unique_ptr<Logger> Logger::instance = nullptr;
-
-Logger::Logger(const LogLevel& level, const std::string& path, const unsigned int amount, const bool do_flush)
-    : queue(DEFAULT_SIZE), local_level{ level }, output_path{ path }, amount{ amount }, end(DEFAULT_END), do_flush(do_flush) {
+Logger::Logger(const LogLevel& level, const std::string& path, const std::uint32_t amount, const bool do_flush, const std::string& format)
+    : queue(DEFAULT_SIZE), local_level{ level }, output_path{ path }, amount{ amount }, end(DEFAULT_END), do_flush(do_flush), format(format) {
     fileInit(this->amount);
 
     thrd = std::thread([this]() {
@@ -20,15 +20,19 @@ Logger::Logger(const LogLevel& level, const std::string& path, const unsigned in
         }
         });
 
+    if (format == "") {
+        this->format = chooseFormat(local_level);
+    }
+
 }
 
-Logger& Logger::getInstance(const LogLevel& level, const std::string& path, const unsigned int amount, const bool do_flush) {
+Logger& Logger::getInstance(const LogLevel& level, const std::string& path, const std::uint32_t amount, const bool do_flush, const std::string& format) {
 
     static Logger instance(level, path, amount, do_flush);
     return instance;
 }
 
-void Logger::fileInit(const unsigned int amount)
+void Logger::fileInit(const std::uint32_t amount)
 {
     std::string log_dir{ "Logs" };
 
@@ -37,7 +41,9 @@ void Logger::fileInit(const unsigned int amount)
     {
         log_dir = output_path + "/Logs";
     }
-    else if (output_path != "")error = 1;
+    else if (output_path != "") {
+        error = 1;
+    }
 
     if (std::filesystem::is_directory(log_dir))
     {
@@ -49,7 +55,9 @@ void Logger::fileInit(const unsigned int amount)
                 std::filesystem::remove(file);
 
                 count = std::distance(std::filesystem::directory_iterator{ log_dir }, {});
-                if (count < amount) break;
+                if (count < amount) {
+                    break;
+                }
             }
         }
     }
@@ -65,19 +73,47 @@ void Logger::fileInit(const unsigned int amount)
 
     output_path = buff_name;
 
-    if (error)
-        log("invalid output path, default will be used", "[WARNING]", FUNCTION_NAME, local_level, std::this_thread::get_id());
+    if (error) {
+        log("invalid output path, default will be used", "[WARNING]", LOG_GET_FUNC(), local_level, std::this_thread::get_id());
+    }
 }
 
 void Logger::shutDown() {
     end = true;
-    if (thrd.joinable())
+    if (thrd.joinable()) {
         thrd.join();
+    }
     file.close();
 }
 
 Logger::~Logger() {
     shutDown();
+}
+
+
+void Logger::setFormat(const std::string& format) {
+    std::unique_lock lock(mutex);
+    this->format = format;
+}
+
+std::string Logger::getFormat() const {
+    std::shared_lock lock(mutex);
+    return format;
+}
+
+std::string Logger::chooseFormat(LogLevel level)
+{
+    switch (level)
+    {
+    case LogLevel::Prod:
+        return FORMAT_PROD;
+    case LogLevel::Debug:
+        return FORMAT_DEBUG;
+    case LogLevel::Trace:
+        return FORMAT_TRACE;
+    default:
+        return FORMAT_NO;
+    }
 }
 
 void Logger::setOutputPath(const std::string& path)
@@ -106,7 +142,7 @@ const LogLevel& Logger::getLevel() const
     return local_level;
 }
 
-void Logger::setFlush(const bool if_flush) {
+void Logger::setFlush(bool if_flush) {
     do_flush = if_flush;
 }
 
@@ -116,75 +152,53 @@ bool Logger::blockLog(LogLevel level)
         static_cast<std::underlying_type<LogLevel>::type>(local_level);
 }
 
-std::string Logger::toString(LogLevel level) {
+std::string Logger::getLevelName(LogLevel level) {
     switch (level) {
-    case LogLevel::TRACE:   return "TRACE";
-    case LogLevel::DEBUG: return "DEBUG";
-    case LogLevel::PROD:    return "PROD";
-    default:                return "NONE";
+    case LogLevel::Trace:
+        return "TRACE";
+    case LogLevel::Debug:
+        return "DEBUG";
+    case LogLevel::Prod:
+        return "PROD";
+    default:
+        return "NONE";
     }
 }
 
-void Logger::write_log_to_file(const LogData& data) {
-    std::string file_output;
+void Logger::writeLogToFile(const LogData& data) {
 
-    file_output += std::format("{:%H:%M:%S-%d.%m.%y}", std::chrono::system_clock::now());
-    file_output += '\t';
-    file_output += data.type;
-    file_output += '\t';
-    file_output += toString(data.level);
-    file_output += '\t';
-    file_output += data.location;
-    file_output += '\t';
-    file_output += "(thread ";
-    file_output += std::to_string(std::hash<std::thread::id>{}(data.thr_id));
-    file_output += ")";
-    file_output += '\t';
-    file_output += data.msg;
-    file_output += '\n';
+    std::string file_output = std::vformat(data.format, std::make_format_args(data));
 
-    file << file_output;
+    file << file_output << std::endl;
     file.flush();
 }
 
-void Logger::write_log_to_console(const LogData& data) {
-    std::string console_output;
+void Logger::writeLogToConsole(const LogData& data) {
+    const ConsoleLog content = ConsoleLog{ data };
+    std::string console_output = std::vformat(data.format, std::make_format_args(content));
 
-    console_output += std::format("{:%H:%M:%S-%d.%m.%y}", std::chrono::system_clock::now());
-    console_output += '\t';
 
-    auto it = colored.find(data.type);
-    if (it != colored.end())
-        console_output += it->second + data.type + DEFAULT_COLOR;
-    else
-        console_output += data.type;
-
-    console_output += '\t';
-    console_output += data.location;
-    console_output += '\t';
-    console_output += "(thread ";
-    console_output += std::to_string(std::hash<std::thread::id>{}(data.thr_id));
-    console_output += ")";
-    console_output += '\t';
-    console_output += data.msg;
-    console_output += '\n';
-
-    std::cout << console_output;
-
+    std::cout << console_output << std::endl;
 }
 
 void Logger::flushMessage(const LogData& data)
 {
-    if (blockLog(data.level))
+
+
+    if (static_cast<int>(local_level) == 0 || static_cast<int>(data.level)==0) {
         return;
-
-    if (static_cast<int>(local_level) == 0) return;
-
+    }
 
 
+    if (blockLog(data.level)) {
+        return;
+    }
 
-    if (do_flush)  write_log_to_console(data);
-    write_log_to_file(data);
+    writeLogToFile(data);
+    if (do_flush) {
+        writeLogToConsole(data);
+    }
+
 
 }
 
@@ -196,7 +210,7 @@ std::vector<std::string> Logger::readAllLogs() const {
     std::string line;
 
     if (!file.is_open()) {
-        LOG_ERROR(LogLevel::PROD) << "ERROR: cannot open log file: " << output_path;
+        LOG_ERROR(LogLevel::Prod) << "ERROR: cannot open log file: " << output_path;
         return lines;
     }
 
@@ -214,7 +228,7 @@ std::vector<std::string> Logger::readLogsByKeyword(const std::string& keyword) c
     std::string line;
 
     if (!file.is_open()) {
-        LOG_ERROR(LogLevel::PROD) << "ERROR: cannot open log file: " << output_path;
+        LOG_ERROR(LogLevel::Prod) << "ERROR: cannot open log file: " << output_path;
         return filtered;
     }
 
@@ -236,25 +250,12 @@ void Logger::log(const LogData& data) {
         std::this_thread::yield();
     }
 }
+
 void Logger::log(const std::string& str, const std::string& type, const std::string& location,
     const LogLevel& level, std::thread::id id = std::this_thread::get_id())
-    //void* ptr_this = nullptr)
 {
-    LogData* msg = new LogData{ str, type, location, level, id };//, ptr_this };
+    LogData* msg = new LogData{ str, type, location, level, id , format };
     while (!queue.push(msg)) {
         std::this_thread::yield();
     }
-}
-
-
-void Logger::logFuncStart() {
-
-    if (static_cast<int>(local_level) >= 2)
-        log("Function is started", "[INFO]", LOG_GET_FUNC(), local_level);
-}
-
-void Logger::logFuncEnd()
-{
-    if (static_cast<int>(local_level) >= 2)
-        log("Function is successfully executed", "[INFO]", LOG_GET_FUNC(), local_level);
 }

@@ -4,8 +4,6 @@
 
 /build/
 
-.vs
-out
-build
+out/
 
 CMakeSettings.json

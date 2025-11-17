@@ -1,4 +1,6 @@
-#pragma once
+#ifndef LOGDATA_H
+#define LOGDATA_H
+
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -18,16 +20,14 @@ struct LogData {
     std::string location;
     LogLevel level;
     std::thread::id thr_id;
-    //void* object_ptr
+    std::string format;
 
     /**
      * @brief Constructs a new LogData object.
      */
 
     LogData(const std::string& m, const std::string& type, const std::string& loc,
-        const LogLevel& level, std::thread::id id) //void* ptr = nullptr)
-        : msg(m), type(type), location(loc), level(level), thr_id(id) { //, object_ptr(ptr) {
-    }
+        const LogLevel& level, std::thread::id id, std::string ft);
 
     /**
      * @brief Appends a value to the message text.
@@ -40,12 +40,7 @@ struct LogData {
      */
 
     template<typename T>
-    LogData& operator<<(const T& value) {
-        std::ostringstream oss;
-        oss << value;
-        msg += oss.str();
-        return *this;
-    }
+    LogData& operator<<(const T& value);
 
     /**
      * @brief Returns a reference to the current object.
@@ -53,10 +48,17 @@ struct LogData {
      * Used for chaining in macros like LOG_INFO(level) << "message";
      */
 
-    LogData& ref()
-    {
-        return *this;
-    }
+    LogData& ref();
 
 
 };
+
+template<typename T>
+LogData& LogData::operator<<(const T& value) {
+    std::ostringstream oss;
+    oss << value;
+    msg += oss.str();
+    return *this;
+}
+
+#endif
