@@ -9,8 +9,8 @@
 
 constexpr uint8_t RECONNECT_DELAY_TIME = 2;
 
-Client::Client(const std::string& host, const unsigned short port) :
-  server_endpoint(net::ip::make_address(host), port),
+Client::Client(const ClientSettings& settings, StatusCallback statusCallback) :
+  server_endpoint(net::ip::make_address(settings.server), settings.port),
   session(std::make_shared<SmartSession>(std::make_shared<net::ip::tcp::socket>(io), SmartSession::Type::CLIENT)),
   timer(io),
   sslContext(smtp::ssl::SSLContextFactory::createClientContext())
@@ -126,7 +126,7 @@ bool Client::sendMail(EmailMessage e_msg)
     return false;
   }
 
-  email_info = e_msg;
+  m_emailInfo = e_msg;
   if (canSend)
   {
     session->net()->send(net::buffer(sendInfo.front()));
@@ -147,6 +147,22 @@ void Client::changeLogLevel(const std::string& level) const
     Logger::getInstance().setLevel(DEBUG_LOG_LEVEL);
   if (level == "TRACE")
     Logger::getInstance().setLevel(TRACE_LOG_LEVEL);
+}
+
+bool Client::setSettings(const ClientSettings& newSettings){
+    bool mustReconnect =
+        (newSettings.server != m_settings.server) ||
+        (newSettings.port != m_settings.port) ||
+        (newSettings.username != m_settings.username) ||
+        (newSettings.password != m_settings.password) ||
+        (newSettings.securityType != m_settings.securityType);
+
+    m_settings = newSettings;
+
+    if(mustReconnect){
+        reconnect();
+    }
+    return mustReconnect;
 }
 
 bool Client::stop()

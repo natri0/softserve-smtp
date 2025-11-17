@@ -14,14 +14,16 @@ SmtpClientWindow::SmtpClientWindow(QWidget *parent)
     connect(m_Controller, &SmtpController::sendSuccess, this, &SmtpClientWindow::onSendSuccess);
     connect(m_Controller, &SmtpController::sendFailed, this, &SmtpClientWindow::onSendFailed);
 
-    m_Settings.server = "localhost";
-    m_Settings.username = "user";
+    m_Settings.server = "0.0.0.0";
+    m_Settings.username = "user@test.com";
     m_Settings.password = "pass";
-    m_Settings.port = 1025;
+    m_Settings.port = 12345;
     m_Settings.logLevel = "DEBUG";
     m_Settings.securityType = 0;
 
     m_lastFromAddress = m_Settings.username;
+
+    m_Controller->init(m_Settings);
 
     addMockSentEmails();
     addMockInboxEmails();
@@ -75,22 +77,17 @@ void SmtpClientWindow::createToolBar()
 
 QWidget* SmtpClientWindow::createMainLayout()
 {
-    // Create a container widget and a horizontal layout
     QWidget *mainWidget = new QWidget;
     QHBoxLayout *mainLayout = new QHBoxLayout(mainWidget);
-    mainLayout->setContentsMargins(0, 0, 0, 0); // Remove spacing around the edge
-    mainLayout->setSpacing(0); // Remove spacing between widgets (no gray line)
+    mainLayout->setContentsMargins(0, 0, 0, 0);
+    mainLayout->setSpacing(0);
 
-    // 1. Navigation Panel (Left)
     navigationListWidget = new QListWidget;
     navigationListWidget->addItem(new QListWidgetItem(QIcon::fromTheme("mail-send"), "Sent"));
-    navigationListWidget->addItem(new QListWidgetItem(QIcon::fromTheme("mail-receive"), "Inbox")); // <-- Renamed
+    navigationListWidget->addItem(new QListWidgetItem(QIcon::fromTheme("mail-receive"), "Inbox"));
     navigationListWidget->setMaximumWidth(150);
-    mainLayout->addWidget(navigationListWidget); // Add to layout
+    mainLayout->addWidget(navigationListWidget);
 
-    // 2. Main Content (Right) - Now a Splitter
-
-    // 2a. List Stack (Left side of splitter)
     listStack = new QStackedWidget;
 
     sentItemsListWidget = new QListWidget;

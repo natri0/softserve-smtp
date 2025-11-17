@@ -23,6 +23,9 @@ public:
     SmtpClientWindow(QWidget *parent = nullptr);
     ~SmtpClientWindow();
 
+signals:
+    void statusUpdated(const QString& message);
+
 private slots:
     void onCompose();
     void onNavigationChanged(int index);

@@ -80,6 +80,12 @@ public:
      */
     bool run();
 
+    /**
+     * @brief Receives updated settings from UI
+     * @return True if had to change settings and had to reconnect
+     */
+    bool setSettings(const ClientSettings& settings);
+
     std::string getLastError() const { return m_lastError; }
 private:
 
@@ -130,6 +136,9 @@ private:
 
     /// Boost.Asio I/O context for managing asynchronous networking.
     net::io_context io;
+
+    /// Server endpoint (IP + port).
+    net::ip::tcp::endpoint server_endpoint;
 
     /// Manages the connection and SMTP protocol logic.
     std::shared_ptr<SmartSession> session;

@@ -3,14 +3,17 @@
 
 #include <QObject>
 #include "Structures.h"
+#include "Client.h"
 
 class SmtpWorker : public QObject{
     Q_OBJECT
 public:
-    SmtpWorker(const Email& email, const SmtpSettings& settings, QObject* parent = nullptr);
+    SmtpWorker(const SmtpSettings& settings, QObject* parent = nullptr);
 
 public slots:
-    void process();
+    void processEmail(const Email& email);
+
+    void updateSettings(const SmtpSettings& settings);
 
 signals:
     void statusUpdated(const QString& message);
@@ -18,8 +21,8 @@ signals:
     void error(const QString& message);
 
 private:
-    Email m_Email;
     SmtpSettings m_Settings;
+    std::unique_ptr<Client> m_Client;
 };
 
 #endif // SMTPWORKER_H

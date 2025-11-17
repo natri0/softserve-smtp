@@ -1,81 +1,60 @@
 #include "SMTPWorker.h"
-#include "Client.h"
-#include "EmailMessage.h"
 #include "ClientSettings.h"
+#include "EmailMessage.h"
 #include <string>
 #include <vector>
 
-SmtpWorker::SmtpWorker(const Email& email, const SmtpSettings& settings, QObject* parent) :
-  QObject(parent), m_Email(email), m_Settings(settings)
+SmtpWorker::SmtpWorker(const SmtpSettings& settings, QObject* parent) :
+  QObject(parent), m_Settings(settings)
 {
+    ClientSettings clientSettings;
+    clientSettings.logLevel = m_Settings.logLevel.toStdString();
+    clientSettings.password = m_Settings.password.toStdString();
+    clientSettings.server = m_Settings.server.toStdString();
+    clientSettings.username = m_Settings.username.toStdString();
+    clientSettings.port = m_Settings.port;
+    clientSettings.securityType = m_Settings.securityType;
+
+    auto onStatus = [this](const std::string& msg) {
+        emit statusUpdated(QString::fromStdString(msg));
+    };
+
+    m_Client = std::make_unique<Client>(clientSettings, onStatus);
+
+    m_Client->start();
+
+    emit statusUpdated("Worker started and ready.");
 };
 
-void SmtpWorker::process() {
+void SmtpWorker::processEmail(const Email& email) {
     try{
         emit statusUpdated("Worker process started!");
 
         EmailMessage msgToSend;
-        msgToSend.from = m_Email.from.toStdString();
-        msgToSend.subject = m_Email.subject.toStdString();
-        msgToSend.body = m_Email.body.toStdString();
+        msgToSend.from = email.from.toStdString();
+        msgToSend.subject = email.subject.toStdString();
+        msgToSend.body = email.body.toStdString();
 
-        ClientSettings settings;
-        settings.logLevel = m_Settings.logLevel.toStdString();
-        settings.password = m_Settings.password.toStdString();
-        settings.server = m_Settings.server.toStdString();
-        settings.username = m_Settings.username.toStdString();
-        settings.port = m_Settings.port;
-        settings.securityType = m_Settings.securityType;
-
-        msgToSend.to.reserve(m_Email.to.size());
-        for (const QString& recipient : m_Email.to) {
+        msgToSend.to.reserve(email.to.size());
+        for (const QString& recipient : email.to) {
             msgToSend.to.push_back(recipient.toStdString());
         }
 
-        msgToSend.attachmentPaths.reserve(m_Email.attachmentPaths.size());
-        for (const QString& path : m_Email.attachmentPaths) {
+        msgToSend.attachmentPaths.reserve(email.attachmentPaths.size());
+        for (const QString& path : email.attachmentPaths) {
             msgToSend.attachmentPaths.push_back(path.toStdString());
         }
 
         emit statusUpdated("Connecting to " + m_Settings.server + "...");
 
-        auto onStatus = [this](const std::string& msg) {
-            emit statusUpdated(QString::fromStdString(msg));
-        };
-
-        Client client(settings, onStatus);
-
-        // Set authentication if provided
-
-        if (!client.start()) {
-            emit error("Failed to initialize client (client.start())");
-            emit finished();
-            return;
-        }
-
-        if (!client.sendMail(msgToSend)) {
-            emit error("Failed to queue email " + QString::fromStdString(client.getLastError()));
+        if (!m_Client->sendMail(msgToSend)) {
+            emit error("Failed to queue email " + QString::fromStdString(m_Client->getLastError()));
             emit finished();
             return;
         }
         emit statusUpdated("Running network loop.");
 
-        bool networkLoopSuccess = client.run();
-        std::string smtpError = client.getLastError();
-
-        if (!networkLoopSuccess) {
-            emit error("Client network loop failed (client.run())" + QString::fromStdString(smtpError));
-        }
-        else if (!smtpError.empty())
-        {
-            emit error("SMTP Error: " + QString::fromStdString(smtpError));
-        }
-        else
-        {
-            emit statusUpdated("Network loop finished. Email sent successfully.");
-        }
-
-        client.stop();
+        std::string smtpError = m_Client->getLastError();
 
     }catch (std::exception &e)
     {
@@ -86,4 +65,23 @@ void SmtpWorker::process() {
         emit error("An unknown, non-standard exception occurred.");
     }
     emit finished();
+}
+
+void SmtpWorker::updateSettings(const SmtpSettings& settings)
+{
+    m_Settings = settings;
+
+    ClientSettings clientSettings;
+    clientSettings.logLevel = m_Settings.logLevel.toStdString();
+    clientSettings.password = m_Settings.password.toStdString();
+    clientSettings.server = m_Settings.server.toStdString();
+    clientSettings.username = m_Settings.username.toStdString();
+    clientSettings.port = m_Settings.port;
+    clientSettings.securityType = m_Settings.securityType;
+
+    if (m_Client) {
+        m_Client->setSettings(clientSettings);
+    }
+
+    emit statusUpdated("Client settings updated.");
 }

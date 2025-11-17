@@ -39,5 +39,4 @@ Use vcpkg to install boost, qt and openSSL
 vcpkg install boost-lockfree boost-beast
 vcpkg install openssl
 vcpkg install boost-asio boost-thread
-vcpkg install qtbase
 ```
