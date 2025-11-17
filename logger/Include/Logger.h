@@ -1,6 +1,11 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
+
+#include "LogData.h"
+#include "LogLevel.h"
+#include "Macros.h"
+
 #include <iostream>
 #include <fstream>
 #include <queue>
@@ -16,7 +21,7 @@
 #include <filesystem>
 #include <boost/lockfree/queue.hpp>
 #include <shared_mutex>
-#include "Macros.h"
+
 
 /**
  * @brief Asynchronous logger.
@@ -28,7 +33,6 @@
  *  - Configurable log levels and output paths
  */
 
-struct LogData;
 
 class Logger {
 private:

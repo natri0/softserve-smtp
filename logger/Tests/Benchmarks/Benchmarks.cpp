@@ -8,8 +8,8 @@ constexpr std::uint16_t NUM_MESSAGES = 1000;
 static void BM_2Threads(benchmark::State& state) {
     Logger& logger = Logger::getInstance();
     logger.setFlush(false);
-    logger.setLevel(LogLevel::Trace);
-    logger.setOutputPath(".");
+    ///logger.setLevel(LogLevel::Trace);
+    //logger.setOutputPath(".");
     std::uint8_t num_threads = NUM_THREADS / 3;
     std::uint16_t messages_per_thread = NUM_MESSAGES;
 
@@ -33,8 +33,8 @@ static void BM_2Threads(benchmark::State& state) {
 static void BM_4Threads(benchmark::State& state) {
     Logger& logger = Logger::getInstance();
     logger.setFlush(false);
-    logger.setLevel(LogLevel::Trace);
-    logger.setOutputPath(".");
+    //logger.setLevel(LogLevel::Trace);
+    //logger.setOutputPath(".");
     std::uint8_t num_threads = NUM_THREADS * 2 / 3;
     std::uint16_t messages_per_thread = NUM_MESSAGES;
 
@@ -57,8 +57,8 @@ static void BM_4Threads(benchmark::State& state) {
 static void BM_6Threads(benchmark::State& state) {
     Logger& logger = Logger::getInstance();
     logger.setFlush(false);
-    logger.setLevel(LogLevel::Trace);
-    logger.setOutputPath(".");
+    //logger.setLevel(LogLevel::Trace);
+    //logger.setOutputPath(".");
     std::uint8_t num_threads = NUM_THREADS;
     int messages_per_thread = NUM_MESSAGES;
 

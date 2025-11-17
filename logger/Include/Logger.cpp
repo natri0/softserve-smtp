@@ -166,6 +166,7 @@ std::string Logger::getLevelName(LogLevel level) {
 }
 
 void Logger::writeLogToFile(const LogData& data) {
+
     std::string file_output = std::vformat(data.format, std::make_format_args(data));
 
     file << file_output << std::endl;
@@ -185,7 +186,7 @@ void Logger::flushMessage(const LogData& data)
 {
 
 
-    if (static_cast<int>(local_level) == 0) {
+    if (static_cast<int>(local_level) == 0 || static_cast<int>(data.level)==0) {
         return;
     }
 

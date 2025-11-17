@@ -2,9 +2,10 @@
 #define MACROS_H
 
 #include "LogLevel.h"
-#include "LogData.h"
-
+//#include "LogData.h"
 class Logger;
+class LogData;
+//#include "Logger.h"
 
 #define ERROR_COLOR "\033[41m"
 #define WARNING_COLOR "\033[43m"
