@@ -1,105 +1,85 @@
-find_package(Boost REQUIRED)
+cmake_minimum_required(VERSION 3.10)
 
+# Set compiler before project() to avoid resets
+if(NOT DEFINED CMAKE_CXX_COMPILER AND EXISTS "/opt/homebrew/bin/g++-15")
+    set(CMAKE_CXX_COMPILER "/opt/homebrew/bin/g++-15")
+    set(CMAKE_C_COMPILER "/opt/homebrew/bin/gcc-15")
+endif()
+
+project(AsyncLogger 
+    VERSION 1.0.0 
+    DESCRIPTION "Asynchronous C++20 Logger with Lock-Free Queues"
+    LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Report which compiler is being used
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    message(STATUS "Using GCC ${CMAKE_CXX_COMPILER_VERSION}: ${CMAKE_CXX_COMPILER}")
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    message(STATUS "Using Clang ${CMAKE_CXX_COMPILER_VERSION}: ${CMAKE_CXX_COMPILER}")
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "14.0")
+        message(WARNING "Your Clang version may not have full C++20 support. Consider installing GCC-15 with: brew install gcc@15")
+    endif()
+endif()
+
+# Find required packages
 find_package(Threads REQUIRED)
+find_package(Boost QUIET)
 
+if(Boost_FOUND)
+    message(STATUS "Boost found at ${Boost_INCLUDE_DIRS}")
+else()
+    message(STATUS "Boost not found - some features may be limited")
+endif()
+
+# Create logger library
 add_library(logger
     Include/Logger.cpp
     Include/LogData.cpp)
 
-target_include_directories(logger
-    PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/Include
-    ${Boost_INCLUDE_DIRS}
-)
+target_include_directories(logger PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include)
+
+target_compile_features(logger PUBLIC cxx_std_20)
+
+if(Boost_FOUND)
+    target_include_directories(logger PUBLIC ${Boost_INCLUDE_DIRS})
+    target_link_libraries(logger PUBLIC Boost::boost)
+endif()
 
 target_link_libraries(logger PUBLIC Threads::Threads)
 
-
-add_executable(logger_main
-    Tests/StressTest/Main.cpp )
-
-add_executable(logger_example
-    Example/Example.cpp )
-
-target_link_libraries(logger_main PRIVATE logger)
-
-
-target_link_libraries(logger_example PRIVATE
-    logger 
-    Threads::Threads 
-    Boost::boost)
-
-
-
-find_package(benchmark QUIET)
-if (NOT benchmark_FOUND)
-    message(STATUS "Google Benchmark not found — downloading...")
-    include(FetchContent)
-    FetchContent_Declare(
-        benchmark
-        GIT_REPOSITORY https://github.com/google/benchmark.git
-        GIT_TAG v1.8.3
-    )
-
-    set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Disable benchmark's own tests" FORCE)
-    set(BENCHMARK_ENABLE_GTEST_TESTS OFF CACHE BOOL "Disable Google Test inside benchmark" FORCE)
-    set(BENCHMARK_USE_BUNDLED_GTEST OFF CACHE BOOL "Disable bundled GTest in benchmark" FORCE)
-
-    FetchContent_MakeAvailable(benchmark)
+# Enable testing if requested (must be called before add_subdirectory)
+if(ENABLE_TESTS)
+    enable_testing()
 endif()
 
+# Add subdirectories for different components
+add_subdirectory(Example)
+add_subdirectory(Tests)
 
-
-add_executable(logger_benchmark
-    Tests/Benchmarks/Benchmarks.cpp)
-
-
-target_include_directories(logger_benchmark
-    PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/Include
-)
-
-target_link_libraries(logger_benchmark
-    PRIVATE
-    logger
-    benchmark::benchmark
-    Threads::Threads
-    Boost::boost
-)
-
-
-find_package(GTest QUIET)
-if (NOT GTest_FOUND)
-    message(STATUS "GoogleTest not found — downloading...")
-    include(FetchContent)
-    FetchContent_Declare(
-        googletest
-        GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG v1.15.2
-    )
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(googletest)
+# Print build summary
+message(STATUS "")
+message(STATUS "=== Build Configuration Summary ===")
+message(STATUS "Compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
+message(STATUS "C++ Standard: ${CMAKE_CXX_STANDARD}")
+message(STATUS "Build Type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "Boost Support: ${Boost_FOUND}")
+message(STATUS "Benchmarks: ${ENABLE_BENCHMARKS}")
+message(STATUS "Tests: ${ENABLE_TESTS}")
+message(STATUS "")
+message(STATUS "Available targets:")
+message(STATUS "  - logger (library)")
+message(STATUS "  - logger_example (basic example)")
+message(STATUS "  - logger_main (stress test)")
+if(ENABLE_BENCHMARKS)
+    message(STATUS "  - logger_benchmark")
 endif()
-
-enable_testing()
-
-add_executable(logger_tests
-    Tests/UnitTests/test.cpp)
-
-target_include_directories(logger_tests
-    PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/Include
-)
-
-target_link_libraries(logger_tests
-    PRIVATE
-    logger
-    GTest::gtest
-    GTest::gtest_main
-    Threads::Threads
-    Boost::boost
-)
-
-include(GoogleTest)
-gtest_discover_tests(logger_tests)
+if(ENABLE_TESTS)
+    message(STATUS "  - logger_tests")
+endif()
+message(STATUS "=====================================")
+message(STATUS "")
 
