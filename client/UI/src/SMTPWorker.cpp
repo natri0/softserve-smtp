@@ -49,7 +49,7 @@ void SmtpWorker::processEmail(const Email& email) {
 
         if (!m_Client->sendMail(msgToSend)) {
             emit error("Failed to queue email " + QString::fromStdString(m_Client->getLastError()));
-            emit finished();
+            //emit finished();
             return;
         }
         emit statusUpdated("Running network loop.");

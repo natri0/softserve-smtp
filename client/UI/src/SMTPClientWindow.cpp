@@ -14,7 +14,7 @@ SmtpClientWindow::SmtpClientWindow(QWidget *parent)
     connect(m_Controller, &SmtpController::sendSuccess, this, &SmtpClientWindow::onSendSuccess);
     connect(m_Controller, &SmtpController::sendFailed, this, &SmtpClientWindow::onSendFailed);
 
-    m_Settings.server = "0.0.0.0";
+    m_Settings.server = "127.0.0.1";
     m_Settings.username = "user@test.com";
     m_Settings.password = "pass";
     m_Settings.port = 12345;

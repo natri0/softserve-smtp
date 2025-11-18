@@ -13,7 +13,8 @@ Client::Client(const ClientSettings& settings, StatusCallback statusCallback) :
   server_endpoint(net::ip::make_address(settings.server), settings.port),
   session(std::make_shared<SmartSession>(std::make_shared<net::ip::tcp::socket>(io), SmartSession::Type::CLIENT)),
   timer(io),
-  sslContext(smtp::ssl::SSLContextFactory::createClientContext())
+  sslContext(smtp::ssl::SSLContextFactory::createClientContext()),
+  m_statusCallback(statusCallback)
 {
 };
 
@@ -24,7 +25,7 @@ Client::~Client()
 
 bool Client::start()
 {
-  changeLogLevel("PROD");
+  changeLogLevel("DEBUG");
 
   init();
   connect();
@@ -52,23 +53,34 @@ void Client::init()
 
 void Client::connect()
 {
-  if (session->net()->isConnected()) return;
-  session->net()->connect(server_endpoint);
+    if (session->net()->isConnected()) return;
+    session->net()->connect(server_endpoint);
 }
 
 void Client::reconnect()
 {
-  timer.cancel();
-  timer.expires_after(std::chrono::seconds(RECONNECT_DELAY_TIME));
-  timer.async_wait([this](boost::system::error_code ec)
-    {
-      if (!ec)
-      {
-        connect();
-        if (!session->net()->isConnected()) reconnect();
-        else run();
-      }
-    });
+    if (m_statusCallback) m_statusCallback("Waiting " + std::to_string(static_cast<int>(RECONNECT_DELAY_TIME)) + "s before reconnecting...");
+    LOG_INFO(DEBUG_LOG_LEVEL) << "Waiting " << (int)RECONNECT_DELAY_TIME << "s before reconnecting...";
+
+    timer.cancel();
+    timer.expires_after(std::chrono::seconds(RECONNECT_DELAY_TIME));
+    timer.async_wait([this](boost::system::error_code ec)
+            {
+                if (!ec){
+                    if (m_statusCallback) m_statusCallback("Attempting to connect to " + m_settings.server);
+                    LOG_INFO(PROD_LOG_LEVEL) << "Attempting to connect to " << m_settings.server;
+                    connect();
+
+                    if (!session->net()->isConnected()) {
+                        if (m_statusCallback) m_statusCallback("Connection failed. Retrying...");
+                        LOG_WARNING(DEBUG_LOG_LEVEL) << "Connection failed. Retrying...";
+                        reconnect();
+                    }
+                    else {
+                        if (!isRunning) run();
+                    }
+                }
+            });
 }
 
 bool Client::run()
