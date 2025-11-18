@@ -39,7 +39,7 @@ void Client::init()
 
     session->net()->setOnConnected([this]()
     {
-        LOG_INFO(PROD_LOG_LEVEL) << "Client connected";
+        LOG_INFO(PROD) << "Client connected";
         auto keys = std::make_shared<std::pair<std::vector<unsigned char>, std::vector<unsigned char>>>(
             smtp::ssl::KeyExchange::generateKeyPair()
         );
@@ -74,7 +74,7 @@ void Client::reconnect()
 bool Client::run()
 {
     if (isRunning) return false;
-    LOG_INFO(PROD_LOG_LEVEL) << "Client is running";
+    LOG_INFO(PROD) << "Client is running";
 
     io_thread = std::jthread([this]() { io.run(); });
     isRunning = true;
@@ -86,7 +86,7 @@ void Client::SMTPHandling(boost::asio::const_buffer msg)
 {
     std::string cmd(static_cast<const char*>(msg.data()), msg.size());
 
-    LOG_INFO(DEBUG_LOG_LEVEL) << "Received message: " << cmd;
+    LOG_INFO(DEBUG) << "Received message: " << cmd;
 
     // temp; will integrate smtp logic in future
     if (cmd.starts_with("220"))
@@ -96,7 +96,7 @@ void Client::SMTPHandling(boost::asio::const_buffer msg)
     else if (cmd.find("250 HELP") != std::string::npos)
     {
         canSend = true;
-        LOG_INFO(DEBUG_LOG_LEVEL) << "Received 250 HELP; Ready to send";
+        LOG_INFO(DEBUG) << "Received 250 HELP; Ready to send";
     }
     else if (cmd.starts_with("250 Action completed"))
     {
@@ -122,7 +122,7 @@ bool Client::sendMail(EmailMessage e_msg)
 
     if (!session->net()->isConnected())
     {
-        LOG_WARNING(DEBUG_LOG_LEVEL) << "Client is not connected";
+        LOG_WARNING(DEBUG) << "Client is not connected";
         return false;
     }
 
@@ -132,7 +132,7 @@ bool Client::sendMail(EmailMessage e_msg)
         session->net()->send(net::buffer(sendInfo.front()));
         sendInfo.pop();
     }
-    LOG_INFO(PROD_LOG_LEVEL) << "Sending...";
+    LOG_INFO(PROD) << "Sending...";
     return true;
 }
 
@@ -140,13 +140,13 @@ bool Client::sendMail(EmailMessage e_msg)
 void Client::changeLogLevel(const std::string& level) const
 {
     if (level == "NONE")
-        Logger::getInstance().setLevel(LogLevel::NONE);
+        Logger::getInstance().setLevel(LogLevel::None);
     if (level == "PROD")
-        Logger::getInstance().setLevel(PROD_LOG_LEVEL);
+        Logger::getInstance().setLevel(PROD);
     if (level == "DEBUG")
-        Logger::getInstance().setLevel(DEBUG_LOG_LEVEL);
+        Logger::getInstance().setLevel(DEBUG);
     if (level == "TRACE")
-        Logger::getInstance().setLevel(TRACE_LOG_LEVEL);
+        Logger::getInstance().setLevel(TRACE);
 }
 
 bool Client::stop()

@@ -1,11 +1,6 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-
-#include "LogData.h"
-#include "LogLevel.h"
-#include "Macros.h"
-
 #include <iostream>
 #include <fstream>
 #include <queue>
@@ -21,7 +16,9 @@
 #include <filesystem>
 #include <boost/lockfree/queue.hpp>
 #include <shared_mutex>
-
+#include "Macros.h"
+#include "LogData.h"
+//#include "Formatter.h"
 
 /**
  * @brief Asynchronous logger.
@@ -33,6 +30,7 @@
  *  - Configurable log levels and output paths
  */
 
+struct LogData;
 
 class Logger {
 private:
@@ -45,6 +43,7 @@ private:
     std::atomic<bool> end;
     std::atomic<bool> do_flush;
     LogLevel local_level;
+    std::string format;
 
     /**
      * @brief Private constructor (Singleton pattern).
@@ -106,8 +105,6 @@ public:
 
     ~Logger();
 
-    bool blockLog(LogLevel level);
-
     std::vector<std::string> readAllLogs() const;
 
     std::vector<std::string> readLogsByKeyword(const std::string& keyword) const;
@@ -125,6 +122,9 @@ public:
     void setLevel(LogLevel level);
 
     void setFlush(bool);
+
+
+    std::string chooseFormat(LogLevel level);
 
     const LogLevel& getLevel() const;
 

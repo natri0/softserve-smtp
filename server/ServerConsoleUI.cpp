@@ -136,7 +136,7 @@ void ServerConsoleUI::showMenu(std::string_view menu)
 
 std::string_view ServerConsoleUI::modifyLoggerMenu()
 {
-    const std::string log_level = Logger::getInstance().toString(Logger::getInstance().getLevel());
+    const std::string log_level = Logger::getInstance().getLevelName(Logger::getInstance().getLevel());
 
     new_log_menu = LoggerMenu;
     new_log_menu.replace(std::string(LoggerMenu).find("{log_level}"), std::string("{log_level}").length(), log_level);

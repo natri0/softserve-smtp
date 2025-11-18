@@ -1,6 +1,4 @@
-#include "Macros.h"
 #include "Logger.h"
-#include "LogData.h"
 #include "Formatter.h"
 
 Logger::Logger(const LogLevel& level, const std::string& path, const std::uint32_t amount, const bool do_flush, const std::string& format)
@@ -28,7 +26,7 @@ Logger::Logger(const LogLevel& level, const std::string& path, const std::uint32
 
 Logger& Logger::getInstance(const LogLevel& level, const std::string& path, const std::uint32_t amount, const bool do_flush, const std::string& format) {
 
-    static Logger instance(level, path, amount, do_flush);
+    static Logger instance(level, path, amount, do_flush, format);
     return instance;
 }
 
@@ -146,6 +144,7 @@ void Logger::setFlush(bool if_flush) {
     do_flush = if_flush;
 }
 
+
 bool Logger::blockLog(LogLevel level)
 {
     return static_cast<std::underlying_type<LogLevel>::type>(level) > \
@@ -166,7 +165,6 @@ std::string Logger::getLevelName(LogLevel level) {
 }
 
 void Logger::writeLogToFile(const LogData& data) {
-
     std::string file_output = std::vformat(data.format, std::make_format_args(data));
 
     file << file_output << std::endl;
@@ -181,11 +179,12 @@ void Logger::writeLogToConsole(const LogData& data) {
     std::cout << console_output << std::endl;
 }
 
+
 void Logger::flushMessage(const LogData& data)
 {
 
 
-    if (static_cast<int>(local_level) == 0 || static_cast<int>(data.level)==0) {
+    if (static_cast<int>(local_level) == 0) {
         return;
     }
 

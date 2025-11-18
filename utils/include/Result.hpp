@@ -116,7 +116,7 @@ constexpr detail::ErrWrapper<void> Err();
 namespace detail {
     template <class OkType>
     class OkWrapper final {
-    protected:
+    public:
         OkType m_value;
 
         constexpr explicit OkWrapper(OkType&& value) noexcept(std::is_nothrow_move_constructible_v<OkType>)
@@ -178,7 +178,7 @@ namespace detail {
 
     template <class ErrType>
     class ErrWrapper<ErrType&> final {
-    protected:
+    public:
         ErrType& m_error;
 
         constexpr explicit ErrWrapper(ErrType& error) noexcept : m_error(error) {}

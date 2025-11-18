@@ -22,7 +22,7 @@ void NetSession::connect(const net::ip::tcp::endpoint& endpoint)
     {
         if (!ec)
         {
-            LOG_INFO(DEBUG_LOG_LEVEL) << "Connected";
+            LOG_INFO(DEBUG) << "Connected";
             connected = true;
             if (onConnected) onConnected();
         }
@@ -30,7 +30,7 @@ void NetSession::connect(const net::ip::tcp::endpoint& endpoint)
         {
             connected = false;
             if (onDisconnect) onDisconnect();
-            LOG_INFO(DEBUG_LOG_LEVEL) << "Connect failed: " << ec.message();
+            LOG_INFO(DEBUG) << "Connect failed: " << ec.message();
         }
     });
 }
@@ -106,7 +106,7 @@ void NetSession::write()
                          else if (self->onDisconnect && ec != net::error::operation_aborted)
                          {
                              if (self->onDisconnect) self->onDisconnect();
-                             LOG_INFO(DEBUG_LOG_LEVEL) << "write failed: " << ec.message();
+                             LOG_INFO(DEBUG) << "write failed: " << ec.message();
                              self->connected = false;
                              self->disconnect();
                          }
@@ -143,7 +143,7 @@ void NetSession::read()
                                 else if (self->onDisconnect && ec != net::error::operation_aborted)
                                 {
                                     if (self->onDisconnect) self->onDisconnect();
-                                    LOG_INFO(PROD_LOG_LEVEL) << "read failed: " << ec.message();
+                                    LOG_INFO(PROD) << "read failed: " << ec.message();
                                     self->disconnect();
                                 }
                             });

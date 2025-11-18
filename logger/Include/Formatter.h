@@ -5,6 +5,10 @@
 #include <string>
 #include "Macros.h"
 
+class Logger;
+class LogData;
+
+
 const std::unordered_map<std::string, std::string> colored{
     {"[ERROR]", ERROR_COLOR},
     {"[WARNING]", WARNING_COLOR},
