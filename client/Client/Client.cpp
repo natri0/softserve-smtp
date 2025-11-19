@@ -6,15 +6,32 @@
 
 #include "../networking/SSL/KeyExchanger.h"
 #include "../logger/Include/Logger.h"
+#include <sstream>
 
 constexpr uint8_t RECONNECT_DELAY_TIME = 2;
+
+static std::string createEmailBody(const EmailMessage& msg) {
+  std::stringstream ss;
+  ss << "From: " << msg.from << "\r\n";
+  ss << "To: ";
+  for (size_t i = 0; i < msg.to.size(); ++i) {
+    ss << msg.to[i] << (i == msg.to.size() - 1 ? "" : ", ");
+  }
+  ss << "\r\n";
+  ss << "Subject: " << msg.subject << "\r\n";
+  ss << "\r\n"; // Empty line separates headers from body
+  ss << msg.body << "\r\n";
+  ss << ".\r\n"; // End of data indicator
+  return ss.str();
+}
 
 Client::Client(const ClientSettings& settings, StatusCallback statusCallback) :
   server_endpoint(net::ip::make_address(settings.server), settings.port),
   session(std::make_shared<SmartSession>(std::make_shared<net::ip::tcp::socket>(io), SmartSession::Type::CLIENT)),
   timer(io),
   sslContext(smtp::ssl::SSLContextFactory::createClientContext()),
-  m_statusCallback(statusCallback)
+  m_statusCallback(statusCallback),
+  m_SMTPLogic(std::make_unique<ISXSMTP::SMTPClient>())
 {
 };
 
@@ -53,34 +70,34 @@ void Client::init()
 
 void Client::connect()
 {
-    if (session->net()->isConnected()) return;
-    session->net()->connect(server_endpoint);
+  if (session->net()->isConnected()) return;
+  session->net()->connect(server_endpoint);
 }
 
 void Client::reconnect()
 {
-    if (m_statusCallback) m_statusCallback("Waiting " + std::to_string(static_cast<int>(RECONNECT_DELAY_TIME)) + "s before reconnecting...");
-    LOG_INFO(DEBUG_LOG_LEVEL) << "Waiting " << (int)RECONNECT_DELAY_TIME << "s before reconnecting...";
+  if (m_statusCallback) m_statusCallback("Waiting " + std::to_string(static_cast<int>(RECONNECT_DELAY_TIME)) + "s before reconnecting...");
+  LOG_INFO(DEBUG_LOG_LEVEL) << "Waiting " << (int)RECONNECT_DELAY_TIME << "s before reconnecting...";
 
-    timer.cancel();
-    timer.expires_after(std::chrono::seconds(RECONNECT_DELAY_TIME));
-    timer.async_wait([this](boost::system::error_code ec)
-            {
-                if (!ec){
-                    if (m_statusCallback) m_statusCallback("Attempting to connect to " + m_settings.server);
-                    LOG_INFO(PROD_LOG_LEVEL) << "Attempting to connect to " << m_settings.server;
-                    connect();
+  timer.cancel();
+  timer.expires_after(std::chrono::seconds(RECONNECT_DELAY_TIME));
+  timer.async_wait([this](boost::system::error_code ec)
+    {
+      if (!ec) {
+        if (m_statusCallback) m_statusCallback("Attempting to connect to " + m_settings.server);
+        LOG_INFO(PROD_LOG_LEVEL) << "Attempting to connect to " << m_settings.server;
+        connect();
 
-                    if (!session->net()->isConnected()) {
-                        if (m_statusCallback) m_statusCallback("Connection failed. Retrying...");
-                        LOG_WARNING(DEBUG_LOG_LEVEL) << "Connection failed. Retrying...";
-                        reconnect();
-                    }
-                    else {
-                        if (!isRunning) run();
-                    }
-                }
-            });
+        if (!session->net()->isConnected()) {
+          if (m_statusCallback) m_statusCallback("Connection failed. Retrying...");
+          LOG_WARNING(DEBUG_LOG_LEVEL) << "Connection failed. Retrying...";
+          reconnect();
+        }
+        else {
+          if (!isRunning) run();
+        }
+      }
+    });
 }
 
 bool Client::run()
@@ -96,59 +113,89 @@ bool Client::run()
 
 void Client::SMTPHandling(boost::asio::const_buffer msg)
 {
-  std::string cmd(static_cast<const char*>(msg.data()), msg.size());
+  std::string reply(static_cast<const char*>(msg.data()), msg.size());
+  LOG_INFO(DEBUG_LOG_LEVEL) << "Received message: " << reply;
 
-  LOG_INFO(DEBUG_LOG_LEVEL) << "Received message: " << cmd;
+  auto status = m_SMTPLogic->OnReply(reply);
 
-  // temp; will integrate smtp logic in future
-  if (cmd.starts_with("220"))
+  switch (status)
   {
-    session->net()->send(net::buffer("EHLO example.com\r\n"));
-  }
-  else if (cmd.find("250 HELP") != std::string::npos)
-  {
-    canSend = true;
-    LOG_INFO(DEBUG_LOG_LEVEL) << "Received 250 HELP; Ready to send";
-  }
-  else if (cmd.starts_with("250 Action completed"))
-  {
-    if (!sendInfo.empty())
-    {
-      session->net()->send(net::buffer(sendInfo.front()));
-      sendInfo.pop();
+  case ISXSMTP::SMTPTransactionStatus::SEND_NEXT_COMMAND:
+    if (!m_commandQueue.empty()) {
+      std::string cmd = m_commandQueue.front();
+      m_commandQueue.pop();
+      LOG_INFO(DEBUG_LOG_LEVEL) << "Sending command: " << cmd;
+      session->net()->send(net::buffer(cmd));
     }
-  }
-  else if (cmd.starts_with("354"))
+    else {
+      LOG_INFO(PROD_LOG_LEVEL) << "Transaction finished.";
+      if (m_statusCallback) m_statusCallback("Ready / Email Sent");
+    }
+    break;
+
+  case ISXSMTP::SMTPTransactionStatus::SEND_DATA:
   {
-    session->net()->send(net::buffer("test body\r\n.\r\n"));
+    LOG_INFO(DEBUG_LOG_LEVEL) << "Sending email body...";
+    if (m_statusCallback) m_statusCallback("Sending email content...");
+
+    std::string dataPayload = createEmailBody(m_emailInfo);
+    session->net()->send(net::buffer(dataPayload));
+  }
+  break;
+
+  case ISXSMTP::SMTPTransactionStatus::WAIT_FOR_REPLY:
+    break;
+
+  case ISXSMTP::SMTPTransactionStatus::ABORTED:
+  case ISXSMTP::SMTPTransactionStatus::RETRY_LATER:
+  case ISXSMTP::SMTPTransactionStatus::REPLY_PARSE_ERROR:
+    LOG_ERROR(PROD_LOG_LEVEL) << "SMTP Error: " << reply;
+    if (m_statusCallback) m_statusCallback("SMTP Error: " + reply);
+
+    std::queue<std::string> empty;
+    std::swap(m_commandQueue, empty);
+    break;
   }
 };
 
 bool Client::sendMail(EmailMessage e_msg)
 {
-  // temp
-  sendInfo.emplace("MAIL FROM:<reverse@smtp.test>\r\n");
-  sendInfo.emplace("RCPT TO:<forward1@smtp.test>\r\n");
-  sendInfo.emplace("DATA\r\n");
-  sendInfo.emplace("RSET\r\n");
+  m_emailInfo = e_msg;
+
+  m_SMTPLogic->SetDomain("localhost");
+  m_SMTPLogic->SetFrom(e_msg.from);
+  m_SMTPLogic->SetTo(e_msg.to);
+  m_SMTPLogic->SetQuitOnFinish(false);
+
+  std::vector<std::string> cmds = m_SMTPLogic->GenCommands();
+
+  // Reset queue
+  std::queue<std::string> empty;
+  std::swap(m_commandQueue, empty);
+
+  for (const auto& cmd : cmds) {
+    m_commandQueue.push(cmd);
+  }
 
   if (!session->net()->isConnected())
   {
-    LOG_WARNING(DEBUG_LOG_LEVEL) << "Client is not connected";
-    return false;
+    LOG_INFO(PROD_LOG_LEVEL) << "Client is not connected. Connecting...";
+    connect();
+    return true;
   }
 
-  m_emailInfo = e_msg;
-  if (canSend)
+  if (!m_commandQueue.empty())
   {
-    session->net()->send(net::buffer(sendInfo.front()));
-    sendInfo.pop();
+    std::string cmd = m_commandQueue.front();
+    m_commandQueue.pop();
+    LOG_INFO(DEBUG_LOG_LEVEL) << "Sending command: " << cmd;
+    session->net()->send(net::buffer(cmd));
   }
-  LOG_INFO(PROD_LOG_LEVEL) << "Sending...";
+
+  LOG_INFO(PROD_LOG_LEVEL) << "Starting email transmission...";
   return true;
 }
 
-// will be modified after GUI integration
 void Client::changeLogLevel(const std::string& level) const
 {
   if (level == "NONE")
@@ -161,20 +208,20 @@ void Client::changeLogLevel(const std::string& level) const
     Logger::getInstance().setLevel(TRACE_LOG_LEVEL);
 }
 
-bool Client::setSettings(const ClientSettings& newSettings){
-    bool mustReconnect =
-        (newSettings.server != m_settings.server) ||
-        (newSettings.port != m_settings.port) ||
-        (newSettings.username != m_settings.username) ||
-        (newSettings.password != m_settings.password) ||
-        (newSettings.securityType != m_settings.securityType);
+bool Client::setSettings(const ClientSettings& newSettings) {
+  bool mustReconnect =
+    (newSettings.server != m_settings.server) ||
+    (newSettings.port != m_settings.port) ||
+    (newSettings.username != m_settings.username) ||
+    (newSettings.password != m_settings.password) ||
+    (newSettings.securityType != m_settings.securityType);
 
-    m_settings = newSettings;
+  m_settings = newSettings;
 
-    if(mustReconnect){
-        reconnect();
-    }
-    return mustReconnect;
+  if (mustReconnect) {
+    reconnect();
+  }
+  return mustReconnect;
 }
 
 bool Client::stop()
