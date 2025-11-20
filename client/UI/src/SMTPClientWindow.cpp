@@ -203,6 +203,7 @@ void SmtpClientWindow::onConfigureServer()
         m_Settings.password = passEdit->text();
         m_Settings.logLevel = loggerCombo->currentText();
 
+        m_Controller->updateSettings(m_Settings);
         m_lastFromAddress = m_Settings.username;
         updateLog("Server configuration updated.");
     }

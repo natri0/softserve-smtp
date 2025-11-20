@@ -16,6 +16,7 @@ public:
 public slots:
     void sendEmail(const Email& email, const SmtpSettings& settings);
 
+    void updateSettings(const SmtpSettings& settings);
 signals:
     void statusUpdated(const QString& status);
     void sendSuccess();

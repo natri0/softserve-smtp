@@ -37,7 +37,6 @@ private slots:
 
     void onSentItemClicked(QListWidgetItem *item);
     void onInboxItemClicked(QListWidgetItem *item);
-
 private:
     void setupUi();
     void createToolBar();

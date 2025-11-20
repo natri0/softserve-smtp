@@ -29,6 +29,14 @@ void SmtpController::init(const SmtpSettings& initialSettings)
     m_workerThread->start();
 }
 
+void SmtpController::updateSettings(const SmtpSettings& settings)
+{
+    if (m_lastSettings != settings) {
+        m_lastSettings = settings;
+        emit workerUpdateSettings(settings);
+    }
+}
+
 void SmtpController::sendEmail(const Email& email, const SmtpSettings& settings){
     if (m_lastSettings != settings)
     {

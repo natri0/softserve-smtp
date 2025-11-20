@@ -92,6 +92,8 @@ private:
     void changeLogLevel(const std::string& level) const;
 
 private:
+    /// Buffer to handle TCP stream fragmentation and multi-line responses
+    std::string m_responseBuffer;
 
     ///Client settings to get settings from gui
     ClientSettings m_settings;
