@@ -30,7 +30,7 @@ bool Server::init()
     // setting logger
     Logger::getInstance().setLevel(DEBUG_LOG_LEVEL);
     Logger::getInstance().setFlush(false);
-    ui->do_flush = false;
+    // ui->do_flush = false;
 
     Config config;
     if (!config.load_from_file("server/config/config.json")) {
@@ -56,7 +56,7 @@ bool Server::init()
     threadPool->start();
 
     // starting the console UI
-    ui->start(port);
+    // ui->start(port);
 
     return true;
 }
@@ -103,10 +103,9 @@ void Server::run()
     runAcceptor();
 
     LOG_INFO(PROD_LOG_LEVEL) << "Server is running";
-    ui->run();
+    io->run();
 
     LOG_INFO(PROD_LOG_LEVEL) << "Server shut down";
-    stop();
 }
 
 void Server::runAcceptor()
@@ -151,7 +150,7 @@ void Server::setConnection(std::shared_ptr<net::ip::tcp::socket> socket)
     {
         std::lock_guard lock(sessionMutex);
         sessions.push_back(session);
-        ui->updateOnConnected(sessions.size());
+        // ui->updateOnConnected(sessions.size());
     }
 
     session->net()->setOnDisconnect([this, session]()
@@ -162,7 +161,7 @@ void Server::setConnection(std::shared_ptr<net::ip::tcp::socket> socket)
         }
         LOG_INFO(PROD_LOG_LEVEL) << "Client disconnected";
 
-        ui->updateOnConnected(sessions.size());
+        // ui->updateOnConnected(sessions.size());
     });
 
     session->setSMTPHandling([this, session](boost::asio::const_buffer msg) { SMTPHandling(msg, session); });

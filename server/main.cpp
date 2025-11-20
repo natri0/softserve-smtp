@@ -1,11 +1,82 @@
+#include <iostream>
+#include <memory>
+#include <windows.h>
+#include <tchar.h>
+#include <filesystem>
+
 #include "Server.h"
 
-int main()
-{
-    std::shared_ptr<Server> server = std::make_shared<Server>();
+// sc create "Smtp Server" binPath= "D:\softserve-smtp\build\server\bin\smtp_server.exe" - to install service
 
-    if (server->init())
-        server->run();
+struct ServiceGlobals {
+  const TCHAR *serviceName = _T("SMTP server");
+  SERVICE_STATUS_HANDLE statusHandle = nullptr;
+  SERVICE_STATUS status = {};
+  std::shared_ptr<Server> server = nullptr;
+} g_Service;
 
-    return 0;
+void ReportSvcStatus(const DWORD currentState, const DWORD exitCode = NO_ERROR, const DWORD waitHint = 0) {
+  g_Service.status.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
+  g_Service.status.dwCurrentState = currentState;
+  g_Service.status.dwWin32ExitCode = exitCode;
+  g_Service.status.dwWaitHint = waitHint;
+
+  if (currentState == SERVICE_START_PENDING)
+    g_Service.status.dwControlsAccepted = 0;
+  else
+    g_Service.status.dwControlsAccepted = SERVICE_ACCEPT_STOP;
+
+  static DWORD checkPoint = 1;
+  g_Service.status.dwCheckPoint = currentState == SERVICE_RUNNING || currentState == SERVICE_STOPPED ? 0 : checkPoint++;
+
+  SetServiceStatus(g_Service.statusHandle, &g_Service.status);
+}
+
+VOID WINAPI ServiceCtrlHandler(const DWORD CtrlCode) {
+  if (CtrlCode == SERVICE_CONTROL_STOP) {
+    ReportSvcStatus(SERVICE_STOP_PENDING, NO_ERROR, 3000);
+
+    if (g_Service.server) {
+      g_Service.server->stop();
+    }
+
+    ReportSvcStatus(SERVICE_STOPPED);
+  }
+}
+
+VOID WINAPI ServiceMain(DWORD argc, LPTSTR *argv) {
+  g_Service.statusHandle = RegisterServiceCtrlHandler(g_Service.serviceName, ServiceCtrlHandler);
+  if (!g_Service.statusHandle) return;
+
+  ReportSvcStatus(SERVICE_START_PENDING, NO_ERROR, 3000);
+
+  // change execution directory
+  TCHAR szPath[MAX_PATH];
+  if (GetModuleFileName(nullptr, szPath, MAX_PATH)) {
+    const std::filesystem::path exePath(szPath);
+    std::filesystem::current_path(exePath.parent_path());
+  }
+
+  g_Service.server = std::make_shared<Server>();
+  if (!g_Service.server->init()) {
+    ReportSvcStatus(SERVICE_STOPPED, ERROR_SERVICE_SPECIFIC_ERROR);
+    return;
+  }
+
+  ReportSvcStatus(SERVICE_RUNNING);
+  g_Service.server->run();
+  ReportSvcStatus(SERVICE_STOPPED);
+}
+
+int _tmain(int argc, TCHAR *argv[]) {
+  const SERVICE_TABLE_ENTRY ServiceTable[] = {
+    {const_cast<LPTSTR>(g_Service.serviceName), static_cast<LPSERVICE_MAIN_FUNCTION>(ServiceMain)},
+    {nullptr, nullptr}
+  };
+
+  if (!StartServiceCtrlDispatcher(ServiceTable)) {
+    return static_cast<int>(GetLastError());
+  }
+
+  return 0;
 }
