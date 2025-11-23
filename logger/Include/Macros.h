@@ -21,8 +21,8 @@ class LogData;
 
 #define FORMAT_NO     ""
 #define FORMAT_PROD   "{0:T} {0:t}| {0:m}"
-#define FORMAT_DEBUG  "{0:T} {0:t} [{0:l}] [{0:L}]| {0:m}"
-#define FORMAT_TRACE  "{0:T} {0:t} [{0:l}] [{0:L}] ({0:i})| {0:m}"
+#define FORMAT_DEBUG  "{0:T} {0:t} {0:l} {0:L}| {0:m}"
+#define FORMAT_TRACE  "{0:T} {0:t} {0:l} {0:L} ({0:i})| {0:m}"
 
 #define DEFAULT_FORMAT FORMAT_TRACE
 
