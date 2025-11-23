@@ -9,6 +9,8 @@ if (NOT UNIX)
 endif ()
 find_package(OpenSSL REQUIRED)
 
+find_package(fmt CONFIG REQUIRED)
+
 add_executable(smtp_server main.cpp
         ../networking/Connection/NetSession.cpp
         Server.cpp
@@ -32,10 +34,10 @@ add_custom_command(TARGET smtp_server POST_BUILD
 if (WIN32)
     add_custom_command(TARGET smtp_server POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "C:/Program Files/JetBrains/CLion 2025.1.1/bin/mingw/bin/libstdc++-6.dll"
-            "C:/Program Files/JetBrains/CLion 2025.1.1/bin/mingw/bin/libgcc_s_seh-1.dll"
-            "C:/Program Files/JetBrains/CLion 2025.1.1/bin/mingw/bin/libwinpthread-1.dll"
-            "C:/Users/alkir/vcpkg/installed/x64-windows/bin/fmt.dll"
+            "C:/mingw64/bin/libstdc++-6.dll"
+            "C:/mingw64/bin/libgcc_s_seh-1.dll"
+            "C:/mingw64/bin/libwinpthread-1.dll"
+            "C:/vcpkg/installed/x64-windows/bin/fmt.dll"
             $<TARGET_FILE_DIR:smtp_server>
     )
 endif()
@@ -44,6 +46,7 @@ target_link_libraries(smtp_server PRIVATE
         ${Boost_LIBRARIES}
         networking
         ssl_support
+        fmt::fmt
         OpenSSL::SSL
         OpenSSL::Crypto
         config_parser

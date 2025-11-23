@@ -140,13 +140,17 @@ bool Client::sendMail(EmailMessage e_msg)
 void Client::changeLogLevel(const std::string& level) const
 {
     if (level == "NONE")
-        Logger::getInstance().setLevel(LogLevel::None);
+        //Logger::getInstance().setLevel(LogLevel::None);
+        SET_LEVEL(LogLevel::None);
     if (level == "PROD")
-        Logger::getInstance().setLevel(PROD);
+        //Logger::getInstance().setLevel(PROD);
+        SET_LEVEL(PROD);
     if (level == "DEBUG")
-        Logger::getInstance().setLevel(DEBUG);
+        //Logger::getInstance().setLevel(DEBUG);
+        SET_LEVEL(DEBUG);
     if (level == "TRACE")
-        Logger::getInstance().setLevel(TRACE);
+        //Logger::getInstance().setLevel(TRACE);
+        SET_LEVEL(TRACE);
 }
 
 bool Client::stop()

@@ -28,7 +28,8 @@ Server::~Server()
 bool Server::init()
 {
     // setting logger
-    Logger::getInstance().setLevel(DEBUG);
+    SET_LEVEL(DEBUG);
+    //Logger::getInstance().setLevel(DEBUG);
     Logger::getInstance().setFlush(false);
     ui->do_flush = false;
 

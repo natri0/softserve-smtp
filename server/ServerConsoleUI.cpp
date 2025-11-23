@@ -136,7 +136,7 @@ void ServerConsoleUI::showMenu(std::string_view menu)
 
 std::string_view ServerConsoleUI::modifyLoggerMenu()
 {
-    const std::string log_level = Logger::getInstance().getLevelName(Logger::getInstance().getLevel());
+    const std::string log_level = Logger::getLevelName(GET_LEVEL());
 
     new_log_menu = LoggerMenu;
     new_log_menu.replace(std::string(LoggerMenu).find("{log_level}"), std::string("{log_level}").length(), log_level);
@@ -201,7 +201,7 @@ bool ServerConsoleUI::runLoggerMenu()
             std::cout << "Enter the level:\n"
                 << "\tNONE -  0\n\tPROD -  1\n\tDEBUG - 2\n\tTRACE - 3 " << std::endl;
             std::cin >> lvl;
-            Logger::getInstance().setLevel(LogLevel(lvl));
+            SET_LEVEL(LogLevel(lvl));
             return true;
         }
     case 2:
