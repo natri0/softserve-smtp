@@ -80,7 +80,6 @@ bool Server::stop()
 bool Server::reset()
 {
     stop();
-    isStopping = false;
     io->restart();
     threadPool->start();
 
@@ -176,9 +175,4 @@ void Server::SMTPHandling(boost::asio::const_buffer msg, std::shared_ptr<SmartSe
 
     auto rpl = session->smtp()->OnMessage(cmd.c_str());
     session->net()->send(net::buffer(rpl));
-
-    LOG_INFO(DEBUG_LOG_LEVEL) << "Received message from: " << session->net()->getSocket()->
-                                                                       remote_endpoint();
-    LOG_INFO(DEBUG_LOG_LEVEL) << "Message: " << cmd;
-    LOG_INFO(DEBUG_LOG_LEVEL) << "Reply: " << rpl;
 }

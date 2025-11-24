@@ -29,20 +29,3 @@ target_sources(${PROJECT_NAME} PRIVATE ${SQLITE_DIR}/sqlite3.c)
 target_include_directories(${PROJECT_NAME} PRIVATE ${SQLITE_DIR})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC utils fmt::fmt)
-
-#if (DB_ENABLE_TESTS)
-#    if (NOT TARGET GTest::GTest)
-#        CPMAddPackage(
-#            NAME googletest
-#            GITHUB_REPOSITORY google/googletest
-#            VERSION 1.17.0
-#            OPTIONS
-#                "BUILD_GMOCK OFF"
-#                "INSTALL_GTEST OFF"
-#        )
-#    endif()
-#    add_executable(${PROJECT_NAME}_tests tests/Test.cpp)
-#    target_link_libraries(${PROJECT_NAME}_tests PRIVATE ${PROJECT_NAME} utils GTest::gtest_main)
-#    include(GoogleTest)
-#    gtest_discover_tests(${PROJECT_NAME}_tests)
-#endif()

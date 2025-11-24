@@ -111,9 +111,6 @@ private:
     /// Number of threads in the thread pool.
     unsigned short thread_pool_size = 4;
 
-    /// Flag indicating if the server is in the process of stopping.
-    bool isStopping = false;
-
     // --- User Interface ---
 
     /// Console-based UI for runtime interaction and status output.

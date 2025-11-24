@@ -116,15 +116,7 @@ void ServerConsoleUI::logEvent(const std::string& msg)
     logBuffer.push_back("[" + timestamp + "] " + msg);
 }
 
-// void ServerConsoleUI::logClientConnected(const std::string& addr)
-// {
-//     logEvent(std::string(Color::GREEN) + "Client connected: " + addr + Color::RESET);
-// }
-//
-// void ServerConsoleUI::logClientDisconnected(const std::string& addr)
-// {
-//     logEvent(std::string(Color::YELLOW) + "Client disconnected: " + addr + Color::RESET);
-// }
+// void ServerConsoleUI::logClientConnected(const std::string& addr
 
 void ServerConsoleUI::showMenu(std::string_view menu)
 {

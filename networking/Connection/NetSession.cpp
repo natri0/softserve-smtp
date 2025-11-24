@@ -87,8 +87,9 @@ void NetSession::write()
 
     if (cryptoManager.get())
     {
-        std::string plain = std::string(static_cast<const char*>(writeQueue.front().data()),
-                                        writeQueue.front().size());
+        const std::string plain = std::string(static_cast<const char*>(writeQueue.front().data()),
+                                              writeQueue.front().size());
+
         encryptedData = std::make_shared<std::vector<unsigned char>>(cryptoManager->encrypt(plain));
         data = net::buffer(*encryptedData);
     }
@@ -99,6 +100,10 @@ void NetSession::write()
                      {
                          if (!ec)
                          {
+                             LOG_INFO(DEBUG_LOG_LEVEL) << "Reply: " << std::string(
+                                 static_cast<const char*>(self->writeQueue.front().data()),
+                                 self->writeQueue.front().size());
+
                              self->writeQueue.pop_front();
                              if (!self->writeQueue.empty()) self->write();
                              else self->isWriting = false;
@@ -125,6 +130,9 @@ void NetSession::read()
                                 {
                                     if (self->onMessageReceived)
                                     {
+                                        LOG_INFO(DEBUG_LOG_LEVEL) << "Received message from: " << self->getSocket()->
+                                                                       remote_endpoint();
+
                                         if (self->cryptoManager.get())
                                         {
                                             const std::vector<unsigned char> data{
@@ -133,11 +141,15 @@ void NetSession::read()
                                             self->decrypted_data = self->cryptoManager->decrypt(data);
                                             self->onMessageReceived(
                                                 net::buffer(self->decrypted_data, self->decrypted_data.size()));
+
+                                            LOG_INFO(DEBUG_LOG_LEVEL) << "Message: " << std::string(
+                                                self->decrypted_data, self->decrypted_data.size());
                                         }
                                         else
                                             self->onMessageReceived(
                                                 net::buffer(self->buffer.data(), bytes_transferred));
                                     }
+
                                     self->read();
                                 }
                                 else if (self->onDisconnect && ec != net::error::operation_aborted)
