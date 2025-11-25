@@ -41,18 +41,20 @@ add_library(logger SHARED
         Include/Logger.cpp
         Include/LogData.cpp)
 
-# Після add_library(logger SHARED ...)
 if(WIN32)
-    # Для Example
-    add_custom_command(TARGET logger POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            $<TARGET_FILE:logger>                      # шлях до DLL
-            $<TARGET_FILE_DIR:logger_example>)         # папка, куди копіювати
-    # Для Main
-    add_custom_command(TARGET logger POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            $<TARGET_FILE:logger>
-            $<TARGET_FILE_DIR:logger_main>)
+    if(ENABLE_EXAMPLE)
+        add_custom_command(TARGET logger POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                $<TARGET_FILE:logger>
+                $<TARGET_FILE_DIR:logger_example>)
+    endif()
+
+    if(ENABLE_MAIN)
+        add_custom_command(TARGET logger POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                $<TARGET_FILE:logger>
+                $<TARGET_FILE_DIR:logger_main>)
+    endif()
 endif()
 
 
@@ -74,8 +76,13 @@ if(ENABLE_TESTS)
 endif()
 
 # Add subdirectories for different components
-add_subdirectory(Example)
+if(ENABLE_EXAMPLE)
+    add_subdirectory(Example)
+endif()
+
+
 add_subdirectory(Tests)
+
 
 # Print build summary
 message(STATUS "")
@@ -89,8 +96,13 @@ message(STATUS "Tests: ${ENABLE_TESTS}")
 message(STATUS "")
 message(STATUS "Available targets:")
 message(STATUS "  - logger (library)")
-message(STATUS "  - logger_example (basic example)")
-message(STATUS "  - logger_main (stress test)")
+if(ENABLE_EXAMPLE)
+    message(STATUS "  - logger_example (basic example)")
+endif()
+if(ENABLE_MAIN)
+    message(STATUS "  - logger_main")
+endif()
+
 if(ENABLE_BENCHMARKS)
     message(STATUS "  - logger_benchmark")
 endif()

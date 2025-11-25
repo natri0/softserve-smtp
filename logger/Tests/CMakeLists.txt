@@ -5,4 +5,7 @@
 # Add subdirectories for different test types
 add_subdirectory(UnitTests)
 add_subdirectory(Benchmarks)
-add_subdirectory(StressTest)
+
+if(ENABLE_MAIN)
+    add_subdirectory(StressTest)
+endif()

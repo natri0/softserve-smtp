@@ -1,5 +1,9 @@
 # Stress Test CMakeLists.txt
 
+if(NOT ENABLE_MAIN)
+    return()
+endif()
+
 # Create stress test executable
 add_executable(logger_main Main.cpp)
 

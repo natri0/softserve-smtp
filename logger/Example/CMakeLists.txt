@@ -1,5 +1,9 @@
 # Example CMakeLists.txt
 
+if(NOT ENABLE_EXAMPLE)
+    return()
+endif()
+
 # Create example executable
 add_executable(logger_example Example.cpp)
 

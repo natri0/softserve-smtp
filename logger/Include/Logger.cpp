@@ -169,6 +169,7 @@ void Logger::writeLogToFile(const LogData& data) {
 
     std::string file_output = std::vformat(data.format, std::make_format_args(data));
 
+    std::unique_lock lock(mutex);
     file << file_output << std::endl;
     file.flush();
 }
@@ -177,7 +178,7 @@ void Logger::writeLogToConsole(const LogData& data) {
     const ConsoleLog content = ConsoleLog{ data };
     std::string console_output = std::vformat(data.format, std::make_format_args(content));
 
-
+    std::unique_lock lock(mutex);
     std::cout << console_output << std::endl;
 }
 
