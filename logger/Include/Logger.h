@@ -53,7 +53,7 @@ private:
 
     void fileInit(const std::uint32_t);
 
-    void log(const std::string&, const std::string&, const std::string&, const LogLevel&, std::thread::id);
+    void log(const std::string&, const std::string&, const std::string&, const std::string&, const LogLevel&, std::thread::id);
 
     void log(const LogData&);
 

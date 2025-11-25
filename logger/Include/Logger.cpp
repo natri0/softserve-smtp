@@ -72,7 +72,7 @@ void Logger::fileInit(const std::uint32_t amount)
     output_path = buff_name;
 
     if (error) {
-        log("invalid output path, default will be used", "[WARNING]", LOG_GET_FUNC(), local_level, std::this_thread::get_id());
+        log(std::format("{:%d-%m-%y-%H_%M_%S}", std::chrono::system_clock::now()), "invalid output path, default will be used", "[WARNING]", LOG_GET_FUNC(), local_level, std::this_thread::get_id());
     }
 }
 
@@ -167,6 +167,7 @@ std::string Logger::getLevelName(LogLevel level) {
 void Logger::writeLogToFile(const LogData& data) {
     std::string file_output = std::vformat(data.format, std::make_format_args(data));
 
+    std::unique_lock lock(mutex);
     file << file_output << std::endl;
     file.flush();
 }
@@ -175,7 +176,7 @@ void Logger::writeLogToConsole(const LogData& data) {
     const ConsoleLog content = ConsoleLog{ data };
     std::string console_output = std::vformat(data.format, std::make_format_args(content));
 
-
+    std::unique_lock lock(mutex);
     std::cout << console_output << std::endl;
 }
 
@@ -250,10 +251,10 @@ void Logger::log(const LogData& data) {
     }
 }
 
-void Logger::log(const std::string& str, const std::string& type, const std::string& location,
+void Logger::log(const std::string& timestamp, const std::string& str, const std::string& type, const std::string& location,
     const LogLevel& level, std::thread::id id = std::this_thread::get_id())
 {
-    LogData* msg = new LogData{ str, type, location, level, id , format };
+    LogData* msg = new LogData{timestamp, str, type, location, level, id , format };
     while (!queue.push(msg)) {
         std::this_thread::yield();
     }
