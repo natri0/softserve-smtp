@@ -5,7 +5,6 @@
 #include "ServerConsoleUI.h"
 
 #include <iomanip>
-#include <iostream>
 #include <chrono>
 
 #include "Logger.h"
@@ -37,6 +36,15 @@ Show logs in real time: {BOOL}
 =================================
 )";
 
+static constexpr const char* EnterCommand = "Enter command: ";
+static constexpr const char* EnterKEYWORDCommand = "Enter the KEYWORD: ";
+static constexpr const char* EnterLOGLEVELCommand = R"(
+Enter the level:
+NONE  - 0
+PROD  - 1
+DEBUG - 2
+TRACE - 3)";
+
 std::string new_log_menu;
 std::queue<std::string> last_info;
 
@@ -58,12 +66,12 @@ void ServerConsoleUI::start(unsigned short port)
 
 void ServerConsoleUI::run()
 {
-    int cmd;
+    unsigned short cmd;
     do
     {
         showMenu(ServerMenu);
-        std::cout << "Enter command: ";
-        std::cin >> cmd;
+        std::cout << EnterCommand;
+        readCommand(EnterCommand, cmd);
         cmd = handleCommand(cmd);
     }
     while (cmd != 0);
@@ -75,7 +83,7 @@ void ServerConsoleUI::updateOnConnected(int _clients_num)
 
     if (menuType == Main) showMenu(ServerMenu);
     else showMenu(modifyLoggerMenu());
-    std::cout << "Enter command: ";
+    std::cout << EnterCommand;
 }
 
 void ServerConsoleUI::showBanner(int clients_num)
@@ -115,8 +123,6 @@ void ServerConsoleUI::logEvent(const std::string& msg)
 
     logBuffer.push_back("[" + timestamp + "] " + msg);
 }
-
-// void ServerConsoleUI::logClientConnected(const std::string& addr
 
 void ServerConsoleUI::showMenu(std::string_view menu)
 {
@@ -175,10 +181,11 @@ bool ServerConsoleUI::runLoggerMenu()
             last_info.pop();
         }
 
-    std::cout << "Enter command: ";
+    std::cout << EnterCommand;
 
-    int cmd_l;
-    std::cin >> cmd_l;
+    unsigned short cmd_l;
+    readCommand(EnterCommand, cmd_l);
+
     switch (cmd_l)
     {
     case 0:
@@ -189,10 +196,10 @@ bool ServerConsoleUI::runLoggerMenu()
         }
     case 1:
         {
-            int lvl;
             std::cout << "Enter the level:\n"
                 << "\tNONE -  0\n\tPROD -  1\n\tDEBUG - 2\n\tTRACE - 3 " << std::endl;
-            std::cin >> lvl;
+            unsigned short lvl;
+            readCommand(EnterCommand, lvl);
             Logger::getInstance().setLevel(LogLevel(lvl));
             return true;
         }
@@ -208,8 +215,8 @@ bool ServerConsoleUI::runLoggerMenu()
     case 3:
         {
             std::string keyword;
-            std::cout << "Enter the KEYWORD: ";
-            std::cin >> keyword;
+            std::cout << EnterKEYWORDCommand;
+            readCommand(EnterKEYWORDCommand, keyword);
             const std::vector<std::string> grape_logs = Logger::getInstance().readLogsByKeyword(keyword);
             for (const std::string& log : grape_logs)
             {
@@ -221,7 +228,8 @@ bool ServerConsoleUI::runLoggerMenu()
     case 4:
         {
             std::cout << "YES - 1\tNO - 0" << std::endl;
-            std::cin >> do_flush;
+            unsigned short do_flush;
+            readCommand(EnterCommand, do_flush);
             Logger::getInstance().setFlush(do_flush);
             return true;
         }

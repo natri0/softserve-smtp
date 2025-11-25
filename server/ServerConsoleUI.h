@@ -4,9 +4,12 @@
 
 #ifndef SERVERCONSOLEUI_H
 #define SERVERCONSOLEUI_H
+#include <cstring>
 #include <mutex>
 #include <string>
 #include <vector>
+#include <iostream>
+#include <format>
 
 class ServerConsoleUI
 {
@@ -15,18 +18,15 @@ public:
     void run();
     void updateOnConnected(int _clients_num);
 
-    // void logClientConnected(const std::string& addr);
-    // void logClientDisconnected(const std::string& addr);
-
     bool do_flush = false;
     unsigned short clients_num = 0;
 
 private:
-enum MenuType
-{
-    Main,
-    Logger
-} menuType = Main;
+    enum MenuType
+    {
+        Main,
+        Logger
+    } menuType = Main;
 
     void showBanner(int clients_num);
     void updateScreen(int _clients_num);
@@ -34,7 +34,7 @@ enum MenuType
 
     bool handleCommand(int cmd);
 
-    inline void clearScreen()
+    void clearScreen()
     {
 #ifdef _WIN32
         system("cls");
@@ -47,6 +47,24 @@ enum MenuType
     bool runLoggerMenu();
 
     void logEvent(const std::string& msg);
+
+    template <typename T>
+    T readCommand(const char* str, T& out) const
+    {
+        while (true)
+        {
+            std::cin >> out;
+            if (std::cin.fail())
+            {
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+                const std::string s = std::format("\033[A\033[{}C\033[K", std::strlen(str));
+                std::cout << s;
+            }
+            else return out;
+        }
+    };
 
     unsigned short currentPort = 0;
     std::mutex consoleMutex;
