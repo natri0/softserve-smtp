@@ -38,6 +38,7 @@ if (WIN32)
             "C:/mingw64/bin/libgcc_s_seh-1.dll"
             "C:/mingw64/bin/libwinpthread-1.dll"
             "C:/vcpkg/installed/x64-windows/bin/fmt.dll"
+            $<TARGET_FILE:logger>
             $<TARGET_FILE_DIR:smtp_server>
     )
 endif()

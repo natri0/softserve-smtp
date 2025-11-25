@@ -35,4 +35,9 @@ target_link_libraries(smtp_client PRIVATE
 
 if (WIN32)
     target_link_libraries(smtp_client PRIVATE ws2_32 mswsock)
+    add_custom_command(TARGET smtp_client POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:logger>
+            $<TARGET_FILE_DIR:smtp_client>
+    )
 endif ()
