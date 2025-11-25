@@ -37,7 +37,25 @@ ninja smtp_server
 ./smtp_server
 ```
 
-## 🐧 Linux Service Deployment
+## Running as a Background Service
+
+### On Windows
+
+To install and run the SMTP server as a Windows service:
+
+run as administrator:
+```powershell
+sc create "SMTP Server" binPath= "C:\..\build\server\bin\smtp_server.exe"
+```
+**Replace this with the actual path to the executable.**
+
+Once installed, you can start/stop/uninstall the service:
+
+```powershell
+sc start/stop/delete "SMTP Server"
+```
+
+### On Linux🐧
 
 To run the SMTP server as a background service on Linux:
 

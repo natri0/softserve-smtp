@@ -96,4 +96,13 @@ int _tmain(int argc, TCHAR *argv[]) {
 
 #else
 
+int main() {
+  std::shared_ptr<Server> server = std::make_shared<Server>();
+
+  if (server->init())
+    server->run();
+
+  return 0;
+}
+
 #endif
