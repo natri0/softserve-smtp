@@ -1,19 +1,29 @@
 # SMTP server project
 
-TODO: fill in readme once we start actually writing the project
+This project is a fully-functional SMTP server that handles email transmission protocols. Built with modern C++ practices, it features a multi-threaded architecture, database integration, and comprehensive logging capabilities.
 
 ## Technologies used
 
-- C++23
-- Boost libraries
-- (we'll probably use more stuff as time goes on)
+- **C++23**
+- **Boost libraries**
+- **OpenSSL**
+- **CMake**
 
-## Project structure
+## 📁 Project Structure
 
-| directory  | usage                                                  |
-|------------|--------------------------------------------------------|
-| `server`   | the server code                                        |
-| `3rdparty` | third-party libraries we wish to include as submodules |
+```
+softserve-smtp/
+├── server/              # Main SMTP server implementation
+├── client/              # SMTP client
+├── SMTP/                # SMTP protocol implementation
+├── networking/          # Network layer and SSL support
+├── db/                  # Database integration
+├── logger/              # Logging system
+├── utils/               # ?
+├── 3rdparty/            # ?
+├── cmake/               # ?
+└── config.example.json  # Configuration template
+```
 
 ## How to run
 
@@ -22,32 +32,22 @@ git clone --recursive https://github.com/natri0/softserve-smtp
 cd softserve-smtp
 mkdir build
 cd build
-cmake -G Ninja ..
+cmake -G "Ninja" ..
 ninja smtp_server
 ./smtp_server
 ```
 
-### Background process
-To install the server as a background service (daemon) on Linux and start it automatically:
+## 🐧 Linux Service Deployment
+
+To run the SMTP server as a background service on Linux:
+
 ```bash
 chmod +x install-service.sh
 sudo ./install-service.sh
 ```
-This will configure the systemd service and start the server immediately.
 
-### Managing the Service Once installed
-You can control the daemon using standard system commands:
+Once installed, you can manage the service using standard systemd commands:
 
-- Check status and logs:
-```Bash
-sudo systemctl status smtp_server
-```
-- Stop the server
-```Bash
-sudo systemctl stop smtp_server
-```
-
-- Restart the server
-```Bash
-sudo systemctl restart smtp_server
+```bash
+sudo systemctl start/stop/restart/status smtp_server
 ```
