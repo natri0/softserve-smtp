@@ -43,7 +43,7 @@ public:
      *
      * Initializes internal components and prepares the server for startup.
      */
-    Server();
+    Server(bool isWinService = false);
 
     /**
      * @brief Destroys the Server instance.
@@ -113,6 +113,9 @@ private:
 
     /// Flag indicating if the server is in the process of stopping.
     bool isStopping = false;
+
+    /// Flag indicating if the server is being run as windows background service.
+    bool isWinService = false;
 
     // --- User Interface ---
 

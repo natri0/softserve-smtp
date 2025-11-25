@@ -1,12 +1,12 @@
 #include <iostream>
 #include <memory>
-#include <windows.h>
-#include <tchar.h>
 #include <filesystem>
 
 #include "Server.h"
 
-// sc create "Smtp Server" binPath= "D:\softserve-smtp\build\server\bin\smtp_server.exe" - to install service
+#ifdef _WIN32
+#include <windows.h>
+#include <tchar.h>
 
 struct ServiceGlobals {
   const TCHAR *serviceName = _T("SMTP server");
@@ -57,7 +57,7 @@ VOID WINAPI ServiceMain(DWORD argc, LPTSTR *argv) {
     std::filesystem::current_path(exePath.parent_path());
   }
 
-  g_Service.server = std::make_shared<Server>();
+  g_Service.server = std::make_shared<Server>(true);
   if (!g_Service.server->init()) {
     ReportSvcStatus(SERVICE_STOPPED, ERROR_SERVICE_SPECIFIC_ERROR);
     return;
@@ -75,8 +75,25 @@ int _tmain(int argc, TCHAR *argv[]) {
   };
 
   if (!StartServiceCtrlDispatcher(ServiceTable)) {
-    return static_cast<int>(GetLastError());
+    DWORD error = GetLastError();
+    
+    // means we're running from console
+    if (error == ERROR_FAILED_SERVICE_CONTROLLER_CONNECT) {
+      auto server = std::make_shared<Server>(false);
+
+      if (server->init())
+        server->run();
+
+      return 0;
+    }
+    
+    std::cerr << "Failed to start service, error code: " << error << std::endl;
+    return static_cast<int>(error);
   }
 
   return 0;
 }
+
+#else
+
+#endif

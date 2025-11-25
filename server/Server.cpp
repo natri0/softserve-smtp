@@ -14,9 +14,10 @@
 
 // temp till we don't have parser
 
-Server::Server() : io(std::make_shared<boost::asio::io_context>()),
+Server::Server(bool isWinService) : io(std::make_shared<boost::asio::io_context>()),
                    work(io->get_executor()), acceptor(net::ip::tcp::acceptor(*io)),
-                   sslContext(smtp::ssl::SSLContextFactory::createServerContext())
+                   sslContext(smtp::ssl::SSLContextFactory::createServerContext()),
+                   isWinService(isWinService)
 {
 }
 
@@ -30,7 +31,9 @@ bool Server::init()
     // setting logger
     Logger::getInstance().setLevel(DEBUG_LOG_LEVEL);
     Logger::getInstance().setFlush(false);
-    // ui->do_flush = false;
+
+    if (!isWinService)
+        ui->do_flush = false;
 
     Config config;
     if (!config.load_from_file("server/config/config.json")) {
@@ -56,7 +59,8 @@ bool Server::init()
     threadPool->start();
 
     // starting the console UI
-    // ui->start(port);
+    if (!isWinService)
+        ui->start(port);
 
     return true;
 }
@@ -103,7 +107,11 @@ void Server::run()
     runAcceptor();
 
     LOG_INFO(PROD_LOG_LEVEL) << "Server is running";
-    io->run();
+
+    if (isWinService)
+        io->run();
+    else
+        ui->run();
 
     LOG_INFO(PROD_LOG_LEVEL) << "Server shut down";
 }
@@ -150,7 +158,9 @@ void Server::setConnection(std::shared_ptr<net::ip::tcp::socket> socket)
     {
         std::lock_guard lock(sessionMutex);
         sessions.push_back(session);
-        // ui->updateOnConnected(sessions.size());
+
+        if (!isWinService)
+            ui->updateOnConnected(sessions.size());
     }
 
     session->net()->setOnDisconnect([this, session]()
@@ -161,7 +171,8 @@ void Server::setConnection(std::shared_ptr<net::ip::tcp::socket> socket)
         }
         LOG_INFO(PROD_LOG_LEVEL) << "Client disconnected";
 
-        // ui->updateOnConnected(sessions.size());
+        if (!isWinService)
+            ui->updateOnConnected(sessions.size());
     });
 
     session->setSMTPHandling([this, session](boost::asio::const_buffer msg) { SMTPHandling(msg, session); });
