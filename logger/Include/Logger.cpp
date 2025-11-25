@@ -73,7 +73,7 @@ void Logger::fileInit(const std::uint32_t amount)
     output_path = buff_name;
 
     if (error) {
-        log("invalid output path, default will be used", "[WARNING]", LOG_GET_FUNC(), local_level, std::this_thread::get_id());
+        log(std::format("{:%d-%m-%y-%H_%M_%S}", std::chrono::system_clock::now()), "invalid output path, default will be used", "[WARNING]", LOG_GET_FUNC(), local_level, std::this_thread::get_id());
     }
 }
 
@@ -252,10 +252,10 @@ void Logger::log(const LogData& data) {
     }
 }
 
-void Logger::log(const std::string& str, const std::string& type, const std::string& location,
+void Logger::log(const std::string& timestamp, const std::string& str, const std::string& type, const std::string& location,
     const LogLevel& level, std::thread::id id = std::this_thread::get_id())
 {
-    LogData* msg = new LogData{ str, type, location, level, id , format };
+    LogData* msg = new LogData{timestamp, str, type, location, level, id , format };
     while (!queue.push(msg)) {
         std::this_thread::yield();
     }

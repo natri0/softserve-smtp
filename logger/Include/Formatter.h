@@ -68,7 +68,7 @@ public:
         }
 
         if (time) {
-            formatted << std::format("{:%H.%M.%S-%d.%m.%y}", std::chrono::system_clock::now());
+            formatted <<  obj.timestamp;
         }
 
         if (type) {
@@ -106,7 +106,7 @@ public:
         }
 
         if (time) {
-            formatted << std::format("{:%H.%M.%S-%d.%m.%y}", std::chrono::system_clock::now());
+            formatted <<  obj.ref.timestamp;
         }
 
         if (type) {

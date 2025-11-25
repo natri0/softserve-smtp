@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <thread>
 #include "LogLevel.h"
 #include "Macros.h"
@@ -16,6 +17,7 @@
  */
 
 struct LogData {
+    std::string timestamp;
     std::string msg;
     std::string type;
     std::string location;
@@ -27,7 +29,7 @@ struct LogData {
      * @brief Constructs a new LogData object.
      */
 
-    LogData(const std::string& m, const std::string& type, const std::string& loc,
+    LogData(const std::string& t, const std::string& m, const std::string& type, const std::string& loc,
         const LogLevel& level, std::thread::id id, std::string ft);
 
     /**

@@ -52,7 +52,8 @@ class LogData;
 #define IF_LOG(level)   if (Logger::getInstance().blockLog(level)) { ; } else
 
 #define LOG(level,type) IF_LOG(level) (Logger::getInstance()) += \
-    LogData("", type, LOG_GET_FUNC(), level, std::this_thread::get_id(), Logger::getInstance().getFormat()).ref()
+    LogData(std::format("{:%H.%M.%S-%d.%m.%y}", std::chrono::system_clock::now()), "", type, LOG_GET_FUNC(), level, std::this_thread::get_id(), Logger::getInstance().getFormat()).ref()
+
 
 #define LOG_INFO(level)           LOG(level, INFO_TYPE )
 #define LOG_WARNING(level)        LOG(level, WARNING_TYPE )

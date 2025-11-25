@@ -33,13 +33,14 @@ target_link_libraries(logger_example PRIVATE
 
 find_package(benchmark QUIET)
 if (NOT benchmark_FOUND)
-    message(STATUS "Google Benchmark not found — downloading...")
+    message(STATUS "Google Benchmark not found - downloading...")
     include(FetchContent)
     FetchContent_Declare(
-        benchmark
-        GIT_REPOSITORY https://github.com/google/benchmark.git
-        GIT_TAG v1.8.3
+            benchmark
+            GIT_REPOSITORY https://github.com/google/benchmark.git
+            GIT_TAG main
     )
+
 
     set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Disable benchmark's own tests" FORCE)
     set(BENCHMARK_ENABLE_GTEST_TESTS OFF CACHE BOOL "Disable Google Test inside benchmark" FORCE)
@@ -70,7 +71,7 @@ target_link_libraries(logger_benchmark
 
 find_package(GTest QUIET)
 if (NOT GTest_FOUND)
-    message(STATUS "GoogleTest not found — downloading...")
+    message(STATUS "GoogleTest not found - downloading...")
     include(FetchContent)
     FetchContent_Declare(
         googletest
