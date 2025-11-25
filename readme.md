@@ -1,19 +1,29 @@
 # SMTP server project
 
-TODO: fill in readme once we start actually writing the project
+This project is a fully-functional SMTP server that handles email transmission protocols. Built with modern C++ practices, it features a multi-threaded architecture, database integration, and comprehensive logging capabilities.
 
 ## Technologies used
 
-- C++23
-- Boost libraries
-- (we'll probably use more stuff as time goes on)
+- **C++23**
+- **Boost libraries**
+- **OpenSSL**
+- **CMake**
 
-## Project structure
+## 📁 Project Structure
 
-| directory  | usage                                                  |
-|------------|--------------------------------------------------------|
-| `server`   | the server code                                        |
-| `3rdparty` | third-party libraries we wish to include as submodules |
+```
+softserve-smtp/
+├── server/              # Main SMTP server implementation
+├── client/              # SMTP client
+├── SMTP/                # SMTP protocol implementation
+├── networking/          # Network layer and SSL support
+├── db/                  # Database integration
+├── logger/              # Logging system
+├── utils/               # ?
+├── 3rdparty/            # ?
+├── cmake/               # ?
+└── config.example.json  # Configuration template
+```
 
 ## How to run
 
@@ -22,7 +32,22 @@ git clone --recursive https://github.com/natri0/softserve-smtp
 cd softserve-smtp
 mkdir build
 cd build
-cmake -G Ninja ..
+cmake -G "Ninja" ..
 ninja smtp_server
 ./smtp_server
+```
+
+## 🐧 Linux Service Deployment
+
+To run the SMTP server as a background service on Linux:
+
+```bash
+chmod +x install-service.sh
+sudo ./install-service.sh
+```
+
+Once installed, you can manage the service using standard systemd commands:
+
+```bash
+sudo systemctl start/stop/restart/status smtp_server
 ```

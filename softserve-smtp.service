@@ -1,0 +1,14 @@
+[Unit]
+Description=Softserve SMTP Server
+
+[Service]
+User=<USERNAME>
+WorkingDirectory=<INSTALL_PATH>/build/server/bin
+ExecStart=<INSTALL_PATH>/build/server/bin/smtp_server
+StandardOutput=null
+StandardError=null
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
