@@ -22,7 +22,7 @@ void NetSession::connect(const net::ip::tcp::endpoint& endpoint)
     {
         if (!ec)
         {
-            LOG_INFO(DEBUG_LOG_LEVEL) << "Connected";
+            LOG_INFO(DEBUG) << "Connected";
             connected = true;
             if (onConnected) onConnected();
         }
@@ -30,7 +30,7 @@ void NetSession::connect(const net::ip::tcp::endpoint& endpoint)
         {
             connected = false;
             if (onDisconnect) onDisconnect();
-            LOG_INFO(DEBUG_LOG_LEVEL) << "Connect failed: " << ec.message();
+            LOG_INFO(DEBUG) << "Connect failed: " << ec.message();
         }
     });
 }
@@ -100,7 +100,7 @@ void NetSession::write()
                      {
                          if (!ec)
                          {
-                             LOG_INFO(DEBUG_LOG_LEVEL) << "Reply: " << std::string(
+                             LOG_INFO(DEBUG) << "Reply: " << std::string(
                                  static_cast<const char*>(self->writeQueue.front().data()),
                                  self->writeQueue.front().size());
 
@@ -111,7 +111,7 @@ void NetSession::write()
                          else if (self->onDisconnect && ec != net::error::operation_aborted)
                          {
                              if (self->onDisconnect) self->onDisconnect();
-                             LOG_INFO(DEBUG_LOG_LEVEL) << "write failed: " << ec.message();
+                             LOG_INFO(DEBUG) << "write failed: " << ec.message();
                              self->connected = false;
                              self->disconnect();
                          }
@@ -130,7 +130,7 @@ void NetSession::read()
                                 {
                                     if (self->onMessageReceived)
                                     {
-                                        LOG_INFO(DEBUG_LOG_LEVEL) << "Received message from: " << self->getSocket()->
+                                        LOG_INFO(DEBUG) << "Received message from: " << self->getSocket()->
                                                                        remote_endpoint();
 
                                         if (self->cryptoManager.get())
@@ -142,7 +142,7 @@ void NetSession::read()
                                             self->onMessageReceived(
                                                 net::buffer(self->decrypted_data, self->decrypted_data.size()));
 
-                                            LOG_INFO(DEBUG_LOG_LEVEL) << "Message: " << std::string(
+                                            LOG_INFO(DEBUG) << "Message: " << std::string(
                                                 self->decrypted_data, self->decrypted_data.size());
                                         }
                                         else
@@ -155,7 +155,7 @@ void NetSession::read()
                                 else if (self->onDisconnect && ec != net::error::operation_aborted)
                                 {
                                     if (self->onDisconnect) self->onDisconnect();
-                                    LOG_INFO(PROD_LOG_LEVEL) << "read failed: " << ec.message();
+                                    LOG_INFO(PROD) << "read failed: " << ec.message();
                                     self->disconnect();
                                 }
                             });

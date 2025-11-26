@@ -28,13 +28,14 @@ Server::~Server()
 bool Server::init()
 {
     // setting logger
-    Logger::getInstance().setLevel(DEBUG_LOG_LEVEL);
+    SET_LEVEL(DEBUG);
     Logger::getInstance().setFlush(false);
     ui->do_flush = false;
 
     Config config;
-    if (!config.load_from_file("server/config/config.json")) {
-        LOG_ERROR(LogLevel::PROD) << "Couldn't load config.json";
+    if (!config.load_from_file("server/config/config.json"))
+    {
+        LOG_ERROR(PROD) << "Couldn't load config.json";
         return false;
     }
 
@@ -68,7 +69,7 @@ bool Server::stop()
     if (acceptor.is_open()) acceptor.close(ec);
 
     if (ec)
-        LOG_ERROR(DEBUG_LOG_LEVEL) << "Error closing acceptor: " << ec.message();
+        LOG_ERROR(DEBUG) << "Error closing acceptor: " << ec.message();
 
     sessions.clear();
     io->stop();
@@ -101,10 +102,10 @@ void Server::run()
 
     runAcceptor();
 
-    LOG_INFO(PROD_LOG_LEVEL) << "Server is running";
+    LOG_INFO(PROD) << "Server is running";
     ui->run();
 
-    LOG_INFO(PROD_LOG_LEVEL) << "Server shut down";
+    LOG_INFO(PROD) << "Server shut down";
     stop();
 }
 
@@ -116,7 +117,7 @@ void Server::runAcceptor()
     {
         if (!ec) setConnection(socket);
         else
-            LOG_ERROR(PROD_LOG_LEVEL) << "Accept failed: " << ec.message();
+            LOG_ERROR(PROD) << "Accept failed: " << ec.message();
 
         runAcceptor();
     });
@@ -134,7 +135,7 @@ bool Server::setUpAcceptor()
 
     if (ec)
     {
-        LOG_ERROR(PROD_LOG_LEVEL) << "Bind failed: " << ec.message();
+        LOG_ERROR(PROD) << "Bind failed: " << ec.message();
         return false;
     }
 
@@ -144,7 +145,7 @@ bool Server::setUpAcceptor()
 
 void Server::setConnection(std::shared_ptr<net::ip::tcp::socket> socket)
 {
-    LOG_INFO(PROD_LOG_LEVEL) << "New connection from " << socket->remote_endpoint();
+    LOG_INFO(PROD) << "New connection from " << socket->remote_endpoint();
     auto session = std::make_shared<SmartSession>(socket, SmartSession::Type::SERVER);
 
     {
@@ -159,7 +160,7 @@ void Server::setConnection(std::shared_ptr<net::ip::tcp::socket> socket)
             std::lock_guard lock(sessionMutex);
             sessions.remove(session);
         }
-        LOG_INFO(PROD_LOG_LEVEL) << "Client disconnected";
+        LOG_INFO(PROD) << "Client disconnected";
 
         ui->updateOnConnected(sessions.size());
     });
