@@ -45,6 +45,11 @@ void ISXSMTP::SMTPReply::SetMultiLine(bool value)
 	m_multiLine = value;
 }
 
+bool ISXSMTP::SMTPReply::IsMultiLine() const
+{
+	return m_multiLine;
+}
+
 ISXSMTP::SMTPReply ISXSMTP::SMTPReply::CommandUnrecognized()
 {
 	return SMTPReply(500, "Command unrecognized");

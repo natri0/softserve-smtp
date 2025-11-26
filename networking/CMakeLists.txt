@@ -1,6 +1,30 @@
-cmake_minimum_required(VERSION 3.30)
-project(networking)
+if (NOT UNIX)
+    find_package(Boost REQUIRED COMPONENTS system thread asio)
+endif ()
 
-set(CMAKE_CXX_STANDARD 23)
+find_package(OpenSSL REQUIRED)
 
-add_subdirectory(SSL)
+add_library(networking STATIC
+        Connection/NetSession.cpp
+        SmartSession.cpp
+)
+
+target_include_directories(networking
+        PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${boost_INLCUDE_DIRS}
+)
+
+target_link_libraries(networking
+        PUBLIC
+        ${Boost_LIBRARIES}
+        OpenSSL::SSL
+        OpenSSL::Crypto
+        SMTP
+        logger
+        ssl_support
+)
+
+if (WIN32)
+    target_link_libraries(networking PRIVATE ws2_32 mswsock)
+endif ()

@@ -3,7 +3,7 @@ project(SMTP VERSION 0.1 DESCRIPTION "SMTP implementation")
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_library(SMTP 
+add_library(SMTP STATIC
 	 "source/Commands/DATACommand.cpp" 
 	 "source/Commands/EHLOCommand.cpp" 
 	 "source/Commands/HELOCommand.cpp"
@@ -19,10 +19,8 @@ add_library(SMTP
 	 "source/SMTPState.cpp" 
 	 "source/SMTPReply.cpp" 
 	 "source/SMTPCommandParser.cpp" 
-	 
+	 "source/SMTPClient.cpp"
+
 	 "source/SMTPConfig.cpp"
-	 "source/SMTPConfigBuilder.cpp" "include/SMTPIMailbox.h")
-
+	 "source/SMTPConfigBuilder.cpp")
 target_include_directories(SMTP PUBLIC "include")
-
-add_subdirectory(gtests)

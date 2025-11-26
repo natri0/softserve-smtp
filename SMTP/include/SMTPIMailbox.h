@@ -8,6 +8,8 @@ namespace ISXSMTP
  */
 class SMTPIMailbox {
 public:
+	virtual ~SMTPIMailbox() = default;
+
 	/**
 	 * @brief This method should put the mail in to the database.
 		The passed arguments and the return value is the topic for future discuss

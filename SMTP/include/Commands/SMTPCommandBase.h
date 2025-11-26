@@ -5,7 +5,9 @@
 #include "SMTPCommandArguments.h"
 
 #include <string>
+#include <vector>
 #include <memory>
+#include <vector>
 
 namespace ISXSMTP
 {
@@ -16,6 +18,8 @@ namespace ISXSMTP
 class SMTPCommandBase 
 {
 public:
+	virtual ~SMTPCommandBase() = default;
+
 	/**
 	 * @brief Executes command with provided arguments
 	 * @param SMTPCommandArguments filled by SMTPCommandParser with attachment of context and mailbox
