@@ -1,4 +1,11 @@
-#pragma once
+#ifndef LOGGER_H
+#define LOGGER_H
+
+
+#include "LogData.h"
+#include "LogLevel.h"
+#include "Macros.h"
+
 #include <iostream>
 #include <fstream>
 #include <queue>
@@ -14,22 +21,10 @@
 #include <filesystem>
 #include <boost/lockfree/queue.hpp>
 #include <shared_mutex>
-#include <fstream>
-#include "Macros.h"
+
 
 /**
- * @brief Color codes for console output.
- */
-
-const std::unordered_map<std::string, std::string> colored{
-    {"[ERROR]", ERROR_COLOR},
-    {"[WARNING]", WARNING_COLOR},
-    {"[INFO]", INFORMATION_COLOR},
-    {"[DEFAULT]", DEFAULT_COLOR}
-};
-
-/**
- * @brief Asynchronous thread-safe logger.
+ * @brief Asynchronous logger.
  *
  * The Logger class supports:
  *  - Asynchronous log processing using a background thread
@@ -37,6 +32,7 @@ const std::unordered_map<std::string, std::string> colored{
  *  - Log file rotation and colored console output
  *  - Configurable log levels and output paths
  */
+
 
 class Logger {
 private:
@@ -49,16 +45,17 @@ private:
     std::atomic<bool> end;
     std::atomic<bool> do_flush;
     LogLevel local_level;
+    std::string format;
 
     /**
      * @brief Private constructor (Singleton pattern).
      */
 
-    Logger(const LogLevel&, const std::string&, const unsigned int, const bool);
+    Logger(const LogLevel&, const std::string&, const std::uint32_t, const bool, const std::string&);
 
-    void fileInit(const unsigned int);
+    void fileInit(const std::uint32_t);
 
-    void log(const std::string&, const std::string&, const std::string&, const LogLevel&, std::thread::id);//, void*);
+    void log(const std::string&, const std::string&, const std::string&, const std::string&, const LogLevel&, std::thread::id);
 
     void log(const LogData&);
 
@@ -68,11 +65,11 @@ private:
      * @return true if log should be blocked, false otherwise
      */
 
-    
 
-    void write_log_to_file(const LogData& data);
 
-    void write_log_to_console(const LogData& data);
+    void writeLogToFile(const LogData& data);
+
+    void writeLogToConsole(const LogData& data);
 
     /**
      * @brief Flushes a message to output (file and/or console).
@@ -94,7 +91,7 @@ public:
      * @return Reference to the Logger instance
      */
 
-    static Logger& getInstance(const LogLevel& level = DEFAULT_LOG_LEVEL, const std::string& path = DEFAULT_PATH, const unsigned int amount = DEFAULT_AMOUNT, const bool do_flush = DEFAULT_FLUSH);
+    static Logger& getInstance(const LogLevel& level = DEFAULT_LOG_LEVEL, const std::string& path = DEFAULT_PATH, const std::uint32_t amount = DEFAULT_AMOUNT, const bool do_flush = DEFAULT_FLUSH, const std::string& format = DEFAULT_FORMAT);
 
 
 
@@ -105,12 +102,10 @@ public:
     Logger() = delete;
 
     /**
-     * @brief Destructor — safely shuts down background thread and closes file.
+     * @brief Destructor safely shuts down background thread and closes file.
      */
 
     ~Logger();
-
-    bool blockLog(LogLevel level);
 
     std::vector<std::string> readAllLogs() const;
 
@@ -118,13 +113,20 @@ public:
 
     void operator+=(const LogData& data);
 
+    void setFormat(const std::string& format);
+
+    std::string getFormat() const;
+
     void setOutputPath(const std::string& path);
 
     const std::string& getOutputPath() const;
 
     void setLevel(LogLevel level);
 
-    void setFlush(const bool);
+    void setFlush(bool);
+
+
+    std::string chooseFormat(LogLevel level);
 
     const LogLevel& getLevel() const;
 
@@ -132,8 +134,9 @@ public:
      * @brief Converts a log level to string (e.g., TRACE ? "TRACE").
      */
 
-    std::string toString(LogLevel level);
+    static std::string getLevelName(LogLevel level);
 
+    bool blockLog(LogLevel level);
 
     /**
      * @brief Stops the background thread and finalizes logging.
@@ -142,11 +145,7 @@ public:
     void shutDown();
 
 
-    // Common message shortcuts
-
-    void logFuncStart();
-
-    void logFuncEnd();
-
 
 };
+
+#endif
