@@ -23,14 +23,14 @@ public:
 	 * @param comment std::string 
 	 * @param multi_line bool flag
 	 */
-	SMTPReply(std::uint16_t code, const std::string& comment, bool multi_line);
+	SMTPReply(std::uint16_t code, std::string comment, bool multi_line);
 
 	/**
 	 * @brief Constructor
 	 * @param code std::uint16_t that represents reply code
 	 * @param comment std::string
 	 */
-	SMTPReply(std::uint16_t code, const std::string& comment);
+	SMTPReply(std::uint16_t code, std::string comment);
 
 	/**
 	 * @brief Returns comment associated with reply

@@ -174,6 +174,6 @@ void Server::SMTPHandling(boost::asio::const_buffer msg, std::shared_ptr<SmartSe
     const std::string cmd(
         std::string(static_cast<const char*>(msg.data()), msg.size()));
 
-    auto rpl = session->smtp()->OnMessage(cmd.c_str());
+    auto rpl = session->smtp()->OnMessage(cmd);
     session->net()->send(net::buffer(rpl));
 }

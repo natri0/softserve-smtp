@@ -33,14 +33,14 @@ public:
 	SMTPClient();
 
 	SMTPClient(
-		const std::string& domain,
-		const std::string& from, 
-		const std::vector<std::string>& to,
+		std::string domain,
+		std::string from,
+		std::vector<std::string> to,
 		bool quit_on_finish = true);
 
-	void SetTo(const std::vector<std::string>& to);
-	void SetFrom(const std::string& from);
-	void SetDomain(const std::string& domain);
+	void SetTo(std::vector<std::string> to);
+	void SetFrom(std::string from);
+	void SetDomain(std::string domain);
 	void SetQuitOnFinish(bool val);
 
 	std::vector<std::string> GenCommands();

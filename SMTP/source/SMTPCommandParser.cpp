@@ -172,7 +172,7 @@ void ISXSMTP::SMTPCommandParser::handleMandatoryArgument(
 		return;
 	}	
 
-	result.parsed_arguments[arg_name] = arg_value;
+	result.parsed_arguments[std::move(arg_name)] = std::move(arg_value);
 	result.error_code = SMTPReply::OK();
 }
 
@@ -198,7 +198,7 @@ void ISXSMTP::SMTPCommandParser::handleOptionalArgument(
 	std::string arg_value = readArgValue(command, command_index);
 	if (!arg_value.empty())
 	{
-		result.parsed_arguments[arg_name] = arg_value;
+		result.parsed_arguments[std::move(arg_name)] = std::move(arg_value);
 	}
 
 	result.error_code = SMTPReply::OK();

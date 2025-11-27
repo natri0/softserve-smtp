@@ -36,29 +36,29 @@ public:
     /// You can invoke this multiple times to append configs from different sources!
     ///
     /// @return if the config was loaded successfully
-    bool load_from_string(const std::string_view &str);
+    bool load_from_string(const std::string &str);
 
-    bool has_key(const std::string_view &key) const;
-    std::any get_any(const std::string_view &key) const;
+    bool has_key(const std::string &key) const;
+    std::any get_any(const std::string &key) const;
 
     size_t size() const {
         return data.size();
     }
 
     template<class T>
-    T get(const std::string_view &key) const {
+    T get(const std::string &key) const {
         if (!has_key(key)) throw std::invalid_argument("Key not found");
         return static_cast<T>(std::any_cast<
             std::conditional_t<std::is_arithmetic_v<T> && !std::is_same_v<bool, T>, double, T>
-        >(data.at(std::string(key))));
+        >(data.at(key)));
     }
 
     template<class T>
-    T get_with_default(const std::string_view &key, const T &default_value) const {
+    T get_with_default(const std::string &key, const T &default_value) const {
         if (!has_key(key)) return default_value;
         return static_cast<T>(std::any_cast<
             std::conditional_t<std::is_arithmetic_v<T> && !std::is_same_v<bool, T>, double, T>
-        >(data.at(std::string(key))));
+        >(data.at(key)));
     }
 private:
     std::unordered_map<std::string, std::any> data;

@@ -9,7 +9,7 @@
 constexpr std::size_t BUFFER_SIZE = 1024;
 constexpr int RECONNECT_DELAY_MS = 2000;
 
-NetSession::NetSession(std::shared_ptr<net::ip::tcp::socket> _socket) : socket(_socket)
+NetSession::NetSession(std::shared_ptr<net::ip::tcp::socket> _socket) : socket(std::move(_socket))
 {
 }
 

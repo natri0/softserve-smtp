@@ -3,7 +3,7 @@
 #include <fstream>
 #include "json.h"
 
-static void populate(const json::Value &root, std::unordered_map<std::string, std::any> &map, std::string prefix = "") {
+static void populate(const json::Value &root, std::unordered_map<std::string, std::any> &map, const std::string &prefix = "") {
     switch (root.type()) {
         case json::Value::Object: {
             const auto &obj = root.as_object();
@@ -18,7 +18,7 @@ static void populate(const json::Value &root, std::unordered_map<std::string, st
             int i = 0;
             for (const auto &[key, _] : obj) {
                 std::string path = (prefix.empty() ? "_keys." : prefix + "._keys.") + std::to_string(i);
-                map[path] = key;
+                map[std::move(path)] = key;
                 i++;
             }
             break;
@@ -61,13 +61,11 @@ bool Config::load_from_file(const std::filesystem::path &path) {
     input.read(string.data(), size);
     input.close();
 
-    return load_from_string(std::move(string));
+    return load_from_string(string);
 }
 
-bool Config::load_from_string(const std::string_view &str) {
-    const std::string data(str);
-
-    const char *c_str = data.data();
+bool Config::load_from_string(const std::string &str) {
+    const char *c_str = str.c_str();
     const auto root = json::visit_element(c_str);
     if (!root.has_value()) return false;
 
@@ -75,12 +73,12 @@ bool Config::load_from_string(const std::string_view &str) {
     return true;
 }
 
-bool Config::has_key(const std::string_view &key) const {
-    return data.contains(std::string(key));
+bool Config::has_key(const std::string &key) const {
+    return data.contains(key);
 }
 
-std::any Config::get_any(const std::string_view &key) const {
+std::any Config::get_any(const std::string &key) const {
     if (!has_key(key)) throw std::invalid_argument("Key not found");
 
-    return data.at(std::string(key));
+    return data.at(key);
 }

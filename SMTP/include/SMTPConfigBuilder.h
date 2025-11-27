@@ -23,23 +23,23 @@ public:
 	static SMTPConfig GetDefaultConfig();
 	/**
 	 * @brief Sets default config
-	 * @param config const SMTPConfig&
+	 * @param config SMTPConfig
 	 */
-	static void SetDefaultConfig(const SMTPConfig& config);
+	static void SetDefaultConfig(SMTPConfig config);
 
 	/**
 	 * @brief Sets domain for the config
-	 * @param domain const std::string&
+	 * @param domain std::string
 	 * @return *this for chaining calls
 	 */
-	SMTPConfigBuilder& SetDomain(const std::string& domain);
+	SMTPConfigBuilder& SetDomain(std::string domain);
 
 	/**
 	 * @brief Sets context for the config
-	 * @param context const SMTPContext&
+	 * @param context SMTPContext
 	 * @return *this for chaining calls
 	 */
-	SMTPConfigBuilder& SetContext(const SMTPContext& context);
+	SMTPConfigBuilder& SetContext(SMTPContext context);
 
 	/**
 	 * @brief Sets mailbox for the config

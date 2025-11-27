@@ -1,8 +1,8 @@
 #include "LogData.h"
 
-LogData::LogData(const std::string& t,const std::string& m, const std::string& type, const std::string& loc,
-        const LogLevel& level, std::thread::id id, std::string ft)
-        :msg(m), type(type), location(loc), level(level), thr_id(id), format(ft), timestamp(t) {
+LogData::LogData(std::string t, std::string m, std::string type, std::string loc,
+        LogLevel level, std::thread::id id, std::string ft)
+        : timestamp(std::move(t)), msg(std::move(m)), type(std::move(type)), location(std::move(loc)), level(level), thr_id(id), format(std::move(ft)) {
 }
 
 
