@@ -126,12 +126,12 @@ std::optional<json::Array> json::visit_array(const char *&string) {
 
     while (true) {
         if (auto value = visit_element(string); value.has_value()) {
-            arr.push_back(*value);
+            arr.push_back(std::move(*value));
         }
 
         skip_whitespace(string);
         switch (*string++) {
-            case ']': return { arr };
+            case ']': return { std::move(arr) };
             case ',': continue;
             default: {
                 string = begin;
@@ -169,12 +169,12 @@ std::optional<std::unordered_map<std::string, json::Value>> json::visit_object(c
 
         skip_whitespace(string);
         if (auto value = visit_element(string); value.has_value()) {
-            map.insert({ key, *value });
+            map.insert({ std::move(key), std::move(*value) });
         }
 
         skip_whitespace(string);
         switch (*string++) {
-            case '}': return { map };
+            case '}': return { std::move(map) };
             case ',': continue;
             default: {
                 string = begin;

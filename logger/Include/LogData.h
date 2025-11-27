@@ -29,8 +29,8 @@ struct LogData {
      * @brief Constructs a new LogData object.
      */
 
-    LogData(const std::string& t, const std::string& m, const std::string& type, const std::string& loc,
-        const LogLevel& level, std::thread::id id, std::string ft);
+    LogData(std::string t, std::string m, std::string type, std::string loc,
+        LogLevel level, std::thread::id id, std::string ft);
 
     /**
      * @brief Appends a value to the message text.

@@ -51,13 +51,13 @@ private:
      * @brief Private constructor (Singleton pattern).
      */
 
-    Logger(const LogLevel&, const std::string&, const std::uint32_t, const bool, const std::string&);
+    Logger(LogLevel, std::string, std::uint32_t, bool, std::string);
 
-    void fileInit(const std::uint32_t);
+    void fileInit(std::uint32_t);
 
-    void log(const std::string&, const std::string&, const std::string&, const std::string&, const LogLevel&, std::thread::id);
+    void log(std::string, std::string, std::string, std::string, LogLevel, std::thread::id);
 
-    void log(const LogData&);
+    void log(LogData);
 
     /**
      * @brief Determines if a message should be blocked based on its log level.
@@ -91,7 +91,7 @@ public:
      * @return Reference to the Logger instance
      */
 
-    static Logger& getInstance(const LogLevel& level = DEFAULT_LOG_LEVEL, const std::string& path = DEFAULT_PATH, const std::uint32_t amount = DEFAULT_AMOUNT, const bool do_flush = DEFAULT_FLUSH, const std::string& format = DEFAULT_FORMAT);
+    static Logger& getInstance(LogLevel level = DEFAULT_LOG_LEVEL, std::string_view path = DEFAULT_PATH, std::uint32_t amount = DEFAULT_AMOUNT, bool do_flush = DEFAULT_FLUSH, std::string_view format = DEFAULT_FORMAT);
 
 
 
@@ -113,11 +113,11 @@ public:
 
     void operator+=(const LogData& data);
 
-    void setFormat(const std::string& format);
+    void setFormat(std::string format);
 
     std::string getFormat() const;
 
-    void setOutputPath(const std::string& path);
+    void setOutputPath(std::string path);
 
     const std::string& getOutputPath() const;
 

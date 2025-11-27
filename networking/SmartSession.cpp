@@ -46,9 +46,9 @@ void SmartSession::setKeys(boost::asio::const_buffer msg,
 
     const auto sharedSecret = smtp::ssl::KeyExchange::performDHExchange(
         peer_public_key, private_key);
-    const auto sessionKey = smtp::ssl::KeyExchange::deriveSessionKey(sharedSecret);
+    auto sessionKey = smtp::ssl::KeyExchange::deriveSessionKey(sharedSecret);
 
-    net_session->setKey(sessionKey);
+    net_session->setKey(std::move(sessionKey));
     LOG_INFO(DEBUG) << "NetSession key established successfully";
 
     boost::asio::post(net_session->getSocket()->get_executor(), [this]()

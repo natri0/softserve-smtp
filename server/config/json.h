@@ -25,6 +25,7 @@ namespace json {
         Value(std::unordered_map<std::string, Value> &&val) : _type(Object), object(std::move(val)) {}
 
         Value(const std::string &val) : _type(String), string(val) {}
+        Value(std::string &&val) : _type(String), string(std::move(val)) {}
 
         static Value get_null() {
             Value x{0};

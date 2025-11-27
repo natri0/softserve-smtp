@@ -19,7 +19,7 @@ public:
 	SMTPContext context;
 	std::shared_ptr<SMTPIMailbox> mailbox;
 
-	SMTPConfig(std::shared_ptr<SMTPIMailbox> mailbox = nullptr, const std::string& domain = "smtp.test", const SMTPContext& context = {});
+	SMTPConfig(std::shared_ptr<SMTPIMailbox> mailbox = nullptr, std::string domain = "smtp.test", SMTPContext context = {});
 };
 
 }

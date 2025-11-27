@@ -8,8 +8,8 @@
 
 namespace smtp::ssl
 {
-  CryptoManager::CryptoManager(const std::vector<unsigned char> &sessionKey) : sessionKey(sessionKey) {
-    if (sessionKey.size() != 32) {
+  CryptoManager::CryptoManager(std::vector<unsigned char> sessionKey) : sessionKey(std::move(sessionKey)) {
+    if (this->sessionKey.size() != 32) {
       throw std::invalid_argument("Session key must be 32 bytes");
     }
   }

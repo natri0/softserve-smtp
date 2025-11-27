@@ -1,9 +1,11 @@
 #include "Logger.h"
+
+#include <utility>
 #include "LogData.h"
 #include "Formatter.h"
 
-Logger::Logger(const LogLevel& level, const std::string& path, const std::uint32_t amount, const bool do_flush, const std::string& format)
-    : queue(DEFAULT_SIZE), local_level{ level }, output_path{ path }, amount{ amount }, end(DEFAULT_END), do_flush(do_flush), format(format) {
+Logger::Logger(LogLevel level, std::string path, std::uint32_t amount, bool do_flush, std::string format)
+    : queue(DEFAULT_SIZE), output_path{ std::move(path) }, amount{ amount }, end(DEFAULT_END), do_flush(do_flush), local_level{ level }, format(std::move(format)) {
     fileInit(this->amount);
 
     thrd = std::thread([this]() {
@@ -25,23 +27,23 @@ Logger::Logger(const LogLevel& level, const std::string& path, const std::uint32
 
 }
 
-Logger& Logger::getInstance(const LogLevel& level, const std::string& path, const std::uint32_t amount, const bool do_flush, const std::string& format) {
+Logger& Logger::getInstance(LogLevel level, std::string_view path, std::uint32_t amount, bool do_flush, std::string_view format) {
 
-    static Logger instance(level, path, amount, do_flush, format);
+    static Logger instance(level, std::string(path), amount, do_flush, std::string(format));
     return instance;
 }
 
-void Logger::fileInit(const std::uint32_t amount)
+void Logger::fileInit(std::uint32_t amount)
 {
     std::string log_dir{ "Logs" };
 
-    bool error = 0;
+    bool error = false;
     if (std::filesystem::is_directory(output_path))
     {
         log_dir = output_path + "/Logs";
     }
-    else if (output_path != "") {
-        error = 1;
+    else if (!output_path.empty()) {
+        error = true;
     }
 
     if (std::filesystem::is_directory(log_dir))
@@ -70,7 +72,7 @@ void Logger::fileInit(const std::uint32_t amount)
 
     file = std::ofstream{ buff_name };
 
-    output_path = buff_name;
+    output_path = std::move(buff_name);
 
     if (error) {
         log(std::format("{:%d-%m-%y-%H_%M_%S}", std::chrono::system_clock::now()), "invalid output path, default will be used", "[WARNING]", LOG_GET_FUNC(), local_level, std::this_thread::get_id());
@@ -90,9 +92,9 @@ Logger::~Logger() {
 }
 
 
-void Logger::setFormat(const std::string& format) {
+void Logger::setFormat(std::string format) {
     std::unique_lock lock(mutex);
-    this->format = format;
+    this->format = std::move(format);
 }
 
 std::string Logger::getFormat() const {
@@ -115,11 +117,11 @@ std::string Logger::chooseFormat(LogLevel level)
     }
 }
 
-void Logger::setOutputPath(const std::string& path)
+void Logger::setOutputPath(std::string path)
 {
 
     std::unique_lock lock{ mutex };
-    output_path = path;
+    output_path = std::move(path);
 }
 
 const std::string& Logger::getOutputPath() const
@@ -244,17 +246,17 @@ void Logger::operator+=(const LogData& data) {
     log(data);
 }
 
-void Logger::log(const LogData& data) {
-    LogData* msg = new LogData{ data };
+void Logger::log(LogData data) {
+    LogData* msg = new LogData{ std::move(data) };
     while (!queue.push(msg)) {
         std::this_thread::yield();
     }
 }
 
-void Logger::log(const std::string& timestamp, const std::string& str, const std::string& type, const std::string& location,
-    const LogLevel& level, std::thread::id id = std::this_thread::get_id())
+void Logger::log(std::string timestamp, std::string str, std::string type, std::string location,
+    LogLevel level, std::thread::id id = std::this_thread::get_id())
 {
-    LogData* msg = new LogData{timestamp, str, type, location, level, id , format };
+    LogData* msg = new LogData{std::move(timestamp), std::move(str), std::move(type), std::move(location), level, id, format };
     while (!queue.push(msg)) {
         std::this_thread::yield();
     }

@@ -1,40 +1,40 @@
 #include "SMTPClient.h"
 
 #include <format>
+#include <utility>
 
 ISXSMTP::SMTPClient::SMTPClient(
-		const std::string& domain,
-		const std::string& from,
-		const std::vector<std::string>& to,
+		std::string domain,
+		std::string from,
+		std::vector<std::string> to,
 		bool quit_after_data)
-	: m_from(from)
-	, m_to(to)
+	: m_from(std::move(from))
+	, m_to(std::move(to))
+	, m_domain(std::move(domain))
 	, m_quitOnFinish(quit_after_data)
-	, m_domain(domain)
 {
 }
 
 ISXSMTP::SMTPClient::SMTPClient()
-	: m_from("")
-	, m_to({})
+	: m_to({})
 	, m_domain("smtp.test")
 	, m_quitOnFinish(true)
 {
 }
 
-void ISXSMTP::SMTPClient::SetTo(const std::vector<std::string>& to)
+void ISXSMTP::SMTPClient::SetTo(std::vector<std::string> to)
 {
-	m_to = to;
+	m_to = std::move(to);
 }
 
-void ISXSMTP::SMTPClient::SetFrom(const std::string& from)
+void ISXSMTP::SMTPClient::SetFrom(std::string from)
 {
-	m_from = from;
+	m_from = std::move(from);
 }
 
-void ISXSMTP::SMTPClient::SetDomain(const std::string& domain)
+void ISXSMTP::SMTPClient::SetDomain(std::string domain)
 {
-	m_domain = domain;
+	m_domain = std::move(domain);
 }
 
 void ISXSMTP::SMTPClient::SetQuitOnFinish(bool val)
@@ -113,7 +113,7 @@ std::optional<ISXSMTP::SMTPReply> ISXSMTP::SMTPClient::ParseReply(const std::str
 
 	std::string comment = std::string(reply.begin() + chars_read + 1, reply.end());
 
-	return SMTPReply(code, comment, multi_line);
+	return SMTPReply(code, std::move(comment), multi_line);
 }
 
 std::string ISXSMTP::SMTPClient::GenMAILCommand()

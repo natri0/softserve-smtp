@@ -128,7 +128,7 @@ public:
      */
     void setKey(std::vector<unsigned char> key)
     {
-        cryptoManager = std::make_unique<smtp::ssl::CryptoManager>(key);
+        cryptoManager = std::make_unique<smtp::ssl::CryptoManager>(std::move(key));
     }
 
 private:

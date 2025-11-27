@@ -1,17 +1,19 @@
 #include "SMTPReply.h"
 
+#include <utility>
+
 #include "SMTPConstants.h"
 
-ISXSMTP::SMTPReply::SMTPReply(std::uint16_t code, const std::string& comment, bool multi_line)
+ISXSMTP::SMTPReply::SMTPReply(std::uint16_t code, std::string comment, bool multi_line)
 	: m_code(code)
-	, m_comment(comment)
+	, m_comment(std::move(comment))
 	, m_multiLine(multi_line)
 {
 }
 
-ISXSMTP::SMTPReply::SMTPReply(std::uint16_t code, const std::string& comment)
+ISXSMTP::SMTPReply::SMTPReply(std::uint16_t code, std::string comment)
 	: m_code(code)
-	, m_comment(comment)
+	, m_comment(std::move(comment))
 	, m_multiLine(false)
 {
 
