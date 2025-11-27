@@ -6,6 +6,4 @@
 add_subdirectory(UnitTests)
 add_subdirectory(Benchmarks)
 
-if(ENABLE_MAIN)
-    add_subdirectory(StressTest)
-endif()
+add_subdirectory(StressTest)

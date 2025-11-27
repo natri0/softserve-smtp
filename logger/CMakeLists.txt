@@ -24,9 +24,11 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL 
     endif()
 endif()
 
+
 # Find required packages
 find_package(Threads REQUIRED)
 find_package(Boost QUIET)
+
 
 if(Boost_FOUND)
     message(STATUS "Boost found at ${Boost_INCLUDE_DIRS}")
@@ -40,6 +42,19 @@ endif()
 add_library(logger SHARED
         Include/Logger.cpp
         Include/LogData.cpp)
+
+
+target_include_directories(logger PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Include)
+
+target_compile_features(logger PUBLIC cxx_std_20)
+
+if(Boost_FOUND)
+    target_include_directories(logger PUBLIC ${Boost_INCLUDE_DIRS})
+    target_link_libraries(logger PUBLIC Boost::boost)
+endif()
+
+target_link_libraries(logger PUBLIC Threads::Threads)
 
 if(WIN32)
     if(ENABLE_EXAMPLE)
@@ -57,30 +72,13 @@ if(WIN32)
     endif()
 endif()
 
-
-target_include_directories(logger PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/Include)
-
-target_compile_features(logger PUBLIC cxx_std_20)
-
-if(Boost_FOUND)
-    target_include_directories(logger PUBLIC ${Boost_INCLUDE_DIRS})
-    target_link_libraries(logger PUBLIC Boost::boost)
-endif()
-
-target_link_libraries(logger PUBLIC Threads::Threads)
-
 # Enable testing if requested (must be called before add_subdirectory)
 if(ENABLE_TESTS)
     enable_testing()
 endif()
 
 # Add subdirectories for different components
-if(ENABLE_EXAMPLE)
-    add_subdirectory(Example)
-endif()
-
-
+add_subdirectory(Example)
 add_subdirectory(Tests)
 
 

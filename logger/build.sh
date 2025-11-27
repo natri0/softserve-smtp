@@ -158,7 +158,7 @@ echo ""
 echo -e "${BLUE}Output files:${NC}"
 case $TARGET in
     lib)
-        echo -e "  Library: ${GREEN}${BUILD_DIR}/liblogger.a${NC}"
+        echo -e "  Library: ${GREEN}${BUILD_DIR}/liblogger${NC}"
         ;;
     example)
         echo -e "  Executable: ${GREEN}${BUILD_DIR}/Example/logger_example${NC}"

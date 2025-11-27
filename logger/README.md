@@ -7,11 +7,11 @@ A high-performance asynchronous logging library implemented in C++20 with thread
 - **Asynchronous Logging**: Non-blocking log operations using background thread processing
 - **Thread-Safe**: Multi-threaded logging with unique thread identification
 - **Lock-Free Queue**: High-performance logging using Boost lockfree queue
-- **Multiple Log Levels**: INFO, WARNING, ERROR with configurable filtering
+- **Multiple Log Levels**: Prod, Debug, Trace
 - **File Rotation**: Automatic log file management with timestamp-based naming
 - **Colored Console Output**: Enhanced readability with color-coded log levels
 - **C++20 Formatting**: Modern std::format integration for efficient string formatting
-- **Modular Build System**: Clean CMake structure with separate builds for tests, benchmarks, and examples
+- **Modular Build System**: Clean CMake structure with separate builds for tests, benchmarks and examples
 - **Unit Tests**: Comprehensive GoogleTest suite for validation
 - **Benchmarks**: Performance testing with Google Benchmark
 
@@ -100,29 +100,6 @@ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
 sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
 ```
 
-### Installing Dependencies (CentOS/RHEL/Fedora)
-
-```bash
-# For RHEL/CentOS 8+
-sudo dnf install gcc-toolset-13-gcc gcc-toolset-13-gcc-c++ cmake make
-sudo dnf install boost-devel
-
-# For Fedora
-sudo dnf install gcc gcc-c++ cmake make boost-devel
-
-# Enable GCC toolset (RHEL/CentOS)
-source /opt/rh/gcc-toolset-13/enable
-```
-
-### Installing Dependencies (Arch Linux)
-
-```bash
-# Install GCC and development tools
-sudo pacman -S gcc cmake make
-
-# Install Boost libraries
-sudo pacman -S boost
-```
 
 ### Installing Dependencies (Windows)
 
@@ -353,9 +330,9 @@ cd build/
 
 **Expected Output:**
 ```
-[13.24.25.640621000-17.11.25][INFO][TRACE][void exampleFunction() ][12241308112218997552]| Program started!
-[13.24.25.640681000-17.11.25][WARNING][DEBUG][void exampleFunction() ][12241308112218997552]| Potential issue detected
-[13.24.25.640716000-17.11.25][ERROR][PROD][void exampleFunction() ][12241308112218997552]| Critical failure!
+13.24.25.640621000-17.11.25 [INFO] [TRACE] [void exampleFunction() ] (thread 12241308112218997552)| Program started!
+13.24.25.640681000-17.11.25 [WARNING] [DEBUG] [void exampleFunction() ] (thread 12241308112218997552)| Potential issue detected
+13.24.25.640716000-17.11.25 [ERROR] [PROD] [void exampleFunction() ](thread 12241308112218997552)| Critical failure!
 ```
 
 ### 2. Stress Test (`logger_main`)
@@ -494,7 +471,7 @@ make -j$(sysctl -n hw.ncpu)  # macOS
 ```
 
 **Available Targets:**
-- `logger` - Static library
+- `logger` - Dynamic library
 - `logger_example` - Basic example
 - `logger_main` - Stress test
 - `logger_tests` - Unit tests (if enabled)
@@ -510,9 +487,9 @@ make -j$(sysctl -n hw.ncpu)  # macOS
 
 ### Log Levels
 
-- `LogLevel::Trace`: Development/debugging environment
-- `LogLevel::Debug`: Testing environment
-- `LogLevel::Prod`: Production environment
+- `LogLevel::Trace`
+- `LogLevel::Debug`
+- `LogLevel::Prod`
 
 ### File Output
 
@@ -520,6 +497,38 @@ Logs are automatically written to timestamped files in the format:
 ```
 DD-MM-YY-HH_MM_SS.txt
 ```
+### Formatting
+
+The logger provides two formatting modes that allow you to control how each log entry is displayed.
+
+
+#### 1. Default Level-Based Formats
+
+Each log level (`Prod`, `Debug`, `Trace`) has its own predefined formatting template.  
+These default formats automatically include the most relevant fields for that particular level, such as:
+
+- timestamp
+- log type
+- log level
+- message
+- source location (for debugging levels)
+
+#### 2. Custom User-Defined Formats
+
+For maximum flexibility, users can define their own formatting rules by providing a custom format string.  
+This is powered by the `std::formatter<LogData>` specialization, which supports the following placeholders:
+
+| Placeholder | Field Description        |
+|------------|---------------------------|
+| `i`        | Thread ID                 |
+| `T`        | Timestamp                 |
+| `t`        | Log type (e.g. `[INFO]`)  |
+| `l`        | Log level name            |
+| `L`        | Source location           |
+| `m`        | Message text              |
+
+
+
 
 ## Usage Example
 
@@ -529,20 +538,22 @@ DD-MM-YY-HH_MM_SS.txt
 int main() {
     // Initialize logger with INFO level, file output enabled
     auto& logger = Logger::getInstance(
-        LogLevel::Prod,     // Minimum log level
-        "./Logs/",          // Log directory
-        100,                // Max log files
-        true,               // Enable file output
-        "MyApp"             // Application prefix
-    );
+       LogLevel::Prod,     // Minimum log level
+       "./Logs/",          // Directory where log files will be stored
+       100,                // Maximum number of log files to keep
+       true,               // Enable writing logs to console
+       "{0:T} ~ {0:m}"     // User-defined format string: allows customizing log output
+                            // Example tokens:
+                            //   {0:T} -> timestamp
+                            //   {0:m} -> log message
+                            // Users can provide their own format to control how each log entry is displayed
+   );
 
     // Log messages
-    LOG_INFO("Application started");
-    LOG_WARNING("Configuration file not found, using defaults");
-    LOG_ERROR("Database connection failed");
+    LOG_INFO(DEBUG)<<"Application started";
+    LOG_WARNING(TRACE)<<"Configuration file not found, using defaults";
+    LOG_ERROR(PROD)<<"Database connection failed";
 
-    // Shutdown logger (flushes remaining logs)
-    logger.shutDown();
     return 0;
 }
 ```
@@ -644,6 +655,4 @@ The logger uses a producer-consumer pattern:
 - **Thread Safety**: Achieved through lock-free data structures and atomic operations
 - **Formatting**: Efficient C++20 std::format for string composition
 
-## License
 
-[Add your license information here]
