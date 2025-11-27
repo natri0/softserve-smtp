@@ -29,3 +29,4 @@ target_link_libraries(ssl_support PUBLIC
 )
 
 add_subdirectory(tests)
+add_subdirectory(benchmarks)
