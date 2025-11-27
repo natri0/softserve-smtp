@@ -1,6 +1,5 @@
 #include <benchmark/benchmark.h>
 #include "Logger.h"
-#include "LogQueue.h"
 
 constexpr std::uint8_t NUM_THREADS = 6;
 constexpr std::uint16_t NUM_MESSAGES = 1000;
