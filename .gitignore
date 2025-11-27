@@ -3,3 +3,9 @@
 /.idea/
 
 /build/
+# Visual Studio
+.vs/
+
+out/
+
+CMakeSettings.json
