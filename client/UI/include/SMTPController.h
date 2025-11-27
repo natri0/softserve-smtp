@@ -11,7 +11,7 @@ class SmtpController : public QObject
     Q_OBJECT
 public:
     SmtpController(QObject* parent = nullptr);
-
+    ~SmtpController();
     void init(const SmtpSettings& initialSettings);
 public slots:
     void sendEmail(const Email& email, const SmtpSettings& settings);

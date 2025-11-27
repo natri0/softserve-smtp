@@ -92,6 +92,8 @@ private:
     void changeLogLevel(const std::string& level) const;
 
 private:
+
+    bool isConnected() const;
     /// Buffer to handle TCP stream fragmentation and multi-line responses
     std::string m_responseBuffer;
 
@@ -168,7 +170,7 @@ private:
     std::queue<std::string> sendInfo;
 
     // --- Callbacks ---
-
+    std::function<void()> m_onConnectedCallback;
     /**
      * @brief Handles incoming SMTP messages from the server.
      * @param msg Received message buffer.

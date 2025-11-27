@@ -6,7 +6,7 @@
 #include "../../logger/Include/Logger.h"
 #include <iostream>
 
-constexpr std::size_t BUFFER_SIZE = 1024;
+constexpr std::size_t BUFFER_SIZE = 1024 * 1024;
 constexpr int RECONNECT_DELAY_MS = 2000;
 
 NetSession::NetSession(std::shared_ptr<net::ip::tcp::socket> _socket) : socket(_socket)
@@ -19,20 +19,20 @@ void NetSession::connect(const net::ip::tcp::endpoint& endpoint)
 {
     if (socket->is_open()) socket->close();
     socket->async_connect(endpoint, [this](const boost::system::error_code& ec)
-    {
-        if (!ec)
         {
-            LOG_INFO(DEBUG_LOG_LEVEL) << "Connected";
-            connected = true;
-            if (onConnected) onConnected();
-        }
-        else
-        {
-            connected = false;
-            if (onDisconnect) onDisconnect();
-            LOG_INFO(DEBUG_LOG_LEVEL) << "Connect failed: " << ec.message();
-        }
-    });
+            if (!ec)
+            {
+                LOG_INFO(DEBUG_LOG_LEVEL) << "Connected";
+                connected = true;
+                if (onConnected) onConnected();
+            }
+            else
+            {
+                connected = false;
+                if (onDisconnect) onDisconnect();
+                LOG_INFO(DEBUG_LOG_LEVEL) << "Connect failed: " << ec.message();
+            }
+        });
 }
 
 bool NetSession::disconnect()
@@ -73,8 +73,12 @@ bool NetSession::run()
 bool NetSession::send(boost::asio::const_buffer data)
 {
     if (!socket->is_open()) return false;
-
-    writeQueue.push_back(data);
+    auto buf = std::make_shared<std::vector<uint8_t>>(
+        (const uint8_t*)data.data(),
+        (const uint8_t*)data.data() + data.size()
+    );
+    writeQueue.push_back(buf);
+    //writeQueue.push_back(data);
     if (!isWriting) write();
     return true;
 }
@@ -82,13 +86,18 @@ bool NetSession::send(boost::asio::const_buffer data)
 void NetSession::write()
 {
     isWriting = true;
-    boost::asio::const_buffer data = writeQueue.front();
+   
+    auto& buf = writeQueue.front();
+    net::const_buffer data(buf->data(), buf->size());
+   
     std::shared_ptr<std::vector<unsigned char>> encryptedData;
 
     if (cryptoManager.get())
     {
-        std::string plain = std::string(static_cast<const char*>(writeQueue.front().data()),
-                                        writeQueue.front().size());
+        std::string plain(
+            reinterpret_cast<const char*>(buf->data()),
+            buf->size()
+        );
         encryptedData = std::make_shared<std::vector<unsigned char>>(cryptoManager->encrypt(plain));
         data = net::buffer(*encryptedData);
     }
@@ -127,10 +136,12 @@ void NetSession::read()
                                     {
                                         if (self->cryptoManager.get())
                                         {
+                                            
                                             const std::vector<unsigned char> data{
                                                 self->buffer.begin(), self->buffer.begin() + bytes_transferred
                                             };
                                             self->decrypted_data = self->cryptoManager->decrypt(data);
+                                            
                                             self->onMessageReceived(
                                                 net::buffer(self->decrypted_data, self->decrypted_data.size()));
                                         }
@@ -147,4 +158,9 @@ void NetSession::read()
                                     self->disconnect();
                                 }
                             });
+}
+
+void NetSession::clearCrypto()
+{
+    cryptoManager.reset();
 }

@@ -13,7 +13,7 @@ void SmtpController::init(const SmtpSettings& initialSettings)
 {
     m_lastSettings = initialSettings;
 
-    m_workerThread = new QThread(this);
+    m_workerThread = new QThread();
     m_worker = new SmtpWorker(initialSettings);
     m_worker->moveToThread(m_workerThread);
 
@@ -45,4 +45,19 @@ void SmtpController::sendEmail(const Email& email, const SmtpSettings& settings)
     }
 
     emit workerProcessEmail(email);
+}
+
+SmtpController::~SmtpController()
+{
+    if (m_workerThread) {
+        m_workerThread->quit();        // Ask thread to stop
+        m_workerThread->wait(5000);    // Wait gracefully
+
+        if (m_workerThread->isRunning()) {
+            m_workerThread->terminate(); // Force if needed
+            m_workerThread->wait();
+        }
+
+        delete m_workerThread;
+    }
 }

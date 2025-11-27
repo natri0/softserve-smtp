@@ -3,6 +3,7 @@
 #include <openssl/evp.h>
 #include <openssl/param_build.h>
 #include <openssl/kdf.h>
+#include <openssl/err.h>
 
 namespace smtp::ssl {
   std::pair<std::vector<unsigned char>, std::vector<unsigned char>> KeyExchange::generateKeyPair() {

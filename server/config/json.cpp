@@ -1,6 +1,7 @@
 #include "json.h"
 
 #include <ostream>
+#include <iostream>
 #include <format>
 #include <string.h>
 #include <utility>
@@ -35,15 +36,26 @@ static void skip_whitespace(const char *&string) {
     while (*string && isspace(*string)) string++;
 }
 
-std::optional<double> json::visit_number(const char *&string) {
-    size_t idx_after;
-    try {
-        double val = std::stod(string, &idx_after);
-        string += idx_after;
-        return val;
-    } catch (std::invalid_argument &e) {
+std::optional<double> json::visit_number(const char*& string) {
+    if (string == nullptr) {
         return {};
     }
+
+    char* end_ptr = nullptr;
+    errno = 0;
+
+    double val = std::strtod(string, &end_ptr);
+
+    if (string == end_ptr) {
+        return {};
+    }
+
+    if (errno == ERANGE) {
+        return {};
+    }
+    string = end_ptr;
+
+    return val;
 }
 
 std::optional<std::string> json::visit_string(const char *&string) {

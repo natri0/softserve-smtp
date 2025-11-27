@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.30)
+cmake_minimum_required(VERSION 3.28)
 project(ssl_support LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)

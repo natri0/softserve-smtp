@@ -2,6 +2,8 @@
 #define SMTPWORKER_H
 
 #include <QObject>
+#include <QFileInfo>
+#include <QMimeDatabase>
 #include "Structures.h"
 #include "Client.h"
 

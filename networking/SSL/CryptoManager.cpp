@@ -3,6 +3,7 @@
 #include <openssl/rand.h>
 #include <openssl/bio.h>
 #include <openssl/buffer.h>
+#include <openssl/err.h>
 #include <stdexcept>
 #include <cstring>
 
@@ -64,45 +65,56 @@ namespace smtp::ssl
     return base64Encode(ciphertext);
   }
 
-  std::string CryptoManager::decrypt(const std::vector<unsigned char> &ciphertext) const {
-    const auto binaryCiphertext = base64Decode(ciphertext);
-    if (binaryCiphertext.size() < 16) {
-      throw std::invalid_argument("Ciphertext too short");
-    }
+  std::string CryptoManager::decrypt(const std::vector<unsigned char>& ciphertext) const {
+      const auto binaryCiphertext = base64Decode(ciphertext);
 
-    const std::vector iv(binaryCiphertext.begin(), binaryCiphertext.begin() + 16);
+      if (binaryCiphertext.size() < 16) {
+          throw std::invalid_argument("Ciphertext too short (less than IV size)");
+      }
 
-    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-    if (!ctx) {
-      throw std::runtime_error("Failed to create cipher context");
-    }
+      const std::vector<unsigned char> iv(binaryCiphertext.begin(),
+          binaryCiphertext.begin() + 16);
 
-    if (EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), nullptr, sessionKey.data(), iv.data()) != 1) {
+      const size_t ciphertext_len = binaryCiphertext.size() - 16;
+
+      EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
+      if (!ctx) {
+          throw std::runtime_error("Failed to create cipher context");
+      }
+
+      if (EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), nullptr,
+          sessionKey.data(), iv.data()) != 1) {
+          EVP_CIPHER_CTX_free(ctx);
+          throw std::runtime_error("Failed to initialize decryption");
+      }
+
+      std::vector<unsigned char> plaintext(ciphertext_len +
+          EVP_CIPHER_block_size(EVP_aes_256_cbc()));
+      int len = 0;
+      int plaintext_len = 0;
+
+      if (EVP_DecryptUpdate(ctx, plaintext.data(), &len,
+          binaryCiphertext.data() + 16,
+          static_cast<int>(ciphertext_len)) != 1) {
+          EVP_CIPHER_CTX_free(ctx);
+          throw std::runtime_error("Decryption failed in Update");
+      }
+      plaintext_len = len;
+
+      
+      if (EVP_DecryptFinal_ex(ctx, plaintext.data() + len, &len) != 1) {
+          unsigned long err = ERR_get_error();
+          char err_buf[256];
+          ERR_error_string_n(err, err_buf, sizeof(err_buf));
+          EVP_CIPHER_CTX_free(ctx);
+          throw std::runtime_error(std::string("Decryption finalization failed: ") + err_buf);
+      }
+      plaintext_len += len;
+
       EVP_CIPHER_CTX_free(ctx);
-      throw std::runtime_error("Failed to initialize decryption");
-    }
 
-    std::vector<unsigned char> plaintext(binaryCiphertext.size());
-    int len = 0;
-    int plaintext_len = 0;
-
-    if (EVP_DecryptUpdate(ctx, plaintext.data(), &len, binaryCiphertext.data() + 16, binaryCiphertext.size() - 16) != 1) {
-      EVP_CIPHER_CTX_free(ctx);
-      throw std::runtime_error("Decryption failed");
-    }
-    plaintext_len = len;
-
-    // Remove padding
-    if (EVP_DecryptFinal_ex(ctx, plaintext.data() + len, &len) != 1) {
-      EVP_CIPHER_CTX_free(ctx);
-      throw std::runtime_error("Decryption finalization failed");
-    }
-    plaintext_len += len;
-
-    EVP_CIPHER_CTX_free(ctx);
-
-    plaintext.resize(plaintext_len);
-    return std::string(plaintext.begin(), plaintext.end());
+      plaintext.resize(plaintext_len);
+      return std::string(plaintext.begin(), plaintext.end());
   }
 
   std::vector<unsigned char> CryptoManager::base64Encode(const std::vector<unsigned char> &data) {
@@ -122,23 +134,44 @@ namespace smtp::ssl
 
     return result;
   }
+  std::vector<unsigned char> CryptoManager::base64Decode(const std::vector<unsigned char>& encoded)  {
+      if (encoded.empty()) {
+          throw std::invalid_argument("Empty input for base64 decode");
+      }
 
-  std::vector<unsigned char> CryptoManager::base64Decode(const std::vector<unsigned char> &encoded) {
-    BIO *bio = BIO_new_mem_buf(encoded.data(), encoded.size());
-    BIO *b64 = BIO_new(BIO_f_base64());
-    BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
-    BIO_push(b64, bio);
+      BIO* bio = BIO_new_mem_buf(encoded.data(), static_cast<int>(encoded.size()));
+      if (!bio) {
+          throw std::runtime_error("Failed to create memory BIO");
+      }
 
-    std::vector<unsigned char> result(encoded.size());
-    const int decoded_length = BIO_read(b64, result.data(), encoded.size());
+      BIO* b64 = BIO_new(BIO_f_base64());
+      if (!b64) {
+          BIO_free(bio);
+          throw std::runtime_error("Failed to create base64 BIO");
+      }
 
-    BIO_free_all(b64);
+      BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
+      bio = BIO_push(b64, bio);
 
-    if (decoded_length < 0) {
-      throw std::runtime_error("Base64 decoding failed");
-    }
+      std::vector<unsigned char> decoded(encoded.size());
+      int decoded_length = BIO_read(bio, decoded.data(), static_cast<int>(decoded.size()));
 
-    result.resize(decoded_length);
-    return result;
+      BIO_free_all(bio);
+
+      if (decoded_length < 0) {
+          throw std::runtime_error("Base64 decode failed");
+      }
+
+      decoded.resize(decoded_length);
+      return decoded;
+  }
+
+  void CryptoManager::reset() {
+      // надiйно затираємо пам'ять
+      std::fill(sessionKey.begin(), sessionKey.end(), 0);
+
+      // очищаємо вектор
+      sessionKey.clear();
+      sessionKey.shrink_to_fit();
   }
 }

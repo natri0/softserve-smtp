@@ -171,10 +171,9 @@ void Server::setConnection(std::shared_ptr<net::ip::tcp::socket> socket)
 
 void Server::SMTPHandling(boost::asio::const_buffer msg, std::shared_ptr<SmartSession> session)
 {
-    const std::string cmd(
-        std::string(static_cast<const char*>(msg.data()), msg.size()));
+    std::string cmd(reinterpret_cast<const char*>(msg.data()), msg.size());
 
-    auto rpl = session->smtp()->OnMessage(cmd.c_str());
+    auto rpl = session->smtp()->OnMessage(cmd);
     session->net()->send(net::buffer(rpl));
 
     LOG_INFO(DEBUG_LOG_LEVEL) << "Received message from: " << session->net()->getSocket()->

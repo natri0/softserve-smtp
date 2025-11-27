@@ -9,6 +9,7 @@ namespace smtp::ssl {
 
     std::vector<unsigned char> encrypt(const std::string &plaintext) const;
     std::string decrypt(const std::vector<unsigned char> &ciphertext) const;
+    void reset();
 
   private:
     std::vector<unsigned char> sessionKey;

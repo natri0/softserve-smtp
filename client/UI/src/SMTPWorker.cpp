@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+
+
 SmtpWorker::SmtpWorker(const SmtpSettings& settings, QObject* parent) :
   QObject(parent), m_Settings(settings)
 {
@@ -31,18 +33,39 @@ void SmtpWorker::processEmail(const Email& email) {
         emit statusUpdated("Worker process started!");
 
         EmailMessage msgToSend;
-        msgToSend.from = email.from.toStdString();
-        msgToSend.subject = email.subject.toStdString();
-        msgToSend.body = email.body.toStdString();
+        msgToSend.setFrom(email.from.toStdString());
+        msgToSend.setSubject(email.subject.toStdString());
+        msgToSend.setBody(email.body.toStdString());
 
-        msgToSend.to.reserve(email.to.size());
+       
         for (const QString& recipient : email.to) {
-            msgToSend.to.push_back(recipient.toStdString());
+            msgToSend.setTo(recipient.toStdString());
         }
 
-        msgToSend.attachmentPaths.reserve(email.attachmentPaths.size());
+        //msgToSend.attachmentPaths.reserve(email.attachmentPaths.size());
         for (const QString& path : email.attachmentPaths) {
-            msgToSend.attachmentPaths.push_back(path.toStdString());
+            QFileInfo info(path);
+
+            QString fileName = info.fileName();             // test.png
+            QString extension = info.suffix();              // png
+            QString baseName = info.completeBaseName();     // test
+
+            emit statusUpdated("Worker process started!");
+
+            QFile file(path);
+            if (!file.open(QIODevice::ReadOnly)) {
+                emit statusUpdated("Cannot open attachment: " + path);
+                continue;
+            }
+
+            QByteArray data = file.readAll();
+            QString mime = QMimeDatabase().mimeTypeForFile(info).name();
+            msgToSend.addAttachment({
+                fileName.toStdString(),
+                mime.toStdString(),
+                "attachment",
+                std::vector<uint8_t>(data.begin(), data.end())
+                });
         }
 
         emit statusUpdated("Connecting to " + m_Settings.server + "...");
@@ -79,9 +102,24 @@ void SmtpWorker::updateSettings(const SmtpSettings& settings)
     clientSettings.port = m_Settings.port;
     clientSettings.securityType = m_Settings.securityType;
 
+    emit statusUpdated("Reconnecting to new server...");
+
+   
     if (m_Client) {
-        m_Client->setSettings(clientSettings);
+        emit statusUpdated("Stopping old client...");
+        m_Client->stop();        
+        m_Client.reset();        
     }
 
-    emit statusUpdated("Client settings updated.");
+    
+    auto onStatus = [this](const std::string& msg) {
+        emit statusUpdated(QString::fromStdString(msg));
+        };
+
+    m_Client = std::make_unique<Client>(clientSettings, onStatus);
+
+    
+    m_Client->start();
+
+    emit statusUpdated("Client reconnected with updated settings!");
 }

@@ -130,6 +130,7 @@ public:
     {
         cryptoManager = std::make_unique<smtp::ssl::CryptoManager>(key);
     }
+    void clearCrypto();
 
 private:
     /**
@@ -137,13 +138,17 @@ private:
      */
     void read();
 
+
     /**
      * @brief Performs asynchronous write operations.
      */
     void write();
 
-    std::array<char, 1024> buffer;                       ///< Read buffer
-    std::deque<net::const_buffer> writeQueue;            ///< Pending write operations
+    std::array<char, 1024 * 1024 * 1000> buffer;                       ///< Read buffer
+    std::array<char, 4> sizeBuffer; // for read size
+
+    std::deque<std::shared_ptr<std::vector<uint8_t>>> writeQueue;
+    //std::deque<net::const_buffer> writeQueue;            ///< Pending write operations
     bool isWriting = false;                              ///< Indicates if writing is in progress
     bool isRunning = false;                              ///< Indicates if the session loop is active
     std::atomic<bool> connected = false;                 ///< Connection state

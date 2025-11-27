@@ -116,7 +116,7 @@ constexpr detail::ErrWrapper<void> Err();
 namespace detail {
     template <class OkType>
     class OkWrapper final {
-    protected:
+    public:
         OkType m_value;
 
         constexpr explicit OkWrapper(OkType&& value) noexcept(std::is_nothrow_move_constructible_v<OkType>)
@@ -125,7 +125,9 @@ namespace detail {
         constexpr explicit OkWrapper(OkType const& value) noexcept(std::is_nothrow_copy_constructible_v<OkType>)
             : m_value(value) {}
 
-        friend constexpr OkWrapper Ok<OkType>(OkType&& value);
+        //friend constexpr OkWrapper Ok<OkType>(OkType&& value);
+        //constexpr OkWrapper Ok<OkType>(OkType&& value);
+
 
     public:
         constexpr OkType&& unwrap() && noexcept { return std::move(m_value); }
@@ -135,12 +137,13 @@ namespace detail {
 
     template <class OkType>
     class OkWrapper<OkType&> final {
-    protected:
+    public:
         OkType& m_value;
 
         constexpr explicit OkWrapper(OkType& value) noexcept : m_value(value) {}
 
-        friend constexpr OkWrapper Ok<OkType>(OkType& value);
+        //friend constexpr OkWrapper Ok<OkType>(OkType& value);
+        //constexpr OkWrapper Ok<OkType>(OkType& value);
 
     public:
         constexpr std::reference_wrapper<OkType> unwrap() && noexcept { return m_value; }
@@ -149,17 +152,17 @@ namespace detail {
 
     template <>
     class OkWrapper<void> final {
-    protected:
+    public:
         std::monostate m_value;
 
         constexpr explicit OkWrapper() noexcept = default;
 
-        friend constexpr OkWrapper (::Ok)();
+        //constexpr OkWrapper (::Ok)();
     };
 
     template <class ErrType>
     class ErrWrapper final {
-    protected:
+    public:
         ErrType m_error;
 
         constexpr explicit ErrWrapper(ErrType&& error) noexcept(std::is_nothrow_move_constructible_v<ErrType>)
@@ -168,7 +171,8 @@ namespace detail {
         constexpr explicit ErrWrapper(ErrType const& error) noexcept(std::is_nothrow_copy_constructible_v<ErrType>)
             : m_error(error) {}
 
-        friend constexpr ErrWrapper Err<ErrType>(ErrType&& error);
+        //friend constexpr ErrWrapper Err<ErrType>(ErrType&& error);
+        //constexpr ErrWrapper Err<ErrType>(ErrType&& error);
 
     public:
         constexpr ErrType&& unwrap() && noexcept { return std::move(m_error); }
@@ -178,12 +182,13 @@ namespace detail {
 
     template <class ErrType>
     class ErrWrapper<ErrType&> final {
-    protected:
+    public:
         ErrType& m_error;
 
         constexpr explicit ErrWrapper(ErrType& error) noexcept : m_error(error) {}
 
-        friend constexpr ErrWrapper Err<ErrType>(ErrType& error);
+        //friend constexpr ErrWrapper Err<ErrType>(ErrType& error);
+        //constexpr ErrWrapper Err<ErrType>(ErrType& error);
 
     public:
         constexpr std::reference_wrapper<ErrType> unwrap() && noexcept { return m_error; }
@@ -192,7 +197,7 @@ namespace detail {
 
     template <>
     class ErrWrapper<void> final {
-    protected:
+    public:
         std::monostate m_error;
 
         constexpr explicit ErrWrapper() noexcept = default;
